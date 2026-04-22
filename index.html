@@ -516,6 +516,42 @@
             display: none;
         }
         .error-msg.visible { display: block; }
+        .warnings-box {
+            display: none;
+            background: #fff3e0;
+            border: 1px solid #ffe082;
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1rem;
+            font-size: 0.83rem;
+            color: #e65100;
+        }
+        .warnings-box.visible { display: block; }
+        .warnings-box summary {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            margin-bottom: 0.4rem;
+        }
+        .warnings-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.3rem 0 0 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .warnings-box li {
+            padding: 0.2rem 0 0.2rem 1rem;
+            position: relative;
+            color: #555;
+        }
+        .warnings-box li::before {
+            content: '!';
+            position: absolute;
+            left: 0;
+            color: #e65100;
+            font-weight: 700;
+        }
 
         /* Center info modal */
         .btn-info {
@@ -942,6 +978,7 @@
             </div>
         </div>
 
+        <div class="warnings-box" id="warnings-box"></div>
         <div class="summary-bar" id="summary-bar"></div>
         <div class="centers-list" id="centers-list"></div>
         <div class="table-container" id="table-container">
@@ -1008,6 +1045,7 @@
         ];
 
         const CURSOS_ERG_INDEX = {
+            '1º Primaria': -2, '2º Primaria': -1,
             '3º Primaria': 0, '4º Primaria': 1, '5º Primaria': 2, '6º Primaria': 3,
             '1º ESO': 4, '2º ESO': 5, '3º ESO': 6, '4º ESO': 7,
             '1º Bachillerato': 8, '2º Bachillerato': 9,
@@ -1216,8 +1254,38 @@
         }
 
         function renderView() {
-            const filtered = applyFilters();
+            const allFiltered = applyFilters();
             const isGroupERG = groupMode === 'erg';
+
+            // Separate complete from incomplete
+            const incomplete = [];
+            const filtered = [];
+            allFiltered.forEach(a => {
+                const missing = [];
+                if (!a.curso_cons) missing.push('Curso Conservatorio');
+                if (!a.curso_erg) missing.push('Curso ERG');
+                if (missing.length > 0) {
+                    const nombre = `${a.apellidos}, ${a.nombre}` + (a.nia ? ` (NIA: ${a.nia})` : '');
+                    incomplete.push({ nombre, missing: missing.join(' y ') });
+                } else {
+                    filtered.push(a);
+                }
+            });
+
+            // Warnings
+            const warningsBox = document.getElementById('warnings-box');
+            if (incomplete.length > 0) {
+                let wHtml = `<details><summary>${incomplete.length} alumno/a(s) con datos incompletos (no se muestran en las cards)</summary><ul>`;
+                incomplete.forEach(w => {
+                    wHtml += `<li><strong>${escapeHtml(w.nombre)}</strong>: falta ${escapeHtml(w.missing)}</li>`;
+                });
+                wHtml += '</ul></details>';
+                warningsBox.innerHTML = wHtml;
+                warningsBox.classList.add('visible');
+            } else {
+                warningsBox.innerHTML = '';
+                warningsBox.classList.remove('visible');
+            }
 
             // Summary
             const summaryBar = document.getElementById('summary-bar');
@@ -1332,7 +1400,7 @@
                 tableContainer.classList.add('visible');
                 document.getElementById('view-toggle-group').style.display = 'none';
                 document.getElementById('view-toggle').style.display = 'none';
-                renderTable(filtered);
+                renderTable(allFiltered);
             } else {
                 centrosList.style.display = '';
                 tableContainer.classList.remove('visible');
