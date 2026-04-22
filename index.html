@@ -3,9 +3,1850 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordinación Horaria</title>
+    <title>Coordinación Horaria – Conservatorio</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.5;
+        }
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+        header h1 { font-size: 1.6rem; font-weight: 600; display: inline; }
+        header .version-badge {
+            font-size: 0.7rem;
+            font-weight: 400;
+            background: rgba(255,255,255,0.15);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        header .btn-update {
+            font-size: 0.65rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        header .btn-update:hover { background: rgba(255,255,255,0.35); }
+        header p { font-size: 0.9rem; opacity: 0.8; margin-top: 0.3rem; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed #b0b8c8;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #4361ee;
+            background: #eef1ff;
+        }
+        .upload-zone .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .upload-zone p { color: #555; }
+        .upload-zone .btn-upload {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.6rem 1.8rem;
+            background: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .upload-zone .btn-upload:hover { background: #3a56d4; }
+        #file-input { display: none; }
+
+        /* Search bar */
+        .search-bar {
+            display: none;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .search-bar.visible { display: flex; }
+        .search-bar .search-icon { color: #888; font-size: 1.1rem; flex-shrink: 0; }
+        .search-bar input {
+            flex: 1;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-bar input:focus { border-color: #4361ee; }
+        .search-bar .search-count {
+            font-size: 0.82rem;
+            color: #888;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .search-bar .search-nav {
+            display: flex;
+            gap: 0.3rem;
+            flex-shrink: 0;
+        }
+        .search-bar .search-nav button {
+            background: #eef0f4;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #555;
+        }
+        .search-bar .search-nav button:hover { background: #dce0e8; }
+        .search-bar .btn-search-clear {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #aaa;
+            padding: 0.2rem;
+            flex-shrink: 0;
+        }
+        .search-bar .btn-search-clear:hover { color: #555; }
+        .alumno-row.search-highlight {
+            background: #fff9c4 !important;
+            box-shadow: inset 0 0 0 2px #ffd600;
+            border-radius: 4px;
+        }
+
+        /* Filters */
+        .filters {
+            display: none;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            background: white;
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            align-items: flex-end;
+        }
+        .filters.visible { display: flex; }
+        .filter-group { display: flex; flex-direction: column; flex: 1; min-width: 180px; }
+        .filter-group label { font-size: 0.75rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
+        .filter-group select {
+            padding: 0.45rem 0.6rem;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        /* Summary bar */
+        .summary-bar {
+            display: none;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-size: 0.9rem;
+            color: #444;
+        }
+        .summary-bar.visible { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+        .summary-stat { display: flex; align-items: center; gap: 0.4rem; }
+        .summary-stat .num { font-weight: 700; font-size: 1.1rem; color: #1a1a2e; }
+
+        /* Center cards */
+        .centers-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .center-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .center-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        .center-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.2rem;
+            cursor: pointer;
+            gap: 1rem;
+            user-select: none;
+        }
+        .center-header .arrow {
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+            color: #888;
+            flex-shrink: 0;
+        }
+        .center-card.expanded .center-header .arrow { transform: rotate(90deg); }
+        .center-info { flex: 1; }
+        .center-name { font-weight: 600; font-size: 1.05rem; }
+        .center-type {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        .center-type.ceip { background: #e8f5e9; color: #2e7d32; }
+        .center-type.ies { background: #e3f2fd; color: #1565c0; }
+        .center-type.cons { background: #f3e5f5; color: #7b1fa2; }
+        .center-meta { font-size: 0.8rem; color: #777; margin-top: 0.15rem; }
+        .center-count {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #1a1a2e;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .center-count small { font-size: 0.7rem; font-weight: 400; color: #888; display: block; }
+
+        /* Desfase bar in header */
+        .desfase-bar {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 120px;
+            flex-shrink: 0;
+            background: #eee;
+        }
+        .desfase-bar .seg-green { background: #4caf50; }
+        .desfase-bar .seg-yellow { background: #ff9800; }
+        .desfase-bar .seg-red { background: #f44336; }
+
+        /* Center body (expanded) */
+        .center-body {
+            display: none;
+            border-top: 1px solid #f0f0f0;
+            padding: 0;
+        }
+        .center-card.expanded .center-body { display: block; }
+
+        .curso-row {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.2rem 0.7rem 2.5rem;
+            gap: 0.8rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.15s;
+        }
+        .curso-row:hover { background: #fafafa; }
+        .curso-row:last-child { border-bottom: none; }
+        .curso-row .arrow-small {
+            font-size: 0.65rem;
+            color: #aaa;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .curso-row.expanded .arrow-small { transform: rotate(90deg); }
+        .curso-name { flex: 1; font-size: 0.95rem; }
+        .curso-count { font-weight: 600; font-size: 0.95rem; min-width: 60px; text-align: right; }
+        .curso-count small { font-weight: 400; font-size: 0.75rem; color: #888; }
+        .curso-desfase-summary {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+        .curso-desfase-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+        }
+        .curso-desfase-chip.green { background: #e8f5e9; color: #2e7d32; }
+        .curso-desfase-chip.yellow { background: #fff3e0; color: #e65100; }
+        .curso-desfase-chip.red { background: #ffebee; color: #c62828; }
+        .curso-desfase-chip .chip-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+        }
+        .curso-desfase-chip.green .chip-dot { background: #4caf50; }
+        .curso-desfase-chip.yellow .chip-dot { background: #ff9800; }
+        .curso-desfase-chip.red .chip-dot { background: #f44336; }
+        .curso-minibar {
+            display: flex;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            width: 60px;
+            flex-shrink: 0;
+            background: #eee;
+        }
+        .curso-minibar .seg-green { background: #4caf50; }
+        .curso-minibar .seg-yellow { background: #ff9800; }
+        .curso-minibar .seg-red { background: #f44336; }
+        .desfase-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.1rem 0.55rem;
+            border-radius: 10px;
+            min-width: 55px;
+            text-align: center;
+        }
+        .desfase-badge.green { background: #e8f5e9; color: #2e7d32; }
+        .desfase-badge.yellow { background: #fff3e0; color: #e65100; }
+        .desfase-badge.red { background: #ffebee; color: #c62828; }
+
+        /* Student list */
+        .alumnos-list {
+            display: none;
+            background: #fafbfc;
+            padding: 0.5rem 0.5rem 0.5rem 3.5rem;
+        }
+        .curso-row.expanded + .alumnos-list { display: block; }
+        .desfase-group {
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            padding: 0.4rem 0.6rem;
+            border-left: 4px solid transparent;
+        }
+        .desfase-group.green { background: #e8f5e920; border-left-color: #4caf50; }
+        .desfase-group.yellow { background: #fff3e020; border-left-color: #ff9800; }
+        .desfase-group.red { background: #ffebee30; border-left-color: #f44336; }
+        .desfase-group-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.2rem;
+            margin-bottom: 0.2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .desfase-group.green .desfase-group-header { color: #2e7d32; }
+        .desfase-group.yellow .desfase-group-header { color: #e65100; }
+        .desfase-group.red .desfase-group-header { color: #c62828; }
+        .alumno-row {
+            display: flex;
+            gap: 1rem;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        .alumno-row:last-child { border-bottom: none; }
+        .alumno-nia { color: #999; font-size: 0.8rem; min-width: 70px; }
+        .alumno-nombre { flex: 1; font-weight: 500; }
+        .alumno-curso-cons { color: #555; min-width: 80px; }
+        .alumno-especialidad { color: #777; min-width: 80px; }
+        .btn-alumno-info {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 1.5px solid #b0b8c8;
+            background: white;
+            color: #888;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-style: italic;
+            font-family: Georgia, serif;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            line-height: 1;
+        }
+        .btn-alumno-info:hover { border-color: #4361ee; color: #4361ee; background: #eef1ff; }
+        .btn-alumno-info.has-obs {
+            border-color: #ff9800;
+            background: #fff3e0;
+            color: #e65100;
+            animation: pulse-obs 2s infinite;
+        }
+        @keyframes pulse-obs {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0.3); }
+            50% { box-shadow: 0 0 0 4px rgba(255,152,0,0.15); }
+        }
+        .alumno-detail-panel {
+            display: none;
+            background: #f8f9fb;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin: 0.2rem 0 0.4rem 0;
+            padding: 0.7rem 0.9rem;
+        }
+        .alumno-detail-panel.visible { display: block; }
+        .alumno-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+        .alumno-detail-section {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 0.5rem 0.7rem;
+        }
+        .alumno-detail-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #4361ee;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+        .alumno-detail-name { font-size: 0.88rem; font-weight: 500; color: #1a1a2e; }
+        .alumno-detail-mail { font-size: 0.8rem; margin-top: 0.1rem; }
+        .alumno-detail-mail a { color: #4361ee; text-decoration: none; }
+        .alumno-detail-mail a:hover { text-decoration: underline; }
+        .alumno-obs-section {
+            grid-column: 1 / -1;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 6px;
+            padding: 0.5rem 0.7rem;
+        }
+        .alumno-obs-section .alumno-detail-title { color: #e65100; }
+        .alumno-obs-text { font-size: 0.85rem; color: #555; }
+
+        /* Legend */
+        .legend {
+            display: none;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            margin-top: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-size: 0.85rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .legend.visible { display: flex; }
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .legend-dot.green { background: #4caf50; }
+        .legend-dot.yellow { background: #ff9800; }
+        .legend-dot.red { background: #f44336; }
+
+        /* Equivalences table */
+        .equiv-section {
+            display: none;
+            background: white;
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            margin-top: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .equiv-section.visible { display: block; }
+        .equiv-section h3 { font-size: 0.95rem; margin-bottom: 0.6rem; color: #333; }
+        .equiv-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .equiv-table th {
+            text-align: left;
+            padding: 0.4rem 0.6rem;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: 600;
+            color: #555;
+        }
+        .equiv-table td {
+            padding: 0.35rem 0.6rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* Error */
+        .error-msg {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .error-msg.visible { display: block; }
+
+        /* Center info modal */
+        .btn-info {
+            background: none;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            color: #4361ee;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .btn-info:hover { background: #eef1ff; border-color: #4361ee; }
+        .btn-mailto {
+            background: none;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            color: #4361ee;
+            cursor: pointer;
+            flex-shrink: 0;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .btn-mailto:hover { background: #eef1ff; border-color: #4361ee; }
+        .btn-mailto .mailto-icon { font-size: 0.85rem; }
+        .center-detail-panel {
+            display: none;
+            border-top: 1px solid #e8e8e8;
+            background: #f8f9fb;
+            padding: 1rem 1.5rem;
+        }
+        .center-detail-panel.visible { display: block; }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .detail-card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+        }
+        .detail-cargo {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #4361ee;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.25rem;
+        }
+        .detail-nombre { font-size: 0.9rem; color: #1a1a2e; font-weight: 500; }
+        .detail-mail { font-size: 0.82rem; margin-top: 0.15rem; }
+        .detail-mail a { color: #4361ee; text-decoration: none; }
+        .detail-mail a:hover { text-decoration: underline; }
+        .detail-general {
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            color: #555;
+        }
+        .detail-general a { color: #4361ee; text-decoration: none; }
+        .detail-general a:hover { text-decoration: underline; }
+        .detail-general-label { font-size: 0.7rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Toggles row */
+        .toggles-row {
+            display: none;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            align-items: center;
+        }
+        .toggles-row.visible { display: flex; }
+        .toggles-row .toggle-separator {
+            width: 1px;
+            height: 24px;
+            background: #d0d5dd;
+            flex-shrink: 0;
+        }
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .view-toggle-label { font-size: 0.8rem; font-weight: 600; color: #555; }
+        .toggle-switch {
+            display: flex;
+            background: #eef0f4;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .toggle-option {
+            padding: 0.4rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #666;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+        .toggle-option.active {
+            background: #4361ee;
+            color: white;
+            border-radius: 6px;
+        }
+
+        /* Table view */
+        .table-container {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .table-container.visible { display: block; }
+        .flat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .flat-table th {
+            position: sticky;
+            top: 0;
+            background: #1a1a2e;
+            color: white;
+            padding: 0.55rem 0.6rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .flat-table th:hover { background: #2a2a4e; }
+        .flat-table th .sort-arrow { margin-left: 0.3rem; font-size: 0.6rem; opacity: 0.5; }
+        .flat-table th.sorted-asc .sort-arrow,
+        .flat-table th.sorted-desc .sort-arrow { opacity: 1; }
+        .flat-table td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+        .flat-table tbody tr:hover { background: #f8f9fb; }
+        .flat-table .desfase-cell {
+            font-weight: 600;
+            text-align: center;
+            border-radius: 4px;
+            padding: 0.2rem 0.5rem;
+        }
+        .flat-table .desfase-cell.green { background: #e8f5e9; color: #2e7d32; }
+        .flat-table .desfase-cell.yellow { background: #fff3e0; color: #e65100; }
+        .flat-table .desfase-cell.red { background: #ffebee; color: #c62828; }
+        .flat-table .obs-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ff9800;
+        }
+
+        /* Export button */
+        .btn-export {
+            display: none;
+            padding: 0.5rem 1.2rem;
+            background: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .btn-export.visible { display: inline-flex; align-items: center; gap: 0.4rem; }
+        .btn-export:hover { background: #3a56d4; }
+        .btn-export:disabled { background: #a0a0a0; cursor: wait; }
+        .export-bar {
+            display: none;
+            background: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            align-items: center;
+            gap: 0.8rem;
+            justify-content: flex-end;
+        }
+        .export-bar.visible { display: flex; }
+
+        /* Changelog modal */
+        .changelog-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .changelog-overlay.visible { display: flex; }
+        .changelog-modal {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            max-width: 650px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .changelog-modal h3 { font-size: 1.1rem; color: #1a1a2e; margin-bottom: 1rem; }
+        .changelog-close {
+            position: absolute;
+            top: 0.8rem; right: 1rem;
+            background: none; border: none;
+            font-size: 1.3rem; color: #888;
+            cursor: pointer;
+        }
+        .changelog-close:hover { color: #333; }
+        .changelog-version { margin-bottom: 1rem; }
+        .changelog-version h4 {
+            font-size: 0.9rem;
+            color: #4361ee;
+            margin-bottom: 0.4rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3rem;
+        }
+        .changelog-version ul {
+            list-style: none;
+            padding: 0;
+        }
+        .changelog-version li {
+            font-size: 0.83rem;
+            color: #444;
+            padding: 0.2rem 0 0.2rem 1.2rem;
+            position: relative;
+            line-height: 1.5;
+        }
+        .changelog-version li::before {
+            content: '>';
+            position: absolute;
+            left: 0.2rem;
+            color: #4361ee;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .site-footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ccc;
+            padding: 1.5rem 2rem;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            line-height: 1.7;
+        }
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .footer-author { flex: 1; min-width: 250px; }
+        .footer-author a { color: #8eaaff; text-decoration: none; }
+        .footer-author a:hover { text-decoration: underline; color: white; }
+        .footer-links {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .footer-links a {
+            color: #8eaaff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: color 0.15s;
+        }
+        .footer-links a:hover { color: white; text-decoration: underline; }
+        .footer-changelog-btn {
+            background: rgba(255,255,255,0.15);
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            color: white !important;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .footer-changelog-btn:hover { background: rgba(255,255,255,0.25) !important; }
+        .footer-separator { width: 1px; height: 14px; background: #444; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .center-header { flex-wrap: wrap; }
+            .desfase-bar { width: 80px; }
+            .filter-group { min-width: 140px; }
+            .alumno-row { flex-wrap: wrap; gap: 0.3rem; }
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: white; }
+            .upload-zone, .search-bar, .filters, .toggles-row,
+            .export-bar, .legend, .equiv-section, .changelog-overlay,
+            .btn-info, .btn-mailto, .btn-alumno-info,
+            .btn-export, .site-footer, .btn-update { display: none !important; }
+            .container { max-width: 100%; padding: 0; }
+            header { padding: 0.8rem; }
+            .center-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+            .summary-bar { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Coordinación Horaria</h1>
+    <header>
+        <div>
+            <h1>Coordinaci&oacute;n Horaria</h1><span class="version-badge">v1.0</span><a class="btn-update" href="https://github.com/JLMirallesB/CoordinacionHoraria/releases/latest" target="_blank" title="Comprobar actualizaciones">Actualizar?</a>
+        </div>
+        <p>Conservatorio ↔ Centros de Ense&ntilde;anza General</p>
+    </header>
+    <div class="container">
+        <div class="error-msg" id="error-msg"></div>
+
+        <div class="upload-zone" id="upload-zone">
+            <div class="icon">📁</div>
+            <p><strong>Arrastra aquí tu archivo Excel</strong> o haz clic para seleccionarlo</p>
+            <p style="font-size:0.8rem;color:#888;margin-top:0.3rem">.xlsx con hojas "Centros" y "Alumnado"</p>
+            <button class="btn-upload" id="btn-upload">Seleccionar archivo</button>
+            <input type="file" id="file-input" accept=".xlsx,.xls">
+        </div>
+
+        <div class="search-bar" id="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Buscar alumno por nombre o NIA...">
+            <span class="search-count" id="search-count"></span>
+            <div class="search-nav" id="search-nav" style="display:none">
+                <button id="search-prev" title="Anterior">&#9650;</button>
+                <button id="search-next" title="Siguiente">&#9660;</button>
+            </div>
+            <button class="btn-search-clear" id="search-clear" title="Limpiar" style="display:none">&#10005;</button>
+        </div>
+
+        <div class="filters" id="filters">
+            <div class="filter-group">
+                <label>Tipo enseñanza</label>
+                <select id="filter-tipo-ens">
+                    <option value="">Todos</option>
+                    <option value="EEM">EEM (Elemental)</option>
+                    <option value="EPM">EPM (Profesional)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Curso Conservatorio</label>
+                <select id="filter-curso-cons"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Especialidad</label>
+                <select id="filter-especialidad"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Curso ERG</label>
+                <select id="filter-curso-erg"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Centro ERG</label>
+                <select id="filter-centro"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Conservatorio</label>
+                <select id="filter-conservatorio"><option value="">Todos</option></select>
+            </div>
+        </div>
+
+        <div class="toggles-row" id="toggles-row">
+            <div class="view-toggle" id="view-toggle-display">
+                <span class="view-toggle-label">Vista:</span>
+                <div class="toggle-switch" id="toggle-display-switch">
+                    <button class="toggle-option active" data-mode="cards">Cards</button>
+                    <button class="toggle-option" data-mode="tabla">Tabla</button>
+                </div>
+            </div>
+            <div class="toggle-separator"></div>
+            <div class="view-toggle" id="view-toggle-group">
+                <span class="view-toggle-label">Agrupar por:</span>
+                <div class="toggle-switch" id="toggle-group-switch">
+                    <button class="toggle-option active" data-mode="erg">Centro ERG</button>
+                    <button class="toggle-option" data-mode="conservatorio">Conservatorio</button>
+                </div>
+            </div>
+            <div class="toggle-separator"></div>
+            <div class="view-toggle" id="view-toggle">
+                <span class="view-toggle-label">Agrupar cursos por:</span>
+                <div class="toggle-switch" id="toggle-curso-switch">
+                    <button class="toggle-option active" data-mode="cons">Curso Conservatorio</button>
+                    <button class="toggle-option" data-mode="erg">Curso ERG</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-bar" id="export-bar">
+            <button class="btn-export visible" id="btn-export-pdf">📄 Exportar PDF</button>
+        </div>
+
+        <div class="summary-bar" id="summary-bar"></div>
+        <div class="centers-list" id="centers-list"></div>
+        <div class="table-container" id="table-container">
+            <table class="flat-table" id="flat-table"></table>
+        </div>
+
+        <div class="legend" id="legend">
+            <div class="legend-item"><div class="legend-dot green"></div> Curso equivalente (desfase 0)</div>
+            <div class="legend-item"><div class="legend-dot yellow"></div> Desfase leve (±1)</div>
+            <div class="legend-item"><div class="legend-dot red"></div> Desfase grande (±2 o más)</div>
+        </div>
+
+        <div class="equiv-section" id="equiv-section">
+            <h3>Tabla de equivalencias Conservatorio ↔ Enseñanza General</h3>
+            <table class="equiv-table">
+                <thead><tr><th>Conservatorio</th><th>Equivalente ERG</th></tr></thead>
+                <tbody id="equiv-tbody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="changelog-overlay" id="changelog-overlay">
+        <div class="changelog-modal">
+            <button class="changelog-close" id="changelog-close">&times;</button>
+            <h3>Novedades</h3>
+            <div class="changelog-version">
+                <h4>v1.0 &mdash; 22 de abril de 2026</h4>
+                <ul>
+                    <li>Carga de datos desde archivo Excel (.xlsx) con hojas "Centros", "Conservatorios" y "Alumnado"</li>
+                    <li>Soporte para m&uacute;ltiples conservatorios coordinados con los mismos centros ERG</li>
+                    <li>Vista Cards con jerarqu&iacute;a: Centro/Conservatorio &rarr; Curso &rarr; Alumnos agrupados por desfase</li>
+                    <li>Vista Tabla plana con todas las columnas, ordenable por clic en cabeceras</li>
+                    <li>Toggle de agrupaci&oacute;n principal: por Centro ERG o por Conservatorio</li>
+                    <li>Toggle de agrupaci&oacute;n de cursos: por Curso Conservatorio o por Curso ERG</li>
+                    <li>Sistema de desfase con colores: verde (equivalente), amarillo (&plusmn;1), rojo (&plusmn;2 o m&aacute;s)</li>
+                    <li>Barras proporcionales y chips de desfase en cada centro y curso</li>
+                    <li>6 filtros combinables: Tipo ense&ntilde;anza, Curso Conservatorio, Curso ERG, Especialidad, Centro ERG y Conservatorio</li>
+                    <li>Buscador de alumnado por nombre o NIA con navegaci&oacute;n entre resultados y auto-despliegue</li>
+                    <li>Bot&oacute;n "Info" en cada centro y conservatorio con datos de contacto: director/a, jefe/a de estudios, coordinador/a</li>
+                    <li>Bot&oacute;n (i) en cada alumno/a con informaci&oacute;n de tutores (Conservatorio y ERG) y observaciones</li>
+                    <li>Indicador visual destacado en alumnos con observaciones</li>
+                    <li>Enlace mailto grupal en cada centro y curso para contactar a todos los tutores del grupo</li>
+                    <li>Exportaci&oacute;n a PDF del contenido visible con filtros aplicados</li>
+                    <li>Dise&ntilde;o responsive adaptado a m&oacute;vil y escritorio</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const EQUIVALENCIAS = [
+            { cons: '1º EEM', erg: '3º Primaria', idx: 0 },
+            { cons: '2º EEM', erg: '4º Primaria', idx: 1 },
+            { cons: '3º EEM', erg: '5º Primaria', idx: 2 },
+            { cons: '4º EEM', erg: '6º Primaria', idx: 3 },
+            { cons: '1º EPM', erg: '1º ESO',      idx: 4 },
+            { cons: '2º EPM', erg: '2º ESO',      idx: 5 },
+            { cons: '3º EPM', erg: '3º ESO',      idx: 6 },
+            { cons: '4º EPM', erg: '4º ESO',      idx: 7 },
+            { cons: '5º EPM', erg: '1º Bachillerato', idx: 8 },
+            { cons: '6º EPM', erg: '2º Bachillerato', idx: 9 },
+        ];
+
+        const CURSOS_ERG_INDEX = {
+            '3º Primaria': 0, '4º Primaria': 1, '5º Primaria': 2, '6º Primaria': 3,
+            '1º ESO': 4, '2º ESO': 5, '3º ESO': 6, '4º ESO': 7,
+            '1º Bachillerato': 8, '2º Bachillerato': 9,
+        };
+
+        const CONS_TO_IDX = {};
+        EQUIVALENCIAS.forEach(e => { CONS_TO_IDX[e.cons] = e.idx; });
+
+        let centrosData = [];
+        let conservatoriosData = [];
+        let alumnadoData = [];
+        let groupMode = 'erg';
+        let viewMode = 'cons';
+        let displayMode = 'cards';
+
+        // Render equivalences table
+        const equivTbody = document.getElementById('equiv-tbody');
+        EQUIVALENCIAS.forEach(e => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${e.cons}</td><td>${e.erg}</td>`;
+            equivTbody.appendChild(tr);
+        });
+
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.classList.add('visible');
+            setTimeout(() => el.classList.remove('visible'), 8000);
+        }
+
+        function normalizeText(t) {
+            if (t == null) return '';
+            return String(t).trim();
+        }
+
+        function normalizeHeader(h) {
+            return normalizeText(h).toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]/g, '');
+        }
+
+        const HEADER_MAP_CENTROS = {
+            'tipo': 'tipo',
+            'denominacion': 'denominacion',
+            'distanciakm': 'distancia_km',
+            'distanciaminapie': 'distancia_min',
+            'mailcontacto': 'mail_contacto',
+            'directora': 'director',
+            'maildirectora': 'mail_director',
+            'jefeaestudios': 'jefe_estudios',
+            'mailjefatura': 'mail_jefatura',
+            'coordinadora': 'coordinador',
+            'mailcoordinadora': 'mail_coordinador',
+        };
+
+        const HEADER_MAP_CONSERVATORIOS = {
+            'denominacion': 'denominacion',
+            'distanciakm': 'distancia_km',
+            'distanciaminapie': 'distancia_min',
+            'mailcontacto': 'mail_contacto',
+            'directora': 'director',
+            'maildirectora': 'mail_director',
+            'jefeaestudios': 'jefe_estudios',
+            'mailjefatura': 'mail_jefatura',
+            'coordinadora': 'coordinador',
+            'mailcoordinadora': 'mail_coordinador',
+        };
+
+        const HEADER_MAP_ALUMNADO = {
+            'nia': 'nia',
+            'apellidos': 'apellidos',
+            'nombre': 'nombre',
+            'centroerg': 'centro_erg',
+            'conservatorio': 'conservatorio',
+            'cursoconservatorio': 'curso_cons',
+            'especialidad': 'especialidad',
+            'cursoerg': 'curso_erg',
+            'modalidaderg': 'modalidad_erg',
+            'modalidadturno': 'modalidad_erg',
+            'tutoraconservatorio': 'tutor_cons',
+            'mailtutoraconservatorio': 'mail_tutor_cons',
+            'tutoraerg': 'tutor_erg',
+            'mailtutoraerg': 'mail_tutor_erg',
+            'observaciones': 'observaciones',
+        };
+
+        function mapHeaders(row, headerMap) {
+            const mapped = {};
+            const keys = Object.keys(row);
+            keys.forEach(k => {
+                const norm = normalizeHeader(k);
+                if (headerMap[norm]) {
+                    mapped[headerMap[norm]] = k;
+                }
+            });
+            return mapped;
+        }
+
+        function parseSheet(sheet, headerMap) {
+            const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+            if (json.length === 0) return [];
+            const colMap = mapHeaders(json[0], headerMap);
+            return json.map(row => {
+                const obj = {};
+                Object.entries(colMap).forEach(([field, origCol]) => {
+                    obj[field] = normalizeText(row[origCol]);
+                });
+                return obj;
+            });
+        }
+
+        function parseExcel(data) {
+            const wb = XLSX.read(data, { type: 'array' });
+            const sheetNames = wb.SheetNames.map(s => s.trim());
+
+            const centrosIdx = sheetNames.findIndex(s => s.toLowerCase().includes('centro'));
+            const alumnadoIdx = sheetNames.findIndex(s => s.toLowerCase().includes('alumna'));
+            const consIdx = sheetNames.findIndex(s => s.toLowerCase().includes('conservatorio'));
+
+            if (centrosIdx === -1 || alumnadoIdx === -1) {
+                throw new Error('El Excel debe tener hojas con nombres que contengan "Centros" y "Alumnado".');
+            }
+
+            centrosData = parseSheet(wb.Sheets[wb.SheetNames[centrosIdx]], HEADER_MAP_CENTROS);
+            alumnadoData = parseSheet(wb.Sheets[wb.SheetNames[alumnadoIdx]], HEADER_MAP_ALUMNADO);
+            conservatoriosData = consIdx !== -1
+                ? parseSheet(wb.Sheets[wb.SheetNames[consIdx]], HEADER_MAP_CONSERVATORIOS)
+                : [];
+
+            if (centrosData.length === 0) throw new Error('La hoja de Centros está vacía.');
+            if (alumnadoData.length === 0) throw new Error('La hoja de Alumnado está vacía.');
+
+            const requiredAlumno = ['centro_erg', 'curso_cons', 'curso_erg'];
+            const missing = requiredAlumno.filter(f => !alumnadoData[0].hasOwnProperty(f));
+            if (missing.length > 0) {
+                throw new Error('Faltan columnas en Alumnado: ' + missing.join(', '));
+            }
+        }
+
+        function calcDesfase(cursoCons, cursoERG) {
+            const idxEsperado = CONS_TO_IDX[cursoCons];
+            const idxReal = CURSOS_ERG_INDEX[cursoERG];
+            if (idxEsperado == null || idxReal == null) {
+                return { valor: null, color: 'green', texto: '?', clase: 'green' };
+            }
+            const d = idxReal - idxEsperado;
+            let color, clase;
+            if (d === 0) { color = 'green'; clase = 'green'; }
+            else if (Math.abs(d) === 1) { color = 'yellow'; clase = 'yellow'; }
+            else { color = 'red'; clase = 'red'; }
+            const signo = d > 0 ? '+' : '';
+            return { valor: d, color, texto: d === 0 ? '0' : signo + d, clase };
+        }
+
+        function getTipoEns(cursoCons) {
+            if (cursoCons.includes('EEM')) return 'EEM';
+            if (cursoCons.includes('EPM')) return 'EPM';
+            return '';
+        }
+
+        function populateFilters() {
+            const cursos = [...new Set(alumnadoData.map(a => a.curso_cons))].filter(Boolean).sort();
+            const cursosErg = [...new Set(alumnadoData.map(a => a.curso_erg))].filter(Boolean).sort((a, b) =>
+                (CURSOS_ERG_INDEX[a] ?? 99) - (CURSOS_ERG_INDEX[b] ?? 99));
+            const especialidades = [...new Set(alumnadoData.map(a => a.especialidad))].filter(Boolean).sort();
+            const centros = [...new Set(alumnadoData.map(a => a.centro_erg))].filter(Boolean).sort();
+            const conservatorios = [...new Set(alumnadoData.map(a => a.conservatorio))].filter(Boolean).sort();
+
+            fillSelect('filter-curso-cons', cursos);
+            fillSelect('filter-curso-erg', cursosErg);
+            fillSelect('filter-especialidad', especialidades);
+            fillSelect('filter-centro', centros);
+            fillSelect('filter-conservatorio', conservatorios);
+        }
+
+        function fillSelect(id, options) {
+            const sel = document.getElementById(id);
+            const current = sel.value;
+            while (sel.options.length > 1) sel.remove(1);
+            options.forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = o;
+                opt.textContent = o;
+                sel.appendChild(opt);
+            });
+            sel.value = current;
+        }
+
+        function applyFilters() {
+            const tipoEns = document.getElementById('filter-tipo-ens').value;
+            const cursoCons = document.getElementById('filter-curso-cons').value;
+            const cursoErg = document.getElementById('filter-curso-erg').value;
+            const especialidad = document.getElementById('filter-especialidad').value;
+            const centro = document.getElementById('filter-centro').value;
+            const conservatorio = document.getElementById('filter-conservatorio').value;
+
+            return alumnadoData.filter(a => {
+                if (tipoEns && getTipoEns(a.curso_cons) !== tipoEns) return false;
+                if (cursoCons && a.curso_cons !== cursoCons) return false;
+                if (cursoErg && a.curso_erg !== cursoErg) return false;
+                if (especialidad && a.especialidad !== especialidad) return false;
+                if (centro && a.centro_erg !== centro) return false;
+                if (conservatorio && a.conservatorio !== conservatorio) return false;
+                return true;
+            });
+        }
+
+        function renderView() {
+            const filtered = applyFilters();
+            const isGroupERG = groupMode === 'erg';
+
+            // Summary
+            const summaryBar = document.getElementById('summary-bar');
+            const totalAlumnos = filtered.length;
+            const totalCentros = new Set(filtered.map(a => a.centro_erg)).size;
+            const totalCons = new Set(filtered.map(a => a.conservatorio).filter(Boolean)).size;
+            const desfases = filtered.map(a => calcDesfase(a.curso_cons, a.curso_erg));
+            const green = desfases.filter(d => d.clase === 'green').length;
+            const yellow = desfases.filter(d => d.clase === 'yellow').length;
+            const red = desfases.filter(d => d.clase === 'red').length;
+
+            summaryBar.innerHTML = `
+                <div class="summary-stat"><span class="num">${totalAlumnos}</span> alumnos</div>
+                <div class="summary-stat"><span class="num">${totalCentros}</span> centros ERG</div>
+                ${totalCons ? `<div class="summary-stat"><span class="num">${totalCons}</span> conservatorios</div>` : ''}
+                <div class="summary-stat"><div class="legend-dot green" style="width:10px;height:10px;border-radius:50%;display:inline-block"></div> ${green} equiv.</div>
+                <div class="summary-stat"><div class="legend-dot yellow" style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#ff9800"></div> ${yellow} leve</div>
+                <div class="summary-stat"><div class="legend-dot red" style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#f44336"></div> ${red} grande</div>
+            `;
+            summaryBar.classList.add('visible');
+
+            // Group by center or conservatorio
+            const groupField = isGroupERG ? 'centro_erg' : 'conservatorio';
+            const fallbackLabel = isGroupERG ? 'Sin centro' : 'Sin conservatorio';
+            const byGroup = {};
+            filtered.forEach(a => {
+                const c = a[groupField] || fallbackLabel;
+                if (!byGroup[c]) byGroup[c] = [];
+                byGroup[c].push(a);
+            });
+
+            const centrosList = document.getElementById('centers-list');
+            centrosList.innerHTML = '';
+
+            const groupNames = Object.keys(byGroup).sort();
+            groupNames.forEach(groupName => {
+                const alumnos = byGroup[groupName];
+                let info, tipo, tipoClass, metaText;
+
+                if (isGroupERG) {
+                    info = centrosData.find(c => c.denominacion === groupName) || {};
+                    tipo = (info.tipo || '').toUpperCase();
+                    tipoClass = tipo.includes('CEIP') ? 'ceip' : 'ies';
+                    const distText = [];
+                    if (info.distancia_km) distText.push(info.distancia_km + ' km');
+                    if (info.distancia_min) distText.push(info.distancia_min + ' min a pie');
+                    metaText = distText.join(' · ');
+                } else {
+                    info = conservatoriosData.find(c => c.denominacion === groupName) || {};
+                    tipo = 'CONS';
+                    tipoClass = 'cons';
+                    const distTextCons = [];
+                    if (info.distancia_km) distTextCons.push(info.distancia_km + ' km');
+                    if (info.distancia_min) distTextCons.push(info.distancia_min + ' min a pie');
+                    metaText = distTextCons.join(' · ');
+                }
+
+                const desfasesC = alumnos.map(a => calcDesfase(a.curso_cons, a.curso_erg));
+                const gC = desfasesC.filter(d => d.clase === 'green').length;
+                const yC = desfasesC.filter(d => d.clase === 'yellow').length;
+                const rC = desfasesC.filter(d => d.clase === 'red').length;
+                const total = alumnos.length;
+                const pG = (gC / total * 100).toFixed(1);
+                const pY = (yC / total * 100).toFixed(1);
+                const pR = (rC / total * 100).toFixed(1);
+
+                const emails = collectEmails(alumnos);
+                const mailtoAll = mailtoLink(emails.all, 'Coordinación horaria – ' + groupName);
+
+                const card = document.createElement('div');
+                card.className = 'center-card';
+                card.innerHTML = `
+                    <div class="center-header">
+                        <span class="arrow">▶</span>
+                        <div class="center-info">
+                            <div>
+                                <span class="center-name">${escapeHtml(groupName)}</span>
+                                ${tipo ? `<span class="center-type ${tipoClass}">${escapeHtml(tipo)}</span>` : ''}
+                            </div>
+                            ${metaText ? `<div class="center-meta">${escapeHtml(metaText)}</div>` : ''}
+                        </div>
+                        <button class="btn-info">Info</button>
+                        ${mailtoAll ? `<a class="btn-mailto" href="${mailtoAll}" title="Email a todos los tutores (${emails.all.length})"><span class="mailto-icon">✉</span> ${emails.all.length}</a>` : ''}
+                        <div class="desfase-bar">
+                            <div class="seg-green" style="width:${pG}%"></div>
+                            <div class="seg-yellow" style="width:${pY}%"></div>
+                            <div class="seg-red" style="width:${pR}%"></div>
+                        </div>
+                        <div class="center-count">${total}<small>alumnos</small></div>
+                    </div>
+                    <div class="center-detail-panel">${renderCentroDetails(info)}</div>
+                    <div class="center-body">${renderCursos(alumnos)}</div>
+                `;
+
+                card.querySelector('.center-header').addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-info') || e.target.closest('.btn-mailto')) return;
+                    card.classList.toggle('expanded');
+                });
+                card.querySelector('.btn-info').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    card.querySelector('.center-detail-panel').classList.toggle('visible');
+                });
+
+                centrosList.appendChild(card);
+            });
+
+            // Show/hide based on display mode
+            const tableContainer = document.getElementById('table-container');
+            if (displayMode === 'tabla') {
+                centrosList.style.display = 'none';
+                tableContainer.classList.add('visible');
+                document.getElementById('view-toggle-group').style.display = 'none';
+                document.getElementById('view-toggle').style.display = 'none';
+                renderTable(filtered);
+            } else {
+                centrosList.style.display = '';
+                tableContainer.classList.remove('visible');
+                document.getElementById('view-toggle-group').style.display = '';
+                document.getElementById('view-toggle').style.display = '';
+            }
+        }
+
+        function renderTable(data) {
+            const table = document.getElementById('flat-table');
+            const cols = [
+                { key: 'nia', label: 'NIA' },
+                { key: 'apellidos', label: 'Apellidos' },
+                { key: 'nombre', label: 'Nombre' },
+                { key: 'conservatorio', label: 'Conservatorio' },
+                { key: 'centro_erg', label: 'Centro ERG' },
+                { key: 'curso_cons', label: 'Curso Cons.' },
+                { key: 'especialidad', label: 'Especialidad' },
+                { key: 'curso_erg', label: 'Curso ERG' },
+                { key: 'modalidad_erg', label: 'Modalidad/Turno' },
+                { key: 'desfase', label: 'Desfase' },
+                { key: 'observaciones', label: 'Obs.' },
+            ];
+
+            let html = '<thead><tr>';
+            cols.forEach(c => {
+                html += `<th data-col="${c.key}">${c.label}<span class="sort-arrow">&#9650;</span></th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            const rows = data.map(a => {
+                const d = calcDesfase(a.curso_cons, a.curso_erg);
+                return { ...a, desfase_obj: d, desfase_val: d.valor ?? 0, desfase_txt: d.texto };
+            });
+
+            rows.forEach(a => {
+                const d = a.desfase_obj;
+                html += '<tr>';
+                html += `<td>${escapeHtml(a.nia)}</td>`;
+                html += `<td>${escapeHtml(a.apellidos)}</td>`;
+                html += `<td>${escapeHtml(a.nombre)}</td>`;
+                html += `<td>${escapeHtml(a.conservatorio || '')}</td>`;
+                html += `<td>${escapeHtml(a.centro_erg)}</td>`;
+                html += `<td>${escapeHtml(a.curso_cons)}</td>`;
+                html += `<td>${escapeHtml(a.especialidad)}</td>`;
+                html += `<td>${escapeHtml(a.curso_erg)}</td>`;
+                html += `<td>${escapeHtml(a.modalidad_erg)}</td>`;
+                html += `<td><span class="desfase-cell ${d.clase}">${d.texto}</span></td>`;
+                html += `<td>${a.observaciones ? '<span class="obs-dot" title="' + escapeHtml(a.observaciones) + '"></span>' : ''}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            table.innerHTML = html;
+
+            // Sortable headers
+            table.querySelectorAll('th').forEach(th => {
+                th.addEventListener('click', () => {
+                    const col = th.dataset.col;
+                    const wasAsc = th.classList.contains('sorted-asc');
+                    table.querySelectorAll('th').forEach(t => { t.classList.remove('sorted-asc', 'sorted-desc'); });
+
+                    const tbody = table.querySelector('tbody');
+                    const trs = Array.from(tbody.querySelectorAll('tr'));
+                    const colIdx = Array.from(th.parentNode.children).indexOf(th);
+
+                    trs.sort((a, b) => {
+                        let va = a.children[colIdx].textContent.trim();
+                        let vb = b.children[colIdx].textContent.trim();
+                        if (col === 'desfase') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0; }
+                        if (typeof va === 'number') return wasAsc ? vb - va : va - vb;
+                        const cmp = va.localeCompare(vb, 'es');
+                        return wasAsc ? -cmp : cmp;
+                    });
+
+                    th.classList.add(wasAsc ? 'sorted-desc' : 'sorted-asc');
+                    trs.forEach(tr => tbody.appendChild(tr));
+                });
+            });
+        }
+
+        function collectEmails(alumnos) {
+            const cons = new Set();
+            const erg = new Set();
+            alumnos.forEach(a => {
+                if (a.mail_tutor_cons) cons.add(a.mail_tutor_cons);
+                if (a.mail_tutor_erg) erg.add(a.mail_tutor_erg);
+            });
+            return { cons: [...cons], erg: [...erg], all: [...new Set([...cons, ...erg])] };
+        }
+
+        function mailtoLink(emails, subject) {
+            if (!emails.length) return '';
+            return `mailto:${emails.join(',')}${subject ? '?subject=' + encodeURIComponent(subject) : ''}`;
+        }
+
+        function renderCentroDetails(info) {
+            let html = '';
+            if (info.mail_contacto) {
+                html += `<div class="detail-general"><span class="detail-general-label">Mail del centro</span><br><a href="mailto:${escapeHtml(info.mail_contacto)}">${escapeHtml(info.mail_contacto)}</a></div>`;
+            }
+            const cargos = [
+                { cargo: 'Director/a', nombre: info.director, mail: info.mail_director },
+                { cargo: 'Jefe/a de estudios', nombre: info.jefe_estudios, mail: info.mail_jefatura },
+                { cargo: 'Coordinador/a', nombre: info.coordinador, mail: info.mail_coordinador },
+            ];
+            const cards = cargos
+                .filter(c => c.nombre || c.mail)
+                .map(c => {
+                    let inner = `<div class="detail-cargo">${c.cargo}</div>`;
+                    if (c.nombre) inner += `<div class="detail-nombre">${escapeHtml(c.nombre)}</div>`;
+                    if (c.mail) inner += `<div class="detail-mail"><a href="mailto:${escapeHtml(c.mail)}">${escapeHtml(c.mail)}</a></div>`;
+                    return `<div class="detail-card">${inner}</div>`;
+                })
+                .join('');
+            if (!html && !cards) return '<p style="font-size:0.85rem;color:#999;padding:0.5rem">No hay datos de contacto disponibles.</p>';
+            return html + `<div class="detail-grid">${cards}</div>`;
+        }
+
+        function renderTutorSection(title, nombre, mail) {
+            let inner = `<div class="alumno-detail-title">${title}</div>`;
+            if (nombre) inner += `<div class="alumno-detail-name">${escapeHtml(nombre)}</div>`;
+            if (mail) inner += `<div class="alumno-detail-mail"><a href="mailto:${escapeHtml(mail)}">${escapeHtml(mail)}</a></div>`;
+            if (!nombre && !mail) inner += `<div style="font-size:0.82rem;color:#aaa">Sin datos</div>`;
+            return `<div class="alumno-detail-section">${inner}</div>`;
+        }
+
+        function renderCursos(alumnos) {
+            const isERG = viewMode === 'erg';
+            const groupField = isERG ? 'curso_erg' : 'curso_cons';
+            const altField = isERG ? 'curso_cons' : 'curso_erg';
+            const altLabel = isERG ? 'Curso Cons.' : 'Curso ERG';
+            const fallbackLabel = isERG ? 'Sin curso ERG' : 'Sin curso Cons.';
+
+            const byCurso = {};
+            alumnos.forEach(a => {
+                const c = a[groupField] || fallbackLabel;
+                if (!byCurso[c]) byCurso[c] = [];
+                byCurso[c].push(a);
+            });
+
+            const sorted = Object.keys(byCurso).sort((a, b) => {
+                if (isERG) {
+                    return (CURSOS_ERG_INDEX[a] ?? 99) - (CURSOS_ERG_INDEX[b] ?? 99);
+                }
+                const CONS_ORDER = ['1º EEM','2º EEM','3º EEM','4º EEM','1º EPM','2º EPM','3º EPM','4º EPM','5º EPM','6º EPM'];
+                return (CONS_ORDER.indexOf(a) === -1 ? 99 : CONS_ORDER.indexOf(a))
+                     - (CONS_ORDER.indexOf(b) === -1 ? 99 : CONS_ORDER.indexOf(b));
+            });
+
+            let html = '';
+            sorted.forEach(cursoGroup => {
+                const als = byCurso[cursoGroup];
+                const uid = 'c_' + Math.random().toString(36).slice(2, 10);
+                let nGreen = 0, nYellow = 0, nRed = 0;
+                als.forEach(a => {
+                    const d = calcDesfase(a.curso_cons, a.curso_erg);
+                    if (d.clase === 'green') nGreen++;
+                    else if (d.clase === 'yellow') nYellow++;
+                    else nRed++;
+                });
+                const total = als.length;
+                const pG = (nGreen / total * 100).toFixed(1);
+                const pY = (nYellow / total * 100).toFixed(1);
+                const pR = (nRed / total * 100).toFixed(1);
+
+                const chips = [];
+                if (nGreen) chips.push(`<span class="curso-desfase-chip green"><span class="chip-dot"></span>${nGreen}</span>`);
+                if (nYellow) chips.push(`<span class="curso-desfase-chip yellow"><span class="chip-dot"></span>${nYellow}</span>`);
+                if (nRed) chips.push(`<span class="curso-desfase-chip red"><span class="chip-dot"></span>${nRed}</span>`);
+
+                const cursoEmails = collectEmails(als);
+                const cursoMailto = mailtoLink(cursoEmails.all, 'Coordinación horaria – ' + cursoGroup);
+
+                html += `<div class="curso-row" data-uid="${uid}">
+                    <span class="arrow-small">▶</span>
+                    <span class="curso-name">${escapeHtml(cursoGroup)}</span>
+                    <div class="curso-desfase-summary">
+                        ${chips.join('')}
+                        <div class="curso-minibar">
+                            <div class="seg-green" style="width:${pG}%"></div>
+                            <div class="seg-yellow" style="width:${pY}%"></div>
+                            <div class="seg-red" style="width:${pR}%"></div>
+                        </div>
+                    </div>
+                    ${cursoMailto ? `<a class="btn-mailto" href="${cursoMailto}" title="Email tutores (${cursoEmails.all.length})" onclick="event.stopPropagation()"><span class="mailto-icon">✉</span></a>` : ''}
+                    <span class="curso-count">${total} <small>alum.</small></span>
+                </div>`;
+                html += `<div class="alumnos-list" data-parent="${uid}">`;
+
+                const byDesfase = {};
+                als.forEach(a => {
+                    const d = calcDesfase(a.curso_cons, a.curso_erg);
+                    const key = d.valor != null ? d.valor : '?';
+                    if (!byDesfase[key]) byDesfase[key] = { desfase: d, alumnos: [] };
+                    byDesfase[key].alumnos.push(a);
+                });
+
+                const desfaseKeys = Object.keys(byDesfase).sort((a, b) => Number(a) - Number(b));
+                desfaseKeys.forEach(key => {
+                    const group = byDesfase[key];
+                    const d = group.desfase;
+                    const n = group.alumnos.length;
+                    const alumTxt = n === 1 ? '1 alumno/a' : `${n} alumnos/as`;
+                    const signo = d.valor > 0 ? '+' : '';
+                    const label = d.valor === 0
+                        ? `${alumTxt} en curso equivalente`
+                        : `${alumTxt} con desfase ${signo}${d.valor}`;
+                    html += `<div class="desfase-group ${d.clase}">`;
+                    html += `<div class="desfase-group-header">
+                        <span class="desfase-badge ${d.clase}">${d.texto}</span>
+                        <span>${label}</span>
+                    </div>`;
+                    const col3Label = isERG ? 'Curso Cons.' : 'Curso ERG';
+                    const col4Label = isERG ? 'Especialidad' : 'Modalidad/Turno';
+                    html += `<div class="alumno-row" style="font-weight:600;color:#555;border-bottom:2px solid #e0e0e0">
+                        <span class="alumno-nia">NIA</span>
+                        <span class="alumno-nombre">Nombre</span>
+                        <span class="alumno-curso-cons">${col3Label}</span>
+                        <span class="alumno-especialidad">${col4Label}</span>
+                        <span style="width:22px"></span>
+                    </div>`;
+                    group.alumnos.sort((a, b) => (a.apellidos + a.nombre).localeCompare(b.apellidos + b.nombre));
+                    group.alumnos.forEach(a => {
+                        const hasObs = !!a.observaciones;
+                        const infoClass = hasObs ? 'btn-alumno-info has-obs' : 'btn-alumno-info';
+                        const subtext = isERG ? a.modalidad_erg : a.especialidad;
+                        const col3 = isERG ? a.curso_cons : a.curso_erg;
+                        const col4 = isERG ? a.especialidad : a.modalidad_erg;
+                        const auid = 'a_' + Math.random().toString(36).slice(2, 10);
+                        html += `<div class="alumno-row" data-nia="${escapeHtml(a.nia)}" data-nombre="${escapeHtml(a.apellidos + ' ' + a.nombre).toLowerCase()}">
+                            <span class="alumno-nia">${escapeHtml(a.nia)}</span>
+                            <span class="alumno-nombre">${escapeHtml(a.apellidos)}, ${escapeHtml(a.nombre)} <small style="color:#888">— ${escapeHtml(subtext)}</small></span>
+                            <span class="alumno-curso-cons">${escapeHtml(col3)}</span>
+                            <span class="alumno-especialidad">${escapeHtml(col4)}</span>
+                            <button class="${infoClass}" data-auid="${auid}">i</button>
+                        </div>`;
+                        html += `<div class="alumno-detail-panel" data-auid-panel="${auid}">`;
+                        html += '<div class="alumno-detail-grid">';
+                        html += renderTutorSection('Tutor/a Conservatorio', a.tutor_cons, a.mail_tutor_cons);
+                        html += renderTutorSection('Tutor/a ERG', a.tutor_erg, a.mail_tutor_erg);
+                        if (hasObs) {
+                            html += `<div class="alumno-obs-section">
+                                <div class="alumno-detail-title">Observaciones</div>
+                                <div class="alumno-obs-text">${escapeHtml(a.observaciones)}</div>
+                            </div>`;
+                        }
+                        html += '</div></div>';
+                    });
+                    html += '</div>';
+                });
+
+                html += '</div>';
+            });
+            return html;
+        }
+
+        document.addEventListener('click', function(e) {
+            const infoBtn = e.target.closest('.btn-alumno-info');
+            if (infoBtn) {
+                const auid = infoBtn.dataset.auid;
+                const panel = document.querySelector(`[data-auid-panel="${auid}"]`);
+                if (panel) panel.classList.toggle('visible');
+                return;
+            }
+            const row = e.target.closest('.curso-row');
+            if (!row) return;
+            row.classList.toggle('expanded');
+            const uid = row.dataset.uid;
+            const list = row.nextElementSibling;
+            if (list && list.classList.contains('alumnos-list')) {
+                list.style.display = row.classList.contains('expanded') ? 'block' : 'none';
+            }
+        });
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // File handling
+        const uploadZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+
+        document.getElementById('btn-upload').addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) handleFile(fileInput.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file.name.match(/\.xlsx?$/i)) {
+                showError('Por favor, selecciona un archivo Excel (.xlsx)');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    parseExcel(new Uint8Array(e.target.result));
+                    uploadZone.style.display = 'none';
+                    document.getElementById('search-bar').classList.add('visible');
+                    document.getElementById('filters').classList.add('visible');
+                    document.getElementById('toggles-row').classList.add('visible');
+                    document.getElementById('export-bar').classList.add('visible');
+                    document.getElementById('legend').classList.add('visible');
+                    document.getElementById('equiv-section').classList.add('visible');
+                    populateFilters();
+                    renderView();
+                } catch(err) {
+                    showError(err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Filter change handlers
+        ['filter-tipo-ens', 'filter-curso-cons', 'filter-curso-erg', 'filter-especialidad', 'filter-centro', 'filter-conservatorio'].forEach(id => {
+            document.getElementById(id).addEventListener('change', renderView);
+        });
+
+        // Group toggle (ERG / Conservatorio)
+        document.querySelectorAll('#toggle-group-switch .toggle-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#toggle-group-switch .toggle-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                groupMode = btn.dataset.mode;
+                renderView();
+            });
+        });
+
+        // Course view toggle
+        document.querySelectorAll('#toggle-curso-switch .toggle-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#toggle-curso-switch .toggle-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                viewMode = btn.dataset.mode;
+                renderView();
+            });
+        });
+        // PDF export
+        document.getElementById('btn-export-pdf').addEventListener('click', function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Generando PDF...';
+
+            // Expand everything visible
+            const expandedCards = [];
+            const expandedCursos = [];
+            document.querySelectorAll('.center-card:not(.expanded)').forEach(card => {
+                card.classList.add('expanded');
+                expandedCards.push(card);
+            });
+            document.querySelectorAll('.curso-row:not(.expanded)').forEach(row => {
+                row.classList.add('expanded');
+                expandedCursos.push(row);
+                const list = row.nextElementSibling;
+                if (list && list.classList.contains('alumnos-list')) list.style.display = 'block';
+            });
+
+            // Hide non-printable elements
+            const hideEls = [
+                document.getElementById('search-bar'),
+                document.getElementById('filters'),
+                document.getElementById('toggles-row'),
+                document.getElementById('export-bar'),
+                document.getElementById('legend'),
+                document.getElementById('equiv-section'),
+            ];
+            hideEls.forEach(el => { if (el) el.dataset.prevDisplay = el.style.display; el.style.display = 'none'; });
+
+            // Hide interactive buttons
+            document.querySelectorAll('.btn-info, .btn-mailto, .btn-alumno-info').forEach(el => {
+                el.dataset.prevDisplay = el.style.display;
+                el.style.display = 'none';
+            });
+
+            const content = document.querySelector('.container');
+
+            const opt = {
+                margin: [8, 8, 8, 8],
+                filename: 'coordinacion_horaria.pdf',
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+            };
+
+            html2pdf().set(opt).from(content).save().then(() => {
+                // Restore state
+                expandedCards.forEach(card => card.classList.remove('expanded'));
+                expandedCursos.forEach(row => {
+                    row.classList.remove('expanded');
+                    const list = row.nextElementSibling;
+                    if (list && list.classList.contains('alumnos-list')) list.style.display = 'none';
+                });
+                hideEls.forEach(el => { if (el) el.style.display = el.dataset.prevDisplay || ''; });
+                document.querySelectorAll('.btn-info, .btn-mailto, .btn-alumno-info').forEach(el => {
+                    el.style.display = el.dataset.prevDisplay || '';
+                });
+                btn.disabled = false;
+                btn.textContent = '📄 Exportar PDF';
+            });
+        });
+
+        // Display toggle (Cards / Tabla)
+        document.querySelectorAll('#toggle-display-switch .toggle-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#toggle-display-switch .toggle-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                displayMode = btn.dataset.mode;
+                renderView();
+            });
+        });
+
+        // Search functionality
+        let searchMatches = [];
+        let searchCurrentIdx = -1;
+
+        const searchInput = document.getElementById('search-input');
+        const searchCount = document.getElementById('search-count');
+        const searchNav = document.getElementById('search-nav');
+        const searchClear = document.getElementById('search-clear');
+
+        function clearSearch() {
+            searchInput.value = '';
+            searchCount.textContent = '';
+            searchNav.style.display = 'none';
+            searchClear.style.display = 'none';
+            document.querySelectorAll('.alumno-row.search-highlight').forEach(el => el.classList.remove('search-highlight'));
+            searchMatches = [];
+            searchCurrentIdx = -1;
+        }
+
+        function performSearch() {
+            document.querySelectorAll('.alumno-row.search-highlight').forEach(el => el.classList.remove('search-highlight'));
+            const query = searchInput.value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+            if (!query) {
+                searchCount.textContent = '';
+                searchNav.style.display = 'none';
+                searchClear.style.display = 'none';
+                searchMatches = [];
+                searchCurrentIdx = -1;
+                return;
+            }
+            searchClear.style.display = 'block';
+            searchMatches = [];
+            document.querySelectorAll('.alumno-row[data-nia]').forEach(row => {
+                const nia = (row.dataset.nia || '').toLowerCase();
+                const nombre = (row.dataset.nombre || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+                if (nia.includes(query) || nombre.includes(query)) {
+                    searchMatches.push(row);
+                }
+            });
+
+            if (searchMatches.length === 0) {
+                searchCount.textContent = 'Sin resultados';
+                searchNav.style.display = 'none';
+                searchCurrentIdx = -1;
+            } else {
+                searchMatches.forEach(r => r.classList.add('search-highlight'));
+                searchNav.style.display = 'flex';
+                searchCurrentIdx = 0;
+                navigateToMatch(0);
+            }
+        }
+
+        function navigateToMatch(idx) {
+            if (searchMatches.length === 0) return;
+            searchCurrentIdx = idx;
+            if (searchCurrentIdx < 0) searchCurrentIdx = searchMatches.length - 1;
+            if (searchCurrentIdx >= searchMatches.length) searchCurrentIdx = 0;
+
+            const row = searchMatches[searchCurrentIdx];
+            searchCount.textContent = `${searchCurrentIdx + 1} / ${searchMatches.length}`;
+
+            const card = row.closest('.center-card');
+            if (card && !card.classList.contains('expanded')) card.classList.add('expanded');
+
+            const cursoRow = row.closest('.alumnos-list')?.previousElementSibling;
+            if (cursoRow && cursoRow.classList.contains('curso-row') && !cursoRow.classList.contains('expanded')) {
+                cursoRow.classList.add('expanded');
+                const list = cursoRow.nextElementSibling;
+                if (list && list.classList.contains('alumnos-list')) list.style.display = 'block';
+            }
+
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        searchInput.addEventListener('input', performSearch);
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (searchMatches.length) navigateToMatch(e.shiftKey ? searchCurrentIdx - 1 : searchCurrentIdx + 1);
+            }
+            if (e.key === 'Escape') clearSearch();
+        });
+        document.getElementById('search-next').addEventListener('click', () => navigateToMatch(searchCurrentIdx + 1));
+        document.getElementById('search-prev').addEventListener('click', () => navigateToMatch(searchCurrentIdx - 1));
+        searchClear.addEventListener('click', clearSearch);
+
+        // Changelog modal
+        document.getElementById('btn-changelog').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('changelog-overlay').classList.add('visible');
+        });
+        document.getElementById('changelog-close').addEventListener('click', () => {
+            document.getElementById('changelog-overlay').classList.remove('visible');
+        });
+        document.getElementById('changelog-overlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) e.currentTarget.classList.remove('visible');
+        });
+    })();
+    </script>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-author">
+                App creada por <a href="https://www.jlmirall.es" target="_blank">Jos&eacute; Luis Miralles Bono</a> con ayuda de Claude
+            </div>
+            <div class="footer-links">
+                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v1.0</a>
+                <span class="footer-separator"></span>
+                <a href="https://elpulpoenelvaso.jlmirall.es" target="_blank">Blog</a>
+                <span class="footer-separator"></span>
+                <a href="https://github.com/JLMirallesB/CoordinacionHoraria" target="_blank">GitHub</a>
+                <span class="footer-separator"></span>
+                <a href="https://ko-fi.com/miralles" target="_blank">Inv&iacute;tame a una horchata</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
