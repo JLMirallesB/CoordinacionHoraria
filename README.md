@@ -2,7 +2,15 @@
 
 App para coordinar horarios entre conservatorios de música/danza y centros de enseñanza general (CEIP/IES).
 
-Funciona como **un único archivo HTML** que se abre en el navegador. No requiere instalación, servidor ni conexión a internet (salvo la primera carga para las librerías CDN).
+![Pantalla de inicio](screenshots/01-pantalla-inicio.png)
+
+## Privacidad y seguridad
+
+- **No se instala nada.** Es un único archivo HTML que se abre en el navegador.
+- **No se suben datos a internet.** Todo el procesamiento ocurre localmente en tu navegador. Ningún dato sale de tu ordenador.
+- **No se almacenan datos.** La app no guarda nada: ni cookies, ni bases de datos, ni archivos temporales. Al cerrar el navegador, desaparece todo.
+- **La app NO escribe en el Excel.** Solo lee los datos para mostrarlos de forma visual. Tu archivo Excel nunca se modifica.
+- **Los datos están en tu Excel local.** Tú controlas dónde está el archivo y quién tiene acceso a él.
 
 ---
 
@@ -22,11 +30,15 @@ Haz doble clic en `index.html`. Se abrirá en tu navegador (Chrome, Firefox, Edg
 
 ### 4. Cargar el Excel
 
-Arrastra el archivo Excel sobre la zona de subida o haz clic en "Seleccionar archivo" para buscarlo en tu ordenador. Los datos se procesan localmente en tu navegador — **no se envían a ningún servidor**.
+Arrastra el archivo Excel sobre la zona de subida o haz clic en "Seleccionar archivo" para buscarlo en tu ordenador.
+
+![Vista general tras cargar el Excel](screenshots/02-vista-general.png)
 
 ---
 
 ## Cómo preparar tu propio Excel
+
+Puedes partir del Excel de ejemplo y adaptarlo a tu centro. La app **solo lee** el archivo, nunca lo modifica, así que puedes editarlo con total tranquilidad en Excel, LibreOffice, Google Sheets, etc.
 
 El Excel debe tener **tres hojas** (los nombres deben contener estas palabras):
 
@@ -88,6 +100,8 @@ Listado completo del alumnado. Columnas:
 
 **Importante:** Los valores de "Centro ERG" y "Conservatorio" en la hoja de Alumnado deben coincidir exactamente con los de "Denominación" en las hojas de Centros y Conservatorios.
 
+**Campos opcionales:** No es obligatorio rellenar los nombres y emails de tutores, miembros de equipo directivo, coordinadores ni las distancias. La app funciona sin ellos. Sin embargo, si quieres tener esa informacion a mano en el visor (botones "Info", datos de tutores, enlaces mailto grupales), se recomienda completarlos.
+
 ### Cursos válidos del conservatorio
 
 | Conservatorio | Equivalente ERG |
@@ -115,15 +129,24 @@ La app calcula automáticamente el desfase entre el curso del conservatorio y el
 - **Amarillo (±1)**: desfase de un curso (leve)
 - **Rojo (±2 o más)**: desfase de dos o más cursos (grande)
 
-### Vistas
+### Vista Cards
 
-- **Vista Cards**: vista jerárquica con tarjetas colapsables. Centro/Conservatorio → Curso → Alumnos agrupados por desfase
-- **Vista Tabla**: tabla plana con todos los alumnos, ordenable por cualquier columna haciendo clic en la cabecera
+Vista jerárquica con tarjetas colapsables. Cada centro o conservatorio se muestra como una tarjeta que al expandir muestra los cursos, y dentro de cada curso los alumnos agrupados por desfase con fondo coloreado.
+
+![Detalle de un centro expandido con cursos, desfases y datos de tutor](screenshots/03-detalle-centro.png)
+
+### Vista Tabla
+
+Tabla plana con todos los alumnos filtrados. Ordenable por cualquier columna haciendo clic en la cabecera. Incluye columna de desfase coloreada e indicador de observaciones.
+
+![Vista tabla con todos los alumnos](screenshots/04-vista-tabla.png)
 
 ### Toggles de agrupación
 
-- **Agrupar por**: Centro ERG (por defecto) o Conservatorio. Cambia qué aparece como tarjeta principal
-- **Agrupar cursos por**: Curso Conservatorio (por defecto) o Curso ERG. Cambia cómo se organizan los alumnos dentro de cada tarjeta
+- **Agrupar por**: Centro ERG (por defecto) o Conservatorio. Cambia qué aparece como tarjeta principal.
+- **Agrupar cursos por**: Curso Conservatorio (por defecto) o Curso ERG. Cambia cómo se organizan los alumnos dentro de cada tarjeta.
+
+![Vista agrupada por conservatorio](screenshots/05-vista-conservatorio.png)
 
 ### Filtros
 
@@ -143,16 +166,16 @@ Campo de búsqueda por nombre o NIA. Al escribir:
 - Resalta en amarillo todos los resultados
 - Auto-despliega las tarjetas y cursos donde están los resultados
 - Flechas arriba/abajo o Enter para navegar entre resultados
-- Escape o ✕ para limpiar
+- Escape o el botón X para limpiar
 
 ### Información de contacto
 
 - **Botón "Info"** en cada centro y conservatorio: muestra datos de contacto (director/a, jefe/a de estudios, coordinador/a) con enlaces de email
-- **Botón (i)** en cada alumno/a: muestra tutores del conservatorio y del centro ERG con emails, más observaciones si las hay. El icono se destaca en naranja si hay observaciones
+- **Botón (i)** en cada alumno/a: muestra tutores del conservatorio y del centro ERG con emails, y observaciones si las hay. El icono se destaca en naranja cuando hay observaciones
 
 ### Email grupal
 
-Botón ✉ en cada centro/conservatorio y en cada curso que abre el cliente de correo con todos los tutores de ese grupo como destinatarios.
+Botón de email en cada centro/conservatorio y en cada curso que abre el cliente de correo con todos los tutores de ese grupo como destinatarios.
 
 ### Exportar PDF
 
@@ -162,18 +185,20 @@ Botón "Exportar PDF" que genera un documento con todo el contenido visible (res
 
 ## Autor
 
-**José Luis Miralles Bono** — [www.jlmirall.es](https://www.jlmirall.es)
+**Jose Luis Miralles Bono** - [www.jlmirall.es](https://www.jlmirall.es)
 
 Blog: [El pulpo en el vaso](https://elpulpoenelvaso.jlmirall.es)
 
+Contacto para sugerencias o problemas: [jl.mirallesbono@edu.gva.es](mailto:jl.mirallesbono@edu.gva.es)
+
 App creada con ayuda de Claude (Anthropic).
 
-### Invítame a una horchata
+### Invitame a una horchata
 
-Si esta app te resulta útil, puedes invitarme a una horchata en [ko-fi.com/miralles](https://ko-fi.com/miralles). ¡Gracias!
+Si esta app te resulta util, puedes invitarme a una horchata en [ko-fi.com/miralles](https://ko-fi.com/miralles). Gracias!
 
 ---
 
 ## Licencia
 
-Este proyecto es software libre. Consulta el repositorio para más detalles.
+Este proyecto es software libre. Consulta el repositorio para mas detalles.

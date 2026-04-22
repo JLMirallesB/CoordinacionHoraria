@@ -45,6 +45,36 @@
         }
         header .btn-update:hover { background: rgba(255,255,255,0.35); }
         header p { font-size: 0.9rem; opacity: 0.8; margin-top: 0.3rem; }
+        .btn-privacy {
+            font-size: 0.65rem;
+            background: rgba(76,175,80,0.25);
+            color: #a5d6a7;
+            border: 1px solid rgba(76,175,80,0.4);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+            transition: background 0.15s;
+        }
+        .btn-privacy:hover { background: rgba(76,175,80,0.4); color: white; }
+        .privacy-panel {
+            display: none;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            margin-top: 0.6rem;
+            font-size: 0.78rem;
+            color: #ccc;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        .privacy-panel.visible { display: block; }
+        .privacy-panel strong { color: #a5d6a7; }
 
         .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
 
@@ -823,9 +853,15 @@
 <body>
     <header>
         <div>
-            <h1>Coordinaci&oacute;n Horaria</h1><span class="version-badge">v1.0</span><a class="btn-update" href="https://github.com/JLMirallesB/CoordinacionHoraria/releases/latest" target="_blank" title="Comprobar actualizaciones">Actualizar?</a>
+            <h1>Coordinaci&oacute;n Horaria</h1><span class="version-badge">v1.0</span><a class="btn-update" href="https://github.com/JLMirallesB/CoordinacionHoraria/releases/latest" target="_blank" title="Comprobar actualizaciones">Actualizar?</a><button class="btn-privacy" id="btn-privacy">Tus datos est&aacute;n seguros</button>
         </div>
         <p>Conservatorio ↔ Centros de Ense&ntilde;anza General</p>
+        <div class="privacy-panel" id="privacy-panel">
+            <strong>No se instala nada.</strong> Es un &uacute;nico archivo HTML que se abre en el navegador.<br>
+            <strong>No se suben datos a internet.</strong> Todo se procesa localmente en tu navegador. Ning&uacute;n dato sale de tu ordenador.<br>
+            <strong>No se almacenan datos.</strong> Al cerrar el navegador, desaparece todo.<br>
+            <strong>La app NO escribe en el Excel.</strong> Solo lee los datos para visualizarlos. Tu archivo nunca se modifica.
+        </div>
     </header>
     <div class="container">
         <div class="error-msg" id="error-msg"></div>
@@ -904,10 +940,6 @@
                     <button class="toggle-option" data-mode="erg">Curso ERG</button>
                 </div>
             </div>
-        </div>
-
-        <div class="export-bar" id="export-bar">
-            <button class="btn-export visible" id="btn-export-pdf">📄 Exportar PDF</button>
         </div>
 
         <div class="summary-bar" id="summary-bar"></div>
@@ -1204,6 +1236,7 @@
                 <div class="summary-stat"><div class="legend-dot green" style="width:10px;height:10px;border-radius:50%;display:inline-block"></div> ${green} equiv.</div>
                 <div class="summary-stat"><div class="legend-dot yellow" style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#ff9800"></div> ${yellow} leve</div>
                 <div class="summary-stat"><div class="legend-dot red" style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#f44336"></div> ${red} grande</div>
+                <div style="margin-left:auto"><button class="btn-export visible" id="btn-export-pdf">Exportar PDF</button></div>
             `;
             summaryBar.classList.add('visible');
 
@@ -1621,7 +1654,7 @@
                     document.getElementById('search-bar').classList.add('visible');
                     document.getElementById('filters').classList.add('visible');
                     document.getElementById('toggles-row').classList.add('visible');
-                    document.getElementById('export-bar').classList.add('visible');
+                    // export button is now inside summary-bar
                     document.getElementById('legend').classList.add('visible');
                     document.getElementById('equiv-section').classList.add('visible');
                     populateFilters();
@@ -1658,8 +1691,9 @@
             });
         });
         // PDF export
-        document.getElementById('btn-export-pdf').addEventListener('click', function() {
-            const btn = this;
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('#btn-export-pdf');
+            if (!btn) return;
             btn.disabled = true;
             btn.textContent = 'Generando PDF...';
 
@@ -1682,7 +1716,6 @@
                 document.getElementById('search-bar'),
                 document.getElementById('filters'),
                 document.getElementById('toggles-row'),
-                document.getElementById('export-bar'),
                 document.getElementById('legend'),
                 document.getElementById('equiv-section'),
             ];
@@ -1818,6 +1851,11 @@
         document.getElementById('search-prev').addEventListener('click', () => navigateToMatch(searchCurrentIdx - 1));
         searchClear.addEventListener('click', clearSearch);
 
+        // Privacy panel
+        document.getElementById('btn-privacy').addEventListener('click', () => {
+            document.getElementById('privacy-panel').classList.toggle('visible');
+        });
+
         // Changelog modal
         document.getElementById('btn-changelog').addEventListener('click', (e) => {
             e.preventDefault();
@@ -1836,6 +1874,7 @@
         <div class="footer-content">
             <div class="footer-author">
                 App creada por <a href="https://www.jlmirall.es" target="_blank">Jos&eacute; Luis Miralles Bono</a> con ayuda de Claude
+                <br><a href="mailto:jl.mirallesbono@edu.gva.es" style="font-size:0.78rem">jl.mirallesbono@edu.gva.es</a> <span style="font-size:0.75rem;opacity:0.6">— sugerencias y problemas</span>
             </div>
             <div class="footer-links">
                 <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v1.0</a>
