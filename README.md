@@ -200,10 +200,80 @@ distancias no son obligatorios. También puedes rellenarlos después desde la pr
 - **Historial**: quién cambió qué y cuándo, dentro del propio archivo. Se guardan los 500 últimos
   cambios.
 
+### Quién está en la coordinación
+
+Estar matriculado en los dos sitios no significa participar en la coordinación horaria: hay quien no
+la pide y hay cursos incompatibles. Por eso cada alumno/a tiene tres estados: **sin decidir**,
+**coordina** o **no coordina** (con motivo).
+
+Al importar un Excel todos entran como "sin decidir": el Excel es la lista de alumnado en común y la
+coordinación se decide aquí. Para no ir de uno en uno, el botón **"Marcar coordinación"** actúa sobre
+el alumnado que tengas filtrado en ese momento y te dice a cuántos va a afectar.
+
+Todo el alumnado sigue viéndose junto; quien no coordina lleva un distintivo, y el resumen añade
+cuántos coordinan y cuántos faltan por decidir.
+
+### Asignaturas del conservatorio en el centro
+
+Algunas asignaturas del conservatorio pueden impartirse dentro del centro de enseñanza general. La app
+trae un catálogo editable en configuración:
+
+| Asignatura | Cursos | Excepciones |
+|---|---|---|
+| Lenguaje Musical | 1º-4º EEM, 1º-2º EPM | |
+| Coro | 1º-4º EEM | |
+| Armonía | 3º-4º EPM | |
+| Análisis | 5º-6º EPM | |
+| Historia de la Música | 5º-6º EPM | |
+| Piano Complementario | 2º-4º EPM | Piano, órgano y clave |
+
+En la ficha de cada centro marcas cuáles se imparten allí, y **la app deduce a qué alumnado le
+corresponde cada una** según su curso y su especialidad. Aparece en su ficha y en lo que imprimes. Si
+alguien prefiere cursar una en el conservatorio, se le quita en su ficha sin afectar a los demás.
+
+### Cursos académicos y paso de curso
+
+Cada curso tiene **su propio archivo**: `datos/coordinacion-2026-2027.json`. El curso anterior queda
+congelado; se puede consultar desde el botón **Curso** de la barra superior, pero no se toca al
+trabajar en el nuevo.
+
+Para empezar un curso, el asistente:
+
+1. Propone el curso siguiente y valida el formato.
+2. Trae al alumnado del año anterior y **propone subirlo de curso**, en el conservatorio y en el centro.
+3. Te enseña la lista para que desmarques a quien se va y quites "sube" a quien repite. A quien termina
+   6º EPM o 2º de Bachillerato lo desmarca solo.
+4. Arrastra centros, conservatorios, asignaturas y configuración.
+5. Reinicia la coordinación a "sin decidir", porque hay que reconfirmarla cada septiembre.
+6. Conserva tutores y observaciones, pero **marcados como del curso anterior** hasta que los revises.
+   Abrir la ficha y guardarla quita la marca; también hay un botón para darlas todas por revisadas.
+
+No se escribe nada hasta que confirmas, y el archivo del curso anterior no se toca en ningún momento.
+
+> Si tu archivo se llama `coordinacion.json`, sin curso, es del formato anterior. Sigue funcionando, y
+> en configuración hay un botón para convertirlo: escribe el archivo nuevo, comprueba que se lee bien
+> y solo entonces retira el viejo.
+
+### Configuración
+
+Botón **Configuración** en la barra superior. Contiene:
+
+- **Nombre del centro**: aparece al imprimir y en el nombre de los archivos que exportas, para que
+  quien reciba un PDF o un Excel sepa de quién es.
+- **Contacto de soporte**: a quién escribir si la app da problemas. Lo ve todo el que use la carpeta.
+- **Curso académico**, con formato `2026-2027`. Se valida.
+- **Clave de edición**, que es el código del centro (ver abajo).
+- **Datos del archivo** en solo lectura: revisión, última modificación, quién guardó y cuántas copias
+  de seguridad hay. Es lo que resuelve el "me he encontrado esto raro, ¿a quién pregunto?".
+
 ### Pestillo de edición
 
 Si rellenas el **código de centro** en la configuración, la app arranca en **solo lectura** y hay que
 introducirlo para poder modificar nada. El desbloqueo dura lo que la pestaña.
+
+Ese código hace de clave, así que **nunca se muestra en modo lectura**. Y si lo dejas en blanco, la
+app deja de arrancar bloqueada y cualquiera que abra la carpeta podrá editar: la app avisa y pide
+confirmación antes de dejarte hacerlo.
 
 Es la protección de un Excel, no seguridad: quien tenga acceso a la carpeta puede abrir el `.json`
 igualmente. Sirve para no tocar datos sin querer mientras consultas. La protección real son los

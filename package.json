@@ -1,6 +1,6 @@
 {
   "name": "coordinacion-horaria",
-  "version": "2.1.0",
+  "version": "2.4.0",
   "private": true,
   "description": "Coordinacion horaria entre conservatorios y centros de ensenanza general. App de un solo archivo HTML, sin servidor y sin conexion, que guarda los datos en una carpeta local.",
   "scripts": {

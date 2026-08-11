@@ -521,6 +521,21 @@
         .alumno-curso-cons { color: #555; min-width: 80px; }
         .alumno-especialidad { color: #777; min-width: 80px; }
         .alumno-missing { color: #c62828; font-style: italic; }
+        .marca-coord {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.05rem 0.4rem;
+            border-radius: 8px;
+            vertical-align: middle;
+            white-space: nowrap;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .marca-coord.no { background: #eceff1; color: #546e7a; border: 1px solid #cfd8dc; }
+        .marca-coord.sin { background: #fff3e0; color: #e65100; border: 1px solid #ffe082; }
+        .summary-stat.sin-decidir .num { color: #e65100; }
+        .flat-table tr.no-coordina td:not(:first-child) { opacity: 0.72; }
         .btn-alumno-info {
             width: 22px; height: 22px;
             border-radius: 50%;
@@ -1138,6 +1153,49 @@
         .lista-fichas .nom { flex: 1; }
         .lista-fichas .cuenta { font-size: 0.78rem; color: #888; white-space: nowrap; }
 
+        /* Asistente de paso de curso */
+        .acciones-bloque { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+        .tabla-paso { max-height: 46vh; overflow-y: auto; border: 1px solid #e8e8e8; border-radius: 8px; }
+        .tabla-paso table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+        .tabla-paso th {
+            position: sticky; top: 0; background: #f4f6fa; text-align: left;
+            padding: 0.4rem 0.6rem; border-bottom: 1px solid #e0e4ea; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.3px; color: #555;
+        }
+        .tabla-paso td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #f2f2f2; }
+        .tabla-paso tr.termina { background: #fff8e1; }
+        .tabla-paso tr.termina small { color: #e65100; }
+        .marca-coord.arrastrado { background: #ede7f6; color: #5e35b1; border: 1px solid #d1c4e9; }
+        .aviso-arrastrado {
+            grid-column: 1 / -1;
+            background: #ede7f6; border: 1px solid #d1c4e9; color: #4527a0;
+            border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.85rem;
+        }
+
+        /* Casillas (asignaturas) */
+        .casillas { display: flex; flex-direction: column; gap: 0.25rem; }
+        .casilla {
+            display: flex; align-items: flex-start; gap: 0.5rem;
+            font-size: 0.88rem; cursor: pointer; padding: 0.15rem 0;
+        }
+        .casilla input { margin-top: 0.2rem; flex-shrink: 0; }
+        .casilla small { color: #888; font-size: 0.78rem; }
+        .asignaturas-alumno {
+            grid-column: 1 / -1;
+            background: #f4f6fa; border-radius: 8px; padding: 0.6rem 0.8rem;
+        }
+        .asignaturas-alumno .titulo {
+            font-size: 0.72rem; font-weight: 700; color: #4361ee;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;
+        }
+        .chip-asig {
+            display: inline-block;
+            background: #e8eaf6; color: #303f9f;
+            border-radius: 10px; padding: 0.1rem 0.5rem;
+            font-size: 0.75rem; margin: 0.1rem 0.2rem 0.1rem 0;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        }
+
         /* Avisos flotantes */
         #avisos {
             position: fixed; right: 1rem; bottom: 1rem;
@@ -1289,6 +1347,8 @@
             <div class="be-acciones">
                 <button class="btn-ghost" id="btn-carpeta"></button>
                 <button class="btn-ghost" id="btn-modo"></button>
+                <button class="btn-ghost" id="btn-cursos"></button>
+                <button class="btn-ghost" id="btn-config">Configuración</button>
                 <button class="btn-ghost" id="btn-historial">Historial</button>
                 <button class="btn-ghost" id="btn-copias">Copias</button>
                 <button class="btn-action primary" id="btn-guardar">Guardar</button>
@@ -1339,6 +1399,15 @@
                 <select id="filter-conservatorio"><option value="">Todos</option></select>
             </div>
             <div class="filter-group">
+                <label for="filter-coordina">Coordinación</label>
+                <select id="filter-coordina">
+                    <option value="">Todos</option>
+                    <option value="si">Coordinan</option>
+                    <option value="no">No coordinan</option>
+                    <option value="sin">Sin decidir</option>
+                </select>
+            </div>
+            <div class="filter-group">
                 <label for="filter-desfase">Desfase</label>
                 <select id="filter-desfase">
                     <option value="">Todos</option>
@@ -1385,6 +1454,7 @@
                 <button class="btn-ghost" id="btn-collapse-all">Contraer todo</button>
             </div>
             <div class="toggle-separator" aria-hidden="true"></div>
+            <button class="btn-ghost solo-edicion" id="btn-coordinacion">Marcar coordinación</button>
             <button class="btn-ghost solo-edicion" id="btn-nuevo-alumno">+ Alumno/a</button>
             <button class="btn-ghost solo-edicion" id="btn-fichas">Centros</button>
             <button class="btn-ghost solo-edicion" id="btn-importar">Importar Excel</button>
@@ -1430,6 +1500,40 @@
             <button class="changelog-close" id="changelog-close" aria-label="Cerrar">&times;</button>
             <h3>Novedades</h3>
             <p style="font-size:0.72rem;color:#999;margin:-0.7rem 0 0.9rem" id="changelog-build"></p>
+            <div class="changelog-version">
+                <h4>v2.4 &mdash; 11 de agosto de 2026</h4>
+                <ul>
+                    <li><strong>Un archivo por curso.</strong> Los datos pasan a llamarse <code>coordinacion-2026-2027.json</code>, y el curso anterior queda congelado e intocable. Hay un gestor para volver a cualquier curso</li>
+                    <li><strong>Asistente de paso de curso</strong>: trae al alumnado del a&ntilde;o anterior, propone subirlo de curso y te ense&ntilde;a la lista para desmarcar a quien repite o se va. No escribe nada hasta que confirmas</li>
+                    <li>A quien termina 6&ordm; EPM o 2&ordm; de Bachillerato lo desmarca solo, avisando de qu&eacute; termina</li>
+                    <li>Al pasar de curso, la coordinaci&oacute;n vuelve a &laquo;sin decidir&raquo;, porque hay que reconfirmarla cada septiembre; los tutores y las observaciones se conservan <strong>marcados como del curso anterior</strong> hasta que los revisas</li>
+                    <li>Cada curso tiene sus propias copias de seguridad y solo purga las suyas</li>
+                    <li>Bot&oacute;n en configuraci&oacute;n para convertir un archivo del formato anterior al esquema por cursos, comprobando que se ha escrito bien antes de retirar el viejo</li>
+                </ul>
+            </div>
+            <div class="changelog-version">
+                <h4>v2.3 &mdash; 11 de agosto de 2026</h4>
+                <ul>
+                    <li><strong>Estar en com&uacute;n ya no es lo mismo que estar en la coordinaci&oacute;n.</strong> Cada alumno/a tiene tres estados: sin decidir, coordina o no coordina, con motivo cuando no</li>
+                    <li>Al importar un Excel todos entran como &laquo;sin decidir&raquo;: el Excel es la lista de alumnado en com&uacute;n y la coordinaci&oacute;n se decide en la app</li>
+                    <li><strong>Marcado en bloque</strong> sobre el alumnado que tengas filtrado, avisando de a cu&aacute;ntos afecta y de si no hay ning&uacute;n filtro puesto</li>
+                    <li>Filtro nuevo, columna en la tabla, contadores en el resumen y dos columnas m&aacute;s al exportar</li>
+                    <li><strong>Asignaturas del conservatorio que se imparten en el centro</strong>: cat&aacute;logo editable (Lenguaje Musical, Coro, Armon&iacute;a, An&aacute;lisis, Historia y Piano Complementario), con los cursos en los que aplica cada una y las especialidades que la tienen exenta</li>
+                    <li>Se marca en cada centro qu&eacute; asignaturas se dan all&iacute;, y la app <strong>deduce qu&eacute; clases hace cada alumno/a en su colegio</strong> seg&uacute;n su curso y su especialidad</li>
+                    <li>Se puede quitar una asignatura a un alumno/a concreto si prefiere cursarla en el conservatorio</li>
+                </ul>
+            </div>
+            <div class="changelog-version">
+                <h4>v2.2 &mdash; 11 de agosto de 2026</h4>
+                <ul>
+                    <li><strong>Pantalla de configuraci&oacute;n</strong>, con el nombre del centro, el curso acad&eacute;mico, un contacto de soporte y la clave de edici&oacute;n. Hasta ahora la clave del pestillo solo se pod&iacute;a poner editando el archivo a mano</li>
+                    <li>El nombre del centro y el curso <strong>se usan de verdad</strong>: salen al imprimir y en el nombre de los archivos que exportas, para que al otro lado se sepa de qui&eacute;n es y de qu&eacute; a&ntilde;o</li>
+                    <li><strong>La clave nunca se muestra en modo lectura</strong>, porque quien la viera podr&iacute;a desbloquear la app</li>
+                    <li>Quitar la clave abr&iacute;a la app a todo el mundo sin decir nada: ahora avisa y pide confirmaci&oacute;n</li>
+                    <li>La configuraci&oacute;n ense&ntilde;a los datos del archivo (revisi&oacute;n, &uacute;ltima modificaci&oacute;n, qui&eacute;n guard&oacute; y cu&aacute;ntas copias hay), que es lo que hace falta cuando te encuentras algo raro y no sabes a qui&eacute;n preguntar</li>
+                    <li>El curso acad&eacute;mico pasa a guardarse fuera de la configuraci&oacute;n del centro, y se valida el formato</li>
+                </ul>
+            </div>
             <div class="changelog-version">
                 <h4>v2.1 &mdash; 11 de agosto de 2026</h4>
                 <ul>
@@ -1502,7 +1606,7 @@
                 <br><a href="mailto:jl.mirallesbono@edu.gva.es" style="font-size:0.78rem">jl.mirallesbono@edu.gva.es</a> <span style="font-size:0.75rem;opacity:0.6">— sugerencias y problemas</span>
             </div>
             <div class="footer-links">
-                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.1</a>
+                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.4</a>
                 <span class="footer-separator"></span>
                 <a href="https://elpulpoenelvaso.jlmirall.es" target="_blank" rel="noopener">Blog</a>
                 <span class="footer-separator"></span>
@@ -1521,7 +1625,7 @@
     (function() {
         'use strict';
 
-        const APP_VERSION = '2.1';
+        const APP_VERSION = '2.4';
 
         const EQUIVALENCIAS = [
             { cons: '1º EEM', erg: '3º Primaria', idx: 0 },
@@ -1560,6 +1664,7 @@
 
             // Carpeta de trabajo (File System Access)
             dirHandle: null,
+            archivo: '',           // archivo del curso que está abierto
             soporteFSA: ('showDirectoryPicker' in window),
             sucio: false,
             cargadoRev: null,      // rev del archivo cuando se cargó
@@ -1582,7 +1687,8 @@
         try { state.usuario = localStorage.getItem('coordinacion-usuario') || ''; } catch (e) { /* sin localStorage */ }
 
         const FILTER_IDS = ['filter-tipo-ens', 'filter-curso-cons', 'filter-especialidad',
-                            'filter-curso-erg', 'filter-centro', 'filter-conservatorio', 'filter-desfase'];
+                            'filter-curso-erg', 'filter-centro', 'filter-conservatorio',
+                            'filter-coordina', 'filter-desfase'];
 
         const $ = id => document.getElementById(id);
 
@@ -1823,10 +1929,39 @@
         // ---------------------------------------------------------------
         const CAMPOS_ALUMNO = ['nia', 'apellidos', 'nombre', 'curso_cons', 'especialidad', 'curso_erg',
                                'modalidad_erg', 'tutor_cons', 'mail_tutor_cons', 'tutor_erg', 'mail_tutor_erg',
-                               'observaciones'];
+                               'observaciones', 'motivoNoCoordina'];
+
+        // Estar en común (matriculado en los dos sitios) no es lo mismo que estar
+        // en la coordinación: hay quien no la pide y hay cursos incompatibles.
+        // Tres estados a propósito: sin "sin decidir" no se sabe qué queda por revisar.
+        const MOTIVOS_HABITUALES = ['No lo solicita', 'Cursos incompatibles', 'Horario incompatible', 'Baja en el conservatorio'];
+
+        function estadoCoordinacion(a) {
+            if (a.coordina === true) return 'si';
+            if (a.coordina === false) return 'no';
+            return 'sin';
+        }
         const CAMPOS_CENTRO = ['tipo', 'denominacion', 'distancia_km', 'distancia_min', 'mail_contacto',
                                'director', 'mail_director', 'jefe_estudios', 'mail_jefatura',
                                'coordinador', 'mail_coordinador'];
+
+        /**
+         * Asignaturas del conservatorio que pueden impartirse en el centro de
+         * enseñanza general. Es un catálogo editable, no una lista fija: los
+         * currículos cambian y no todos los conservatorios ofrecen lo mismo.
+         */
+        function asignaturasPorDefecto() {
+            const EEM = ['1º EEM', '2º EEM', '3º EEM', '4º EEM'];
+            return [
+                { nombre: 'Lenguaje Musical', cursos: EEM.concat(['1º EPM', '2º EPM']), excluyeEspecialidades: [] },
+                { nombre: 'Coro', cursos: EEM.slice(), excluyeEspecialidades: [] },
+                { nombre: 'Armonía', cursos: ['3º EPM', '4º EPM'], excluyeEspecialidades: [] },
+                { nombre: 'Análisis', cursos: ['5º EPM', '6º EPM'], excluyeEspecialidades: [] },
+                { nombre: 'Historia de la Música', cursos: ['5º EPM', '6º EPM'], excluyeEspecialidades: [] },
+                { nombre: 'Piano Complementario', cursos: ['2º EPM', '3º EPM', '4º EPM'],
+                  excluyeEspecialidades: ['PIANO', 'ÓRGANO', 'CLAVE'] },
+            ].map((a, i) => Object.assign({ id: 'asig-' + (i + 1) }, a));
+        }
 
         function idAleatorio(prefijo) {
             return prefijo + '-' + Math.random().toString(36).slice(2, 10);
@@ -1842,15 +1977,23 @@
             return id;
         }
 
+        /** De agosto en adelante ya se prepara el curso siguiente. */
+        function cursoPorDefecto() {
+            const d = new Date();
+            const y = d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+            return y + '-' + (y + 1);
+        }
+
         function datosVacios() {
-            const y = new Date().getFullYear();
             return {
                 app: 'coordinacion-horaria',
                 version: 1,
                 rev: 0,
+                // El curso va en la raíz, no en config: es del archivo, no del centro
+                curso: cursoPorDefecto(),
                 ultimaModificacion: new Date().toISOString(),
                 modificadoPor: '',
-                config: { nombreCentro: '', codigoCentro: '', curso: y + '-' + (y + 1) },
+                config: { nombreCentro: '', codigoCentro: '', contactoSoporte: '', asignaturas: asignaturasPorDefecto() },
                 centros: [],
                 conservatorios: [],
                 alumnado: [],
@@ -1866,6 +2009,20 @@
             d.app = d.app || 'coordinacion-horaria';
             d.version = d.version || 1;
             d.rev = d.rev || 0;
+            ['nombreCentro', 'codigoCentro', 'contactoSoporte'].forEach(k => {
+                if (d.config[k] == null) d.config[k] = '';
+            });
+            // El curso vivía en config; su sitio es la raíz, porque es del archivo
+            if (!d.curso) d.curso = d.config.curso || cursoPorDefecto();
+            delete d.config.curso;
+            // Si falta la clave, se siembra; si está vacía es que las han borrado a propósito
+            if (!Array.isArray(d.config.asignaturas)) d.config.asignaturas = asignaturasPorDefecto();
+            d.config.asignaturas.forEach((x, i) => {
+                if (!x.id) x.id = 'asig-' + (i + 1) + '-' + Math.random().toString(36).slice(2, 6);
+                if (!Array.isArray(x.cursos)) x.cursos = [];
+                if (!Array.isArray(x.excluyeEspecialidades)) x.excluyeEspecialidades = [];
+                x.nombre = x.nombre || '';
+            });
 
             const usados = new Set();
             [['centros', 'centro'], ['conservatorios', 'cons']].forEach(([clave, prefijo]) => {
@@ -1873,6 +2030,7 @@
                     if (!f.id) f.id = idDesdeNombre(prefijo, f.denominacion, usados);
                     else usados.add(f.id);
                     CAMPOS_CENTRO.forEach(c => { if (f[c] == null) f[c] = ''; });
+                    if (!Array.isArray(f.asignaturas)) f.asignaturas = [];
                 });
             });
 
@@ -1888,6 +2046,10 @@
             d.alumnado.forEach(a => {
                 if (!a.id) a.id = idAleatorio('alu');
                 CAMPOS_ALUMNO.forEach(c => { if (a[c] == null) a[c] = ''; });
+                // Los archivos anteriores a la v2.3 eran, por construcción, la lista
+                // de quien coordinaba: se respetan como tales
+                if (a.coordina === undefined) a.coordina = true;
+                if (!Array.isArray(a.asignaturasExcluidas)) a.asignaturasExcluidas = [];
                 if (!a.centroId && a.centro_erg) a.centroId = centrosNombre.get(normKey(a.centro_erg)) || '';
                 if (!a.conservatorioId && a.conservatorio) a.conservatorioId = consNombre.get(normKey(a.conservatorio)) || '';
                 if (a.centroId == null) a.centroId = '';
@@ -1955,7 +2117,9 @@
             }
 
             libro.alumnado.forEach(fila => {
-                const a = { id: idAleatorio('alu') };
+                // El Excel es la lista de alumnado en común; quién coordina se
+                // decide después en la app, uno a uno o en bloque
+                const a = { id: idAleatorio('alu'), coordina: null, asignaturasExcluidas: [] };
                 CAMPOS_ALUMNO.forEach(c => { a[c] = fila[c] || ''; });
                 a.centroId = resolver(fila.centro_erg, dirCentros, datos.centros, 'centro', informe.centrosCreados);
                 a.conservatorioId = resolver(fila.conservatorio, dirCons, datos.conservatorios, 'cons', informe.consCreados);
@@ -1976,8 +2140,10 @@
                 tutor_cons: 'Tutor/a Conservatorio', mail_tutor_cons: 'Mail tutor/a Cons.',
                 tutor_erg: 'Tutor/a ERG', mail_tutor_erg: 'Mail tutor/a ERG', observaciones: 'Observaciones',
             };
-            CAMPOS_ALUMNO.forEach(c => {
-                informe.campos.push({ campo: etiquetas[c] || c, n: datos.alumnado.filter(a => a[c] !== '').length });
+            // Solo los campos que vienen del Excel: los que se rellenan dentro de la
+            // app (el motivo de no coordinar) saldrían siempre a 0 y parecerían un error
+            Object.keys(etiquetas).forEach(c => {
+                informe.campos.push({ campo: etiquetas[c], n: datos.alumnado.filter(a => a[c] !== '').length });
             });
             informe.campos.push({ campo: 'Centro ERG', n: datos.alumnado.filter(a => a.centroId).length });
             informe.campos.push({ campo: 'Conservatorio', n: datos.alumnado.filter(a => a.conservatorioId).length });
@@ -2006,6 +2172,25 @@
             return '';
         }
 
+        /**
+         * Qué clases del conservatorio hace este alumno en su colegio o instituto:
+         * cruce de lo que se imparte en el centro con lo que le toca por curso,
+         * menos las especialidades excluidas y menos sus excepciones personales.
+         */
+        function asignaturasDeAlumno(a, centro) {
+            if (a.coordina !== true) return [];
+            const c = centro || a._centroInfo;
+            if (!c || !Array.isArray(c.asignaturas) || !c.asignaturas.length) return [];
+            const catalogo = (state.datos && state.datos.config.asignaturas) || [];
+            const esp = normKey(a.especialidad);
+            const excluidas = a.asignaturasExcluidas || [];
+            return catalogo.filter(x =>
+                c.asignaturas.indexOf(x.id) !== -1 &&
+                x.cursos.indexOf(a.curso_cons) !== -1 &&
+                !x.excluyeEspecialidades.some(e => normKey(e) === esp) &&
+                excluidas.indexOf(x.id) === -1);
+        }
+
         function porId(lista) {
             const map = new Map();
             lista.forEach(f => { if (f.id) map.set(f.id, f); });
@@ -2030,6 +2215,7 @@
                 refsHuerfanas: new Map(),
                 niaDuplicados: [],
                 sinNia: 0,
+                arrastrados: [],
             };
 
             const niaCount = new Map();
@@ -2047,6 +2233,8 @@
 
                 a._desfase = calcDesfase(a.curso_cons, a.curso_erg);
                 a._tipoEns = getTipoEns(a.curso_cons);
+                a._coord = estadoCoordinacion(a);
+                a._asignaturas = asignaturasDeAlumno(a, centro);
                 a._nombreCompleto = normalizeText((a.apellidos || '') + ' ' + (a.nombre || '')).trim() || '(sin nombre)';
                 a._nombreMostrado = [a.apellidos, a.nombre].filter(Boolean).join(', ') || '(sin nombre)';
                 a._buscar = normKey(a._nombreCompleto);
@@ -2067,6 +2255,8 @@
                 // Referencia a una ficha que ya no existe (edición manual del JSON o fusión rara)
                 if (a.centroId && !centro) inc(issues.refsHuerfanas, 'Centro ' + a.centroId);
                 if (a.conservatorioId && !cons) inc(issues.refsHuerfanas, 'Conservatorio ' + a.conservatorioId);
+
+                if (a.arrastradoDe) issues.arrastrados.push(a);
 
                 if (a.nia) {
                     niaCount.set(a.nia, (niaCount.get(a.nia) || 0) + 1);
@@ -2093,6 +2283,17 @@
         function renderWarnings(issues) {
             const box = $('warnings-box');
             const blocks = [];
+
+            if (issues.arrastrados.length) {
+                const n = issues.arrastrados.length;
+                blocks.push(section(
+                    n + ' ' + plural(n, 'ficha que viene del curso anterior', 'fichas que vienen del curso anterior'),
+                    'Sus tutores y observaciones son los del año pasado. Al abrir la ficha y guardarla, la marca desaparece.',
+                    issues.arrastrados.slice(0, 60).map(a => escapeHtml(a._nombreMostrado)),
+                    '<button class="btn-ghost solo-edicion" id="btn-revisados" style="margin:0.3rem 0 0.4rem 1.1rem">' +
+                    'Dar por revisadas las ' + n + '</button>'
+                ));
+            }
 
             if (issues.niaDuplicados.length) {
                 blocks.push(section(
@@ -2153,9 +2354,16 @@
             box.innerHTML = '<div class="warnings-title">Revisión de los datos</div>' + blocks.join('');
             box.classList.add('visible');
 
-            function section(titulo, pista, items) {
+            const btnRev = $('btn-revisados');
+            if (btnRev) btnRev.addEventListener('click', () => {
+                if (!puedeEditar()) { avisoSoloLectura(); return; }
+                darPorRevisados(issues.arrastrados);
+            });
+
+            function section(titulo, pista, items, extra) {
                 let html = '<details><summary>' + escapeHtml(titulo) + '</summary>';
                 if (pista) html += '<div class="w-hint">' + escapeHtml(pista) + '</div>';
+                if (extra) html += extra;
                 if (items.length) html += '<ul><li>' + items.join('</li><li>') + '</li></ul>';
                 return html + '</details>';
             }
@@ -2215,6 +2423,7 @@
                 especialidad: $('filter-especialidad').value,
                 centro: $('filter-centro').value,
                 conservatorio: $('filter-conservatorio').value,
+                coordina: $('filter-coordina').value,
                 desfase: $('filter-desfase').value,
             };
         }
@@ -2228,6 +2437,7 @@
                 if (f.especialidad && a.especialidad !== f.especialidad) return false;
                 if (f.centro && a._centroLabel !== f.centro) return false;
                 if (f.conservatorio && a._consLabel !== f.conservatorio) return false;
+                if (f.coordina && a._coord !== f.coordina) return false;
                 if (f.desfase) {
                     const clase = a._desfase.clase;
                     if (f.desfase === 'alert') {
@@ -2300,10 +2510,15 @@
             const totalCons = new Set(filtered.map(a => a._consLabel).filter(Boolean)).size;
             const totalGlobal = state.alumnado.length;
 
+            const nCoordinan = filtered.filter(a => a._coord === 'si').length;
+            const nSinDecidir = filtered.filter(a => a._coord === 'sin').length;
+
             let html =
                 '<div class="summary-stat"><span class="num">' + filtered.length + '</span> ' +
                     plural(filtered.length, 'alumno/a', 'alumnos/as') +
                     (filtered.length !== totalGlobal ? ' <small style="color:#999">de ' + totalGlobal + '</small>' : '') + '</div>' +
+                '<div class="summary-stat"><span class="num">' + nCoordinan + '</span> coordinan</div>' +
+                (nSinDecidir ? '<div class="summary-stat sin-decidir"><span class="num">' + nSinDecidir + '</span> sin decidir</div>' : '') +
                 '<div class="summary-stat"><span class="num">' + totalCentros + '</span> ' + plural(totalCentros, 'centro ERG', 'centros ERG') + '</div>';
             if (totalCons) {
                 html += '<div class="summary-stat"><span class="num">' + totalCons + '</span> ' + plural(totalCons, 'conservatorio', 'conservatorios') + '</div>';
@@ -2329,11 +2544,16 @@
                 'Desfase': f.desfase ? $('filter-desfase').selectedOptions[0].textContent : '',
             }).filter(([, v]) => v).map(([k, v]) => k + ': ' + v);
 
+            // Lo que se imprime sale del centro por correo: tiene que decir de quién
+            // es y de qué curso, o al otro lado no hay forma de saberlo
+            const centro = normalizeText(state.datos.config.nombreCentro);
             $('print-header').innerHTML =
-                '<h2>Coordinación horaria</h2>' +
-                '<p>' + filtered.length + ' ' + plural(filtered.length, 'alumno/a', 'alumnos/as') +
+                '<h2>' + escapeHtml(centro || 'Coordinación horaria') +
+                    (state.datos.curso ? ' · curso ' + escapeHtml(state.datos.curso) : '') + '</h2>' +
+                '<p>' + (centro ? 'Coordinación horaria · ' : '') +
+                filtered.length + ' ' + plural(filtered.length, 'alumno/a', 'alumnos/as') +
                 (activos.length ? ' · Filtros — ' + escapeHtml(activos.join(' · ')) : ' · Sin filtros') +
-                ' · ' + escapeHtml(state.origen) + '</p>';
+                ' · impreso el ' + escapeHtml(new Date().toLocaleDateString('es-ES')) + '</p>';
         }
 
         /**
@@ -2603,7 +2823,7 @@
 
                     html += '<div class="alumno-row" data-id="' + a._id + '">' +
                         '<span class="alumno-nia">' + escapeHtml(a.nia) + '</span>' +
-                        '<span class="alumno-nombre">' + escapeHtml(a._nombreMostrado) +
+                        '<span class="alumno-nombre">' + escapeHtml(a._nombreMostrado) + marcaCoord(a) +
                             (subtext ? ' <small style="color:#888">— ' + escapeHtml(subtext) + '</small>' : '') + '</span>' +
                         '<span class="alumno-curso-cons">' + (col3 ? escapeHtml(col3) : falta) + '</span>' +
                         '<span class="alumno-especialidad">' + (col4 ? escapeHtml(col4) : '') + '</span>' +
@@ -2616,6 +2836,17 @@
                         '<div class="alumno-detail-grid">' +
                             renderTutorSection('Tutor/a Conservatorio', a.tutor_cons, a.mail_tutor_cons) +
                             renderTutorSection('Tutor/a ERG', a.tutor_erg, a.mail_tutor_erg) +
+                            (a._asignaturas.length
+                                ? '<div class="alumno-detail-section" style="grid-column:1/-1">' +
+                                  '<div class="alumno-detail-title">Asignaturas del conservatorio en su centro</div>' +
+                                  a._asignaturas.map(x => '<span class="chip-asig">' + escapeHtml(x.nombre) + '</span>').join('') +
+                                  '</div>'
+                                : '') +
+                            (a._coord === 'no' && a.motivoNoCoordina
+                                ? '<div class="alumno-detail-section" style="grid-column:1/-1">' +
+                                  '<div class="alumno-detail-title">No participa en la coordinación</div>' +
+                                  '<div style="font-size:0.85rem;color:#555">' + escapeHtml(a.motivoNoCoordina) + '</div></div>'
+                                : '') +
                             (hasObs
                                 ? '<div class="alumno-obs-section">' +
                                       '<div class="alumno-detail-title">Observaciones</div>' +
@@ -2630,6 +2861,25 @@
             });
 
             return html;
+        }
+
+        /** Distintivo para quien no coordina o está sin decidir. Quien coordina no lleva nada. */
+        function marcaCoord(a) {
+            const arr = a.arrastradoDe
+                ? ' <span class="marca-coord arrastrado" title="Sus tutores y observaciones vienen del curso ' +
+                  escapeHtml(a.arrastradoDe) + '; conviene revisarlos">del curso anterior</span>'
+                : '';
+            return arr + marcaCoordEstado(a);
+        }
+
+        function marcaCoordEstado(a) {
+            if (a._coord === 'si') return '';
+            if (a._coord === 'no') {
+                return ' <span class="marca-coord no" title="' +
+                    escapeHtml(a.motivoNoCoordina ? 'No coordina: ' + a.motivoNoCoordina : 'No coordina') +
+                    '">no coordina</span>';
+            }
+            return ' <span class="marca-coord sin" title="Falta decidir si entra en la coordinación">sin decidir</span>';
         }
 
         function renderTutorSection(title, nombre, mail) {
@@ -2682,7 +2932,12 @@
         }
 
         // ------------------------------ Tabla ------------------------------
+        const TEXTO_COORD = { si: 'Sí', no: 'No', sin: 'Sin decidir' };
+        const ORDEN_COORD = { si: 0, sin: 1, no: 2 };
+
         const TABLE_COLS = [
+            { key: 'coordina', label: 'Coord.', get: a => TEXTO_COORD[a._coord],
+              sort: (a, b) => ORDEN_COORD[a._coord] - ORDEN_COORD[b._coord] },
             { key: 'nia', label: 'NIA', get: a => a.nia, numeric: true },
             { key: 'apellidos', label: 'Apellidos', get: a => a.apellidos },
             { key: 'nombre', label: 'Nombre', get: a => a.nombre },
@@ -2734,9 +2989,11 @@
 
             rows.forEach(a => {
                 const d = a._desfase;
-                html += '<tr data-id="' + a._id + '">' +
+                html += '<tr data-id="' + a._id + '"' + (a._coord === 'no' ? ' class="no-coordina"' : '') + '>' +
+                    '<td>' + (a._coord === 'si' ? 'Sí' : marcaCoordEstado(a)) + '</td>' +
                     '<td>' + escapeHtml(a.nia) + '</td>' +
-                    '<td>' + escapeHtml(a.apellidos) + '</td>' +
+                    '<td>' + escapeHtml(a.apellidos) +
+                        (a.arrastradoDe ? ' <span class="marca-coord arrastrado">del curso anterior</span>' : '') + '</td>' +
                     '<td>' + escapeHtml(a.nombre) + '</td>' +
                     '<td>' + escapeHtml(a._consLabel) + '</td>' +
                     '<td>' + escapeHtml(a._centroLabel) + '</td>' +
@@ -2875,6 +3132,8 @@
         // Exportación
         // ---------------------------------------------------------------
         const EXPORT_COLS = [
+            ['Coordina', a => TEXTO_COORD[a._coord]],
+            ['Motivo', a => a.motivoNoCoordina],
             ['NIA', a => a.nia],
             ['Apellidos', a => a.apellidos],
             ['Nombre', a => a.nombre],
@@ -2902,8 +3161,11 @@
         }
 
         function exportFileName(ext) {
-            const base = 'coordinacion';
-            return base + '_filtrado.' + ext;
+            const trozos = ['coordinacion'];
+            const centro = normKey(state.datos.config.nombreCentro).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            if (centro) trozos.push(centro.slice(0, 40));
+            if (state.datos.curso) trozos.push(state.datos.curso);
+            return trozos.join('_') + '.' + ext;
         }
 
         function exportXlsx() {
@@ -2961,6 +3223,7 @@
             cursoe: 'filter-curso-erg',
             centro: 'filter-centro',
             cons: 'filter-conservatorio',
+            coord: 'filter-coordina',
             desf: 'filter-desfase',
         };
 
@@ -3060,12 +3323,47 @@
         // y volver a pedirlo exige un clic del usuario. De ahí el botón
         // "Reconectar" en vez de intentarlo solo al arrancar.
         // ---------------------------------------------------------------
+        // Un archivo por curso: el año pasado queda congelado e intocable.
+        // coordinacion.json (sin curso) es el formato anterior y se sigue leyendo.
         const NOMBRE_DATOS = 'coordinacion.json';
+        const RE_ARCHIVO_CURSO = /^coordinacion-(\d{4}-\d{4})\.json$/;
+
+        function nombreArchivoCurso(curso) { return 'coordinacion-' + curso + '.json'; }
+
+        /** Archivos de curso que hay en la carpeta, del más reciente al más antiguo. */
+        async function listarArchivosCurso() {
+            if (!state.dirHandle) return [];
+            try {
+                const dir = await carpetaDatos(false);
+                const out = [];
+                for await (const e of dir.values()) {
+                    if (e.kind !== 'file') continue;
+                    const m = e.name.match(RE_ARCHIVO_CURSO);
+                    if (m) out.push({ archivo: e.name, curso: m[1] });
+                    else if (e.name === NOMBRE_DATOS) out.push({ archivo: e.name, curso: null });
+                }
+                return out.sort((a, b) => (b.curso || '').localeCompare(a.curso || ''));
+            } catch (e) { return []; }
+        }
         const CARPETA_DATOS = 'datos';
         const CARPETA_COPIAS = 'copias';
         const MAX_COPIAS = 30;
-        // El sufijo -2, -3... evita que dos guardados en el mismo segundo se pisen
-        const RE_COPIA = /^coordinacion-\d{8}-\d{6}(-\d+)?\.json$/;
+        // El sufijo -2, -3... evita que dos guardados en el mismo segundo se pisen.
+        // Cada curso tiene sus copias y solo purga las suyas, para que empezar un
+        // curso nuevo no se lleve por delante el respaldo del anterior.
+        const RE_COPIA_LEGADO = /^coordinacion-\d{8}-\d{6}(-\d+)?\.json$/;
+
+        function prefijoCopia() {
+            return 'copia-' + ((state.datos && state.datos.curso) || 'sin-curso') + '-';
+        }
+
+        function esCopiaDeEsteCurso(nombre) {
+            if (state.archivo === NOMBRE_DATOS) return RE_COPIA_LEGADO.test(nombre);
+            // El curso que salió del archivo antiguo hereda sus copias: si no, al
+            // convertirlo parecería que se ha quedado sin respaldo
+            if (state.datos && state.datos.convertidoDeLegado && RE_COPIA_LEGADO.test(nombre)) return true;
+            return nombre.indexOf(prefijoCopia()) === 0 && /\d{8}-\d{6}(-\d+)?\.json$/.test(nombre);
+        }
 
         function idb() {
             return new Promise((res, rej) => {
@@ -3132,7 +3430,7 @@
 
         async function archivoDatos(crear) {
             const dir = await carpetaDatos(!!crear);
-            return await dir.getFileHandle(NOMBRE_DATOS, { create: !!crear });
+            return await dir.getFileHandle(state.archivo || NOMBRE_DATOS, { create: !!crear });
         }
 
         /** Mira qué hay en la carpeta sin cargar nada: {existe, resumen} */
@@ -3292,8 +3590,15 @@
             return await cargarDeCarpeta();
         }
 
-        async function cargarDeCarpeta() {
+        async function cargarDeCarpeta(archivoPedido) {
             try {
+                if (archivoPedido) {
+                    state.archivo = archivoPedido;
+                } else {
+                    // Sin pedir nada, se abre el curso más reciente que haya
+                    const disponibles = await listarArchivosCurso();
+                    state.archivo = disponibles.length ? disponibles[0].archivo : nombreArchivoCurso(cursoPorDefecto());
+                }
                 const fh = await archivoDatos(false);
                 const f = await fh.getFile();
                 const texto = await f.text();
@@ -3308,6 +3613,13 @@
                 activarDatos(datos, 'Carpeta: ' + state.dirHandle.name);
                 state.cargadoRev = state.datos.rev || 0;
                 state.cargadoMtime = f.lastModified;
+                // Si el nombre del archivo lleva curso y el contenido dice otro, manda
+                // el contenido: alguien ha renombrado el archivo por fuera
+                const m = state.archivo.match(RE_ARCHIVO_CURSO);
+                if (m && state.datos.curso && m[1] !== state.datos.curso) {
+                    toast('Ojo: el archivo se llama ' + m[1] + ' pero por dentro dice ser del curso ' +
+                          state.datos.curso + '.', 'error');
+                }
                 if (rescatada) {
                     marcarSucio(true);
                     toast('He cargado una copia de seguridad. Guarda para que sustituya al archivo dañado.', 'info');
@@ -3486,9 +3798,9 @@
                 // El sello es YYYYMMDD-HHMMSS: ordenar por nombre es ordenar por fecha
                 const nombres = [];
                 for await (const entry of dir.values()) {
-                    if (entry.kind === 'file' && RE_COPIA.test(entry.name)) nombres.push(entry.name);
+                    if (entry.kind === 'file' && esCopiaDeEsteCurso(entry.name)) nombres.push(entry.name);
                 }
-                const base = 'coordinacion-' + selloFecha();
+                const base = prefijoCopia() + selloFecha();
                 let nombre = base + '.json';
                 for (let n = 2; nombres.includes(nombre); n++) nombre = base + '-' + n + '.json';
 
@@ -3510,7 +3822,7 @@
                 const dir = await (await carpetaDatos(false)).getDirectoryHandle(CARPETA_COPIAS);
                 const nombres = [];
                 for await (const entry of dir.values()) {
-                    if (entry.kind === 'file' && RE_COPIA.test(entry.name)) nombres.push(entry.name);
+                    if (entry.kind === 'file' && esCopiaDeEsteCurso(entry.name)) nombres.push(entry.name);
                 }
                 return nombres.sort().reverse();
             } catch (e) { return []; }
@@ -3552,6 +3864,304 @@
                 descripcion,
             });
             if (state.datos.historial.length > 500) state.datos.historial.length = 500;
+        }
+
+        // ---------------------------------------------------------------
+        // Cursos: un archivo por curso, y el paso de uno a otro
+        // ---------------------------------------------------------------
+        const ERG_ORDER = Object.keys(CURSOS_ERG_INDEX).sort((a, b) => CURSOS_ERG_INDEX[a] - CURSOS_ERG_INDEX[b]);
+
+        function siguienteEnLista(lista, valor) {
+            const i = lista.indexOf(valor);
+            return (i === -1 || i === lista.length - 1) ? '' : lista[i + 1];
+        }
+        const siguienteCursoCons = c => siguienteEnLista(CONS_ORDER, c);
+        const siguienteCursoErg = c => siguienteEnLista(ERG_ORDER, c);
+
+        function siguienteCursoAcademico(curso) {
+            const m = /^(\d{4})-(\d{4})$/.exec(curso || '');
+            if (!m) return cursoPorDefecto();
+            return (Number(m[1]) + 1) + '-' + (Number(m[2]) + 1);
+        }
+
+        async function abrirOtroCurso(archivo) {
+            if (state.sucio) {
+                const ok = await confirmar('Hay cambios sin guardar',
+                    'Si cambias de curso ahora perderás lo que no hayas guardado.', 'Cambiar igualmente', 'peligro');
+                if (!ok) return;
+            }
+            marcarLimpio();
+            await cargarDeCarpeta(archivo);
+        }
+
+        async function gestorCursos() {
+            if (!state.dirHandle) {
+                modal({ titulo: 'Cursos', html: '<p>Para trabajar por cursos hace falta tener una carpeta conectada.</p>' });
+                return;
+            }
+            const disponibles = await listarArchivosCurso();
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML =
+                '<p style="color:#666;margin-bottom:0.7rem">Cada curso tiene su propio archivo. Los cursos anteriores ' +
+                'se pueden consultar y siguen ahí intactos.</p>' +
+                '<ul class="lista-fichas">' +
+                disponibles.map(d => {
+                    const actual = d.archivo === state.archivo;
+                    return '<li><span class="nom">' +
+                        (d.curso ? 'Curso <strong>' + escapeHtml(d.curso) + '</strong>' : 'Archivo sin curso en el nombre') +
+                        '<br><small style="color:#888">' + escapeHtml(d.archivo) + '</small></span>' +
+                        (actual ? '<span class="cuenta">abierto ahora</span>'
+                                : '<button class="btn-editar" data-abrir="' + escapeHtml(d.archivo) + '">Abrir</button>') +
+                        '</li>';
+                }).join('') +
+                '</ul>' +
+                '<button class="btn-action primary solo-edicion" data-nuevo-curso="1" style="margin-top:0.9rem">' +
+                'Empezar curso ' + escapeHtml(siguienteCursoAcademico(state.datos.curso)) + '</button>';
+
+            cuerpo.addEventListener('click', async e => {
+                const abrir = e.target.closest('[data-abrir]');
+                const nuevo = e.target.closest('[data-nuevo-curso]');
+                if (abrir) {
+                    document.querySelectorAll('.modal-fondo').forEach(m => m.remove());
+                    await abrirOtroCurso(abrir.dataset.abrir);
+                } else if (nuevo) {
+                    document.querySelectorAll('.modal-fondo').forEach(m => m.remove());
+                    await asistenteNuevoCurso();
+                }
+            });
+
+            modal({ titulo: 'Cursos', nodo: cuerpo, ancho: true });
+        }
+
+        /**
+         * Paso de curso. No sube a nadie de curso por su cuenta: propone y tú
+         * revisas. Y nunca toca el archivo del curso anterior.
+         */
+        async function asistenteNuevoCurso() {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            if (!state.dirHandle) { toast('Hace falta una carpeta conectada.', 'error'); return; }
+            if (state.sucio) {
+                const ok = await confirmar('Tienes cambios sin guardar',
+                    'Conviene guardar el curso actual antes de empezar el siguiente.', 'Guardar y seguir');
+                if (!ok) return;
+                if (!(await guardar(true))) return;
+            }
+
+            const cursoAnterior = state.datos.curso;
+            const cursoNuevo = siguienteCursoAcademico(cursoAnterior);
+
+            const propuesta = state.datos.alumnado.map(a => {
+                const nCons = siguienteCursoCons(a.curso_cons);
+                const nErg = siguienteCursoErg(a.curso_erg);
+                const termina = (a.curso_cons && !nCons) || (a.curso_erg && !nErg);
+                return { a, incluir: !termina, sube: true, nCons, nErg, termina };
+            });
+
+            const cuerpo = document.createElement('div');
+            const pinta = () => {
+                const nIncluidos = propuesta.filter(p => p.incluir).length;
+                cuerpo.innerHTML =
+                    '<div class="form-rejilla" style="margin-bottom:0.7rem">' +
+                        campoHtml('cursoNuevo', cursoNuevo, { pista: 'Se creará el archivo coordinacion-' + cursoNuevo + '.json' }) +
+                    '</div>' +
+                    '<p>Del curso <strong>' + escapeHtml(cursoAnterior) + '</strong> se llevan ' +
+                    state.datos.centros.length + ' centros, ' + state.datos.conservatorios.length +
+                    ' conservatorios, las asignaturas y la configuración.</p>' +
+                    '<p style="margin:0.5rem 0"><strong>' + nIncluidos + '</strong> de ' + propuesta.length +
+                    ' alumnos/as pasan al curso nuevo. Revisa la lista: desmarca a quien se va, y quita ' +
+                    '«sube» a quien repite.</p>' +
+                    '<div class="acciones-bloque">' +
+                        '<button class="btn-ghost" data-todos="1">Todos pasan</button>' +
+                        '<button class="btn-ghost" data-ninguno="1">Ninguno pasa</button>' +
+                        '<button class="btn-ghost" data-suben="1">Todos suben</button>' +
+                        '<button class="btn-ghost" data-nosuben="1">Ninguno sube</button>' +
+                    '</div>' +
+                    '<div class="tabla-paso"><table><thead><tr>' +
+                        '<th>Pasa</th><th>Alumno/a</th><th>Conservatorio</th><th>Centro</th><th>Sube</th>' +
+                    '</tr></thead><tbody>' +
+                    propuesta.map((p, i) =>
+                        '<tr' + (p.termina ? ' class="termina"' : '') + '>' +
+                        '<td><input type="checkbox" data-inc="' + i + '"' + (p.incluir ? ' checked' : '') + '></td>' +
+                        '<td>' + escapeHtml(p.a._nombreMostrado) +
+                            (p.termina ? '<br><small>termina ' + escapeHtml(!p.nCons ? p.a.curso_cons : p.a.curso_erg) + '</small>' : '') + '</td>' +
+                        '<td>' + escapeHtml(p.a.curso_cons || '—') + (p.sube && p.nCons ? ' → <strong>' + escapeHtml(p.nCons) + '</strong>' : '') + '</td>' +
+                        '<td>' + escapeHtml(p.a.curso_erg || '—') + (p.sube && p.nErg ? ' → <strong>' + escapeHtml(p.nErg) + '</strong>' : '') + '</td>' +
+                        '<td><input type="checkbox" data-sube="' + i + '"' + (p.sube ? ' checked' : '') +
+                            (p.termina ? ' disabled' : '') + '></td>' +
+                        '</tr>').join('') +
+                    '</tbody></table></div>';
+            };
+            pinta();
+
+            cuerpo.addEventListener('change', e => {
+                const inc = e.target.dataset.inc, sub = e.target.dataset.sube;
+                if (inc !== undefined) propuesta[inc].incluir = e.target.checked;
+                if (sub !== undefined) propuesta[sub].sube = e.target.checked;
+                if (inc !== undefined || sub !== undefined) pinta();
+            });
+            cuerpo.addEventListener('click', e => {
+                const b = e.target.closest('button');
+                if (!b) return;
+                if (b.dataset.todos) propuesta.forEach(p => { p.incluir = true; });
+                else if (b.dataset.ninguno) propuesta.forEach(p => { p.incluir = false; });
+                else if (b.dataset.suben) propuesta.forEach(p => { if (!p.termina) p.sube = true; });
+                else if (b.dataset.nosuben) propuesta.forEach(p => { p.sube = false; });
+                else return;
+                pinta();
+            });
+
+            let nombreCurso = cursoNuevo;
+            const salida = await modal({
+                titulo: 'Empezar curso nuevo',
+                nodo: cuerpo, ancho: true,
+                botones: [
+                    { texto: 'Cancelar', valor: false },
+                    { texto: 'Crear el curso', clase: 'principal', valor: true,
+                      antesDeCerrar: f => { nombreCurso = normalizeText(f.querySelector('[name="cursoNuevo"]').value); } },
+                ],
+            });
+            if (salida !== true) return;
+
+            if (!/^\d{4}-\d{4}$/.test(nombreCurso)) { toast('El curso tiene que tener el formato 2027-2028.', 'error'); return; }
+            const [y1, y2] = nombreCurso.split('-').map(Number);
+            if (y2 !== y1 + 1) { toast('Los dos años tienen que ser consecutivos.', 'error'); return; }
+
+            const archivoNuevo = nombreArchivoCurso(nombreCurso);
+            const yaExiste = (await listarArchivosCurso()).some(d => d.archivo === archivoNuevo);
+            if (yaExiste) {
+                await modal({
+                    titulo: 'Ese curso ya existe',
+                    html: 'Ya hay un archivo <code>' + escapeHtml(archivoNuevo) + '</code> en la carpeta. ' +
+                          'Ábrelo desde la lista de cursos en vez de crearlo otra vez.',
+                });
+                return;
+            }
+
+            // Se construye el curso nuevo sin tocar el anterior
+            const nuevos = JSON.parse(JSON.stringify(datosVacios()));
+            nuevos.curso = nombreCurso;
+            nuevos.procedeDe = cursoAnterior;
+            nuevos.config = JSON.parse(JSON.stringify(state.datos.config));
+            nuevos.centros = JSON.parse(JSON.stringify(state.datos.centros));
+            nuevos.conservatorios = JSON.parse(JSON.stringify(state.datos.conservatorios));
+            nuevos.alumnado = propuesta.filter(p => p.incluir).map(p => {
+                const c = JSON.parse(JSON.stringify(p.a));
+                Object.keys(c).forEach(k => { if (k.charAt(0) === '_') delete c[k]; });
+                if (p.sube) {
+                    if (p.nCons) c.curso_cons = p.nCons;
+                    if (p.nErg) c.curso_erg = p.nErg;
+                }
+                // Cada septiembre hay que volver a confirmar quién coordina
+                c.coordina = null;
+                c.motivoNoCoordina = '';
+                // Tutores y observaciones se conservan, pero señalados hasta revisarlos
+                c.arrastradoDe = cursoAnterior;
+                return c;
+            });
+            nuevos.historial = [];
+
+            const anterior = { archivo: state.archivo, datos: state.datos, rev: state.cargadoRev, mtime: state.cargadoMtime };
+            state.archivo = archivoNuevo;
+            state.datos = nuevos;
+            state.cargadoMtime = null;
+            state.cargadoRev = 0;
+
+            activarDatos(nuevos, 'Carpeta: ' + state.dirHandle.name);
+            registrarHistorial('Curso ' + nombreCurso + ' creado a partir de ' + cursoAnterior + ' con ' +
+                nuevos.alumnado.length + ' ' + plural(nuevos.alumnado.length, 'alumno/a', 'alumnos/as'));
+            state.sucio = true;
+            document.body.classList.add('sucio');
+
+            const guardado = await guardar(true);
+            if (!guardado) {
+                // Si no se ha podido escribir, se vuelve al curso anterior sin daños
+                state.archivo = anterior.archivo;
+                state.cargadoRev = anterior.rev;
+                state.cargadoMtime = anterior.mtime;
+                activarDatos(anterior.datos, 'Carpeta: ' + state.dirHandle.name);
+                marcarLimpio();
+                showError('No he podido crear el curso nuevo. Sigues en ' + cursoAnterior + '.');
+                return;
+            }
+
+            actualizarBarraEstado();
+            renderView();
+            toast('Curso ' + nombreCurso + ' creado con ' + nuevos.alumnado.length + ' alumnos/as. ' +
+                  'El curso ' + cursoAnterior + ' queda intacto.', 'ok');
+        }
+
+        /**
+         * Pasa el archivo antiguo (coordinacion.json, sin curso en el nombre) al
+         * esquema de un archivo por curso. Escribe el nuevo, comprueba que se lee
+         * bien y solo entonces retira el viejo.
+         */
+        async function convertirArchivoACurso() {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            if (state.archivo !== NOMBRE_DATOS) return;
+
+            const curso = state.datos.curso;
+            const destino = nombreArchivoCurso(curso);
+            if ((await listarArchivosCurso()).some(d => d.archivo === destino)) {
+                await modal({
+                    titulo: 'Ya existe ese archivo',
+                    html: 'En la carpeta ya hay un <code>' + escapeHtml(destino) + '</code>. ' +
+                          'Revísalo antes de convertir este, porque si no habría dos archivos del mismo curso.',
+                });
+                return;
+            }
+
+            const ok = await confirmar('Convertir el archivo',
+                'Voy a guardar los datos en <code>' + escapeHtml(destino) + '</code> y, solo si se lee bien, ' +
+                'retiraré <code>' + NOMBRE_DATOS + '</code>.<br><br>' +
+                'Antes escribo una copia de seguridad. A partir de ahí podrás usar el paso de curso.',
+                'Convertir');
+            if (!ok) return;
+
+            try {
+                const dir = await carpetaDatos(true);
+                registrarHistorial('Archivo convertido a ' + destino + ' (antes ' + NOMBRE_DATOS + ')');
+                state.datos.convertidoDeLegado = true;
+                const texto = JSON.stringify(state.datos, null, 1);
+
+                await escribirCopia(texto);
+
+                const fh = await dir.getFileHandle(destino, { create: true });
+                const w = await fh.createWritable();
+                await w.write(texto);
+                await w.close();
+
+                // No dar por buena una migración porque no haya dado error
+                const releido = JSON.parse(await (await fh.getFile()).text());
+                if (releido.alumnado.length !== state.datos.alumnado.length ||
+                    releido.centros.length !== state.datos.centros.length) {
+                    throw new Error('el archivo nuevo no ha quedado igual que el original');
+                }
+
+                await dir.removeEntry(NOMBRE_DATOS);
+
+                state.archivo = destino;
+                state.cargadoMtime = (await fh.getFile()).lastModified;
+                state.cargadoRev = state.datos.rev;
+                marcarLimpio();
+                actualizarBarraEstado();
+                toast('Convertido a ' + destino + '.', 'ok');
+            } catch (e) {
+                console.error(e);
+                delete state.datos.convertidoDeLegado;
+                showError('No he podido convertir el archivo: ' + e.message +
+                          '. No he tocado ' + NOMBRE_DATOS + ', tus datos siguen donde estaban.');
+            }
+        }
+
+        /** Quita la marca de "viene del curso anterior" a los que se hayan revisado. */
+        function darPorRevisados(lista) {
+            let n = 0;
+            lista.forEach(a => { if (a.arrastradoDe) { delete a.arrastradoDe; n++; } });
+            if (!n) return;
+            registrarHistorial(n + ' ' + plural(n, 'ficha dada', 'fichas dadas') + ' por revisadas tras el paso de curso');
+            marcarSucio();
+            recalcular();
+            toast(n + ' ' + plural(n, 'ficha marcada', 'fichas marcadas') + ' como revisadas.', 'ok');
         }
 
         // ---------------------------------------------------------------
@@ -3790,6 +4400,8 @@
             tutor_cons: 'Tutor/a Conservatorio', mail_tutor_cons: 'Mail tutor/a Conservatorio',
             tutor_erg: 'Tutor/a ERG', mail_tutor_erg: 'Mail tutor/a ERG', observaciones: 'Observaciones',
             centroId: 'Centro ERG', conservatorioId: 'Conservatorio',
+            nombreCentro: 'Nombre del centro', codigoCentro: 'Código de centro',
+            contactoSoporte: 'Contacto de soporte', curso: 'Curso académico',
             tipo: 'Tipo', denominacion: 'Denominación', distancia_km: 'Distancia (km)',
             distancia_min: 'Distancia (min a pie)', mail_contacto: 'Mail de contacto',
             director: 'Director/a', mail_director: 'Mail director/a',
@@ -3811,6 +4423,12 @@
                     }).join('') + '</select>';
             } else if (o.textarea) {
                 control = '<textarea name="' + name + '" rows="3">' + escapeHtml(valor) + '</textarea>';
+            } else if (o.lista) {
+                // Sugiere sin obligar: evita erratas sin tener que mantener un catálogo
+                const idLista = 'lista-' + name;
+                control = '<input type="text" name="' + name + '" value="' + escapeHtml(valor) + '" list="' + idLista + '">' +
+                    '<datalist id="' + idLista + '">' +
+                    o.lista.map(v => '<option value="' + escapeHtml(v) + '"></option>').join('') + '</datalist>';
             } else {
                 control = '<input type="' + (o.tipo || 'text') + '" name="' + name + '" value="' + escapeHtml(valor) + '">';
             }
@@ -3818,6 +4436,20 @@
                    '<label>' + escapeHtml(et) + '</label>' + control +
                    (o.pista ? '<div class="pista">' + escapeHtml(o.pista) + '</div>' : '') +
                    '</div>';
+        }
+
+        /** Grupo de casillas. opciones: [{v, t, pista}] */
+        function casillasHtml(name, opciones, seleccionados) {
+            if (!opciones.length) return '<p style="color:#999;font-size:0.85rem">No hay ninguna configurada.</p>';
+            return '<div class="casillas">' + opciones.map(o =>
+                '<label class="casilla"><input type="checkbox" name="' + name + '" value="' + escapeHtml(o.v) + '"' +
+                (seleccionados.indexOf(o.v) !== -1 ? ' checked' : '') + '>' +
+                '<span>' + escapeHtml(o.t) + (o.pista ? ' <small>' + escapeHtml(o.pista) + '</small>' : '') + '</span></label>'
+            ).join('') + '</div>';
+        }
+
+        function leerCasillas(raiz, name) {
+            return [...raiz.querySelectorAll('input[name="' + name + '"]:checked')].map(i => i.value);
         }
 
         function leerFormulario(raiz, campos) {
@@ -3850,10 +4482,21 @@
 
             const cuerpo = document.createElement('div');
             cuerpo.innerHTML = '<div class="form-rejilla">' +
+                (a.arrastradoDe
+                    ? '<div class="aviso-arrastrado">Esta ficha viene del curso <strong>' + escapeHtml(a.arrastradoDe) +
+                      '</strong>. Los tutores y las observaciones son los de aquel año: revísalos. ' +
+                      'Al guardar, la marca desaparece.</div>'
+                    : '') +
                 campoHtml('apellidos', a.apellidos) +
                 campoHtml('nombre', a.nombre) +
                 campoHtml('nia', a.nia) +
                 campoHtml('modalidad_erg', a.modalidad_erg) +
+
+                '<div class="form-seccion">Coordinación</div>' +
+                campoHtml('coordina', estadoCoordinacion(a), { opciones: [
+                    { v: 'sin', t: 'Sin decidir' }, { v: 'si', t: 'Sí, coordina' }, { v: 'no', t: 'No coordina' }] }) +
+                campoHtml('motivoNoCoordina', a.motivoNoCoordina, {
+                    lista: MOTIVOS_HABITUALES, pista: 'Solo si no coordina.' }) +
 
                 '<div class="form-seccion">Conservatorio</div>' +
                 campoHtml('conservatorioId', a.conservatorioId, { opciones: opcionesFichas(state.conservatorios, '(sin conservatorio)') }) +
@@ -3869,8 +4512,39 @@
                 campoHtml('mail_tutor_erg', a.mail_tutor_erg, { tipo: 'email' }) +
 
                 '<div class="form-desfase" id="vista-desfase"></div>' +
+                '<div class="asignaturas-alumno" id="vista-asignaturas"></div>' +
                 campoHtml('observaciones', a.observaciones, { textarea: true, ancho: true }) +
                 '</div>';
+
+            // Qué asignaturas le tocan depende del centro, del curso y de la
+            // especialidad, así que se recalcula al cambiar cualquiera de los tres
+            const pintaAsignaturas = () => {
+                const centro = state.centrosPorId.get(cuerpo.querySelector('[name="centroId"]').value);
+                const simulado = {
+                    coordina: true,
+                    curso_cons: cuerpo.querySelector('[name="curso_cons"]').value,
+                    especialidad: cuerpo.querySelector('[name="especialidad"]').value,
+                    asignaturasExcluidas: [],
+                };
+                const aplicables = asignaturasDeAlumno(simulado, centro);
+                const caja = cuerpo.querySelector('#vista-asignaturas');
+                if (!centro) {
+                    caja.innerHTML = '<div class="titulo">Asignaturas en el centro</div>' +
+                        '<span style="color:#888;font-size:0.85rem">Elige un centro para verlas.</span>';
+                    return;
+                }
+                if (!aplicables.length) {
+                    caja.innerHTML = '<div class="titulo">Asignaturas en el centro</div>' +
+                        '<span style="color:#888;font-size:0.85rem">Ninguna le corresponde en ' +
+                        escapeHtml(centro.denominacion) + ' con este curso y especialidad.</span>';
+                    return;
+                }
+                caja.innerHTML = '<div class="titulo">Asignaturas en el centro</div>' +
+                    '<p style="font-size:0.8rem;color:#777;margin-bottom:0.3rem">Desmarca la que curse en el ' +
+                    'conservatorio en vez de en ' + escapeHtml(centro.denominacion) + '.</p>' +
+                    casillasHtml('asigAlumno', aplicables.map(x => ({ v: x.id, t: x.nombre })),
+                        aplicables.filter(x => (a.asignaturasExcluidas || []).indexOf(x.id) === -1).map(x => x.id));
+            };
 
             // El desfase se recalcula en vivo al cambiar cualquiera de los dos cursos
             const pintaDesfase = () => {
@@ -3888,7 +4562,10 @@
             };
             cuerpo.querySelector('[name="curso_cons"]').addEventListener('change', pintaDesfase);
             cuerpo.querySelector('[name="curso_erg"]').addEventListener('change', pintaDesfase);
+            ['curso_cons', 'centroId', 'especialidad'].forEach(n =>
+                cuerpo.querySelector('[name="' + n + '"]').addEventListener('change', pintaAsignaturas));
             pintaDesfase();
+            pintaAsignaturas();
 
             const botones = [{ texto: 'Cancelar', valor: 'cancelar' }];
             if (!nuevo) botones.push({ texto: 'Eliminar', clase: 'peligro', valor: 'eliminar' });
@@ -3917,18 +4594,37 @@
             if (salida !== 'guardar') return;
 
             const valores = leerFormulario(cuerpo, campos);
-            const cambios = campos.filter(c => String(a[c] || '') !== String(valores[c] || ''));
+            const cambios = campos.filter(c => String(a[c] || '') !== String(valores[c] || ''))
+                                  .map(c => ETIQUETAS[c] || c);
             Object.assign(a, valores);
+
+            const coordAntes = estadoCoordinacion(a);
+            const coordAhora = cuerpo.querySelector('[name="coordina"]').value;
+            if (coordAhora !== coordAntes) cambios.push('coordinación (' + TEXTO_COORD[coordAhora].toLowerCase() + ')');
+            a.coordina = coordAhora === 'si' ? true : (coordAhora === 'no' ? false : null);
+            if (a.coordina !== false) a.motivoNoCoordina = '';
+
+            // Las excepciones son las asignaturas aplicables que se han desmarcado
+            const casillas = [...cuerpo.querySelectorAll('input[name="asigAlumno"]')];
+            if (casillas.length) {
+                const excAntes = (a.asignaturasExcluidas || []).slice().sort().join(',');
+                a.asignaturasExcluidas = casillas.filter(c => !c.checked).map(c => c.value);
+                if (a.asignaturasExcluidas.slice().sort().join(',') !== excAntes) cambios.push('asignaturas en el centro');
+            }
 
             if (nuevo) {
                 state.datos.alumnado.push(a);
                 registrarHistorial('Añadido ' + [a.apellidos, a.nombre].filter(Boolean).join(', '));
             } else if (cambios.length) {
                 registrarHistorial('Editado ' + [a.apellidos, a.nombre].filter(Boolean).join(', ') +
-                    ': ' + cambios.map(c => ETIQUETAS[c] || c).join(', '));
+                    ': ' + cambios.join(', '));
             }
 
-            if (nuevo || cambios.length) {
+            // Abrir la ficha y guardarla es dar por revisado lo que venía del año pasado
+            const teniaMarca = !!a.arrastradoDe;
+            if (teniaMarca) delete a.arrastradoDe;
+
+            if (nuevo || cambios.length || teniaMarca) {
                 marcarSucio();
                 recalcular();
                 toast(nuevo ? 'Alumno/a añadido. Recuerda guardar.' : 'Ficha actualizada. Recuerda guardar.', 'ok');
@@ -3956,7 +4652,14 @@
                 campoHtml('mail_jefatura', f.mail_jefatura, { tipo: 'email' }) +
                 campoHtml('coordinador', f.coordinador) +
                 campoHtml('mail_coordinador', f.mail_coordinador, { tipo: 'email' }) +
-                '</div>';
+                '</div>' +
+                (esConservatorio ? '' :
+                    '<div class="form-seccion">Asignaturas del conservatorio que se imparten aquí</div>' +
+                    '<p style="font-size:0.82rem;color:#777;margin-bottom:0.4rem">La app calculará a qué alumnado le ' +
+                    'corresponde cada una según su curso. Se puede quitar caso por caso desde la ficha del alumno/a.</p>' +
+                    casillasHtml('asignaturas', (state.datos.config.asignaturas || []).map(x => ({
+                        v: x.id, t: x.nombre, pista: x.cursos.join(', '),
+                    })), f.asignaturas || []));
 
             const cuantos = nuevo ? 0 : state.datos.alumnado.filter(a =>
                 (esConservatorio ? a.conservatorioId : a.centroId) === f.id).length;
@@ -3997,6 +4700,12 @@
             const antes = f.denominacion;
             Object.assign(f, valores);
 
+            if (!esConservatorio) {
+                const asigAntes = (f.asignaturas || []).slice().sort().join(',');
+                f.asignaturas = leerCasillas(cuerpo, 'asignaturas');
+                if (f.asignaturas.slice().sort().join(',') !== asigAntes) cambios.push('asignaturas impartidas');
+            }
+
             if (nuevo) {
                 const usados = new Set(state.datos.centros.concat(state.datos.conservatorios).map(x => x.id));
                 f.id = idDesdeNombre(esConservatorio ? 'cons' : 'centro', f.denominacion, usados);
@@ -4012,6 +4721,295 @@
                 recalcular();
                 toast('Ficha actualizada. Recuerda guardar.', 'ok');
             }
+        }
+
+        /**
+         * Decidir la coordinación de uno en uno sobre 100 alumnos no lo hace nadie:
+         * esto actúa sobre lo que haya filtrado en ese momento y dice cuántos son.
+         */
+        async function marcarCoordinacionEnBloque() {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            const afectados = state.filtered;
+            if (!afectados.length) { toast('No hay nadie seleccionado con los filtros actuales.', 'info'); return; }
+
+            const cuenta = c => afectados.filter(a => a._coord === c).length;
+            const salida = await modal({
+                titulo: 'Marcar coordinación en bloque',
+                html: '<p>Vas a marcar los <strong>' + afectados.length + ' ' +
+                      plural(afectados.length, 'alumno/a', 'alumnos/as') + '</strong> que tienes ahora mismo en pantalla ' +
+                      (contarFiltrosActivos() ? 'con los filtros aplicados.' : '(todos, no hay filtros puestos).') + '</p>' +
+                      '<p style="margin-top:0.5rem;color:#666;font-size:0.85rem">Ahora: ' +
+                      cuenta('si') + ' coordinan · ' + cuenta('no') + ' no coordinan · ' + cuenta('sin') + ' sin decidir.</p>' +
+                      (contarFiltrosActivos() ? '' :
+                        '<p style="margin-top:0.6rem;padding:0.5rem 0.7rem;background:#fff3e0;border:1px solid #ffe082;' +
+                        'border-radius:8px;color:#e65100;font-size:0.85rem">No tienes ningún filtro puesto, así que esto ' +
+                        'afecta a <strong>todo el alumnado</strong>. Si querías solo una parte, filtra antes.</p>'),
+                botones: [
+                    { texto: 'Cancelar', valor: '' },
+                    { texto: 'Dejar sin decidir', valor: 'sin' },
+                    { texto: 'No coordinan', valor: 'no' },
+                    { texto: 'Sí coordinan', clase: 'principal', valor: 'si' },
+                ],
+            });
+            if (!salida) return;
+
+            const valor = salida === 'si' ? true : (salida === 'no' ? false : null);
+            let n = 0;
+            afectados.forEach(a => {
+                if (a.coordina !== valor) {
+                    a.coordina = valor;
+                    if (valor !== false) a.motivoNoCoordina = '';
+                    n++;
+                }
+            });
+            if (!n) { toast('Ya estaban todos así.', 'info'); return; }
+
+            registrarHistorial('Coordinación en bloque: ' + n + ' ' + plural(n, 'alumno/a', 'alumnos/as') +
+                ' marcados como «' + TEXTO_COORD[salida].toLowerCase() + '»');
+            marcarSucio();
+            recalcular();
+            toast(n + ' ' + plural(n, 'ficha actualizada', 'fichas actualizadas') + '. Recuerda guardar.', 'ok');
+        }
+
+        function contarFiltrosActivos() {
+            return FILTER_IDS.filter(id => $(id).value !== '').length;
+        }
+
+        /**
+         * Configuración. El código de centro es a la vez la clave del pestillo,
+         * así que NUNCA se pinta su valor en modo lectura: quien lo viera podría
+         * desbloquear la app.
+         */
+        async function abrirConfiguracion() {
+            if (!state.datos) return;
+            const c = state.datos.config;
+            const editable = puedeEditar();
+            const teniaCodigo = !!String(c.codigoCentro || '').trim();
+            const nCopias = state.dirHandle ? (await listarCopias()).length : null;
+
+            const fecha = state.datos.ultimaModificacion
+                ? new Date(state.datos.ultimaModificacion).toLocaleString('es-ES') : '—';
+
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML =
+                '<div class="form-seccion" style="margin-top:0">Centro</div>' +
+                '<div class="form-rejilla">' +
+                    campoHtml('nombreCentro', c.nombreCentro, { ancho: true,
+                        pista: 'Aparece al imprimir y en el nombre de los archivos que exportes.' }) +
+                    campoHtml('contactoSoporte', c.contactoSoporte, { tipo: 'email', ancho: true,
+                        pista: 'A quién escribir si la app da problemas. Lo verá quien use esta carpeta.' }) +
+                '</div>' +
+
+                '<div class="form-seccion">Curso académico</div>' +
+                '<div class="form-rejilla">' +
+                    campoHtml('curso', state.datos.curso, {
+                        pista: 'Con el formato 2026-2027.' }) +
+                '</div>' +
+
+                (state.archivo === NOMBRE_DATOS
+                    ? '<div class="form-seccion">Archivo de datos</div>' +
+                      '<p>Estos datos están en <code>' + NOMBRE_DATOS + '</code>, que no lleva el curso en el nombre ' +
+                      'y es el formato anterior. Puedes seguir usándolo, pero para trabajar por cursos conviene ' +
+                      'convertirlo a <code>' + escapeHtml(nombreArchivoCurso(state.datos.curso)) + '</code>.</p>' +
+                      (editable ? '<button class="btn-ghost" id="btn-convertir" style="margin-top:0.4rem">Convertir a archivo del curso ' +
+                        escapeHtml(state.datos.curso) + '</button>' : '')
+                    : '') +
+
+                '<div class="form-seccion">Asignaturas del conservatorio</div>' +
+                '<p style="margin-bottom:0.4rem">' + (state.datos.config.asignaturas || []).length +
+                    ' en el catálogo: ' +
+                    escapeHtml((state.datos.config.asignaturas || []).map(x => x.nombre).join(', ') || 'ninguna') + '.</p>' +
+                (editable ? '<button class="btn-ghost" id="btn-gestor-asig">Gestionar asignaturas</button>' : '') +
+
+                '<div class="form-seccion">Clave de edición</div>' +
+                (editable
+                    ? '<div class="form-rejilla">' +
+                        campoHtml('codigoCentro', c.codigoCentro, { ancho: true,
+                            pista: 'El código del centro hace también de clave para poder editar. ' +
+                                   'Si lo dejas en blanco, cualquiera que abra la app podrá modificar los datos.' }) +
+                      '</div>'
+                    : '<p style="color:#666">' + (teniaCodigo
+                        ? 'Hay una clave configurada. No se muestra: activa la edición para poder cambiarla.'
+                        : 'No hay ninguna clave configurada, así que la app se abre siempre en modo edición.') + '</p>') +
+                (teniaCodigo ? '' :
+                    '<p style="margin-top:0.5rem;padding:0.5rem 0.7rem;background:#fff3e0;border:1px solid #ffe082;' +
+                    'border-radius:8px;color:#e65100;font-size:0.85rem">Ahora mismo <strong>cualquiera que abra ' +
+                    'esta carpeta puede editar y guardar</strong>. Pon una clave si quieres que la app arranque en solo lectura.</p>') +
+
+                '<div class="form-seccion">Datos del archivo</div>' +
+                '<ul style="list-style:none;padding:0;margin:0;font-size:0.86rem;color:#555">' +
+                    '<li>Revisión <strong>' + (state.datos.rev || 0) + '</strong></li>' +
+                    '<li>Última modificación: ' + escapeHtml(fecha) +
+                        (state.datos.modificadoPor ? ' por <strong>' + escapeHtml(state.datos.modificadoPor) + '</strong>' : '') + '</li>' +
+                    '<li>' + state.datos.alumnado.length + ' alumnos/as · ' + state.datos.centros.length +
+                        ' centros · ' + state.datos.conservatorios.length + ' conservatorios</li>' +
+                    '<li>' + escapeHtml(state.origen) + '</li>' +
+                    (nCopias === null ? '' : '<li>' + nCopias + ' ' + plural(nCopias, 'copia de seguridad', 'copias de seguridad') + '</li>') +
+                '</ul>';
+
+            const btnAsig = cuerpo.querySelector('#btn-gestor-asig');
+            if (btnAsig) btnAsig.addEventListener('click', gestorAsignaturas);
+
+            const btnConv = cuerpo.querySelector('#btn-convertir');
+            if (btnConv) btnConv.addEventListener('click', async () => {
+                document.querySelectorAll('.modal-fondo').forEach(m => m.remove());
+                await convertirArchivoACurso();
+            });
+
+            const salida = await modal({
+                titulo: 'Configuración',
+                nodo: cuerpo,
+                ancho: true,
+                botones: editable
+                    ? [{ texto: 'Cancelar', valor: false }, { texto: 'Guardar cambios', clase: 'principal', valor: true }]
+                    : [{ texto: 'Cerrar', valor: false }],
+            });
+            if (salida !== true) return;
+
+            const v = leerFormulario(cuerpo, ['nombreCentro', 'contactoSoporte', 'curso', 'codigoCentro']);
+
+            if (!/^\d{4}-\d{4}$/.test(v.curso)) {
+                toast('El curso tiene que tener el formato 2026-2027.', 'error');
+                return;
+            }
+            const [a1, a2] = v.curso.split('-').map(Number);
+            if (a2 !== a1 + 1) {
+                toast('Los dos años del curso tienen que ser consecutivos.', 'error');
+                return;
+            }
+
+            // Vaciar la clave abre la app a todo el mundo: hay que decirlo
+            if (teniaCodigo && !v.codigoCentro.trim()) {
+                const ok = await confirmar('Vas a quitar la clave',
+                    'Si la dejas en blanco, la app dejará de arrancar en solo lectura y ' +
+                    '<strong>cualquiera que abra esta carpeta podrá modificar y guardar los datos</strong>.',
+                    'Quitar la clave', 'peligro');
+                if (!ok) return;
+            }
+
+            const cambios = [];
+            if (state.datos.curso !== v.curso) { cambios.push('curso académico'); state.datos.curso = v.curso; }
+            ['nombreCentro', 'contactoSoporte'].forEach(k => {
+                if ((c[k] || '') !== v[k]) { cambios.push(ETIQUETAS[k].toLowerCase()); c[k] = v[k]; }
+            });
+            if ((c.codigoCentro || '') !== v.codigoCentro) {
+                cambios.push(v.codigoCentro.trim() ? 'clave de edición' : 'clave de edición (retirada)');
+                c.codigoCentro = v.codigoCentro;
+                // Quien acaba de poner la clave no debe quedarse fuera en esta sesión
+                if (v.codigoCentro.trim()) {
+                    try { sessionStorage.setItem(SS_MODO, 'edicion'); } catch (e) { /* da igual */ }
+                }
+            }
+
+            if (!cambios.length) return;
+            registrarHistorial('Configuración: ' + cambios.join(', '));
+            marcarSucio();
+            actualizarBarraEstado();
+            renderView();
+            toast('Configuración actualizada. Recuerda guardar.', 'ok');
+        }
+
+        async function editarAsignatura(asig) {
+            const nueva = !asig;
+            const x = asig || { id: '', nombre: '', cursos: [], excluyeEspecialidades: [] };
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML =
+                '<div class="form-rejilla">' +
+                    campoHtml('nombre', x.nombre, { ancho: true }) +
+                    campoHtml('excluyeEspecialidades', (x.excluyeEspecialidades || []).join(', '), { ancho: true,
+                        pista: 'Especialidades que NO la cursan, separadas por comas. Por ejemplo, Piano Complementario no la hacen PIANO, ÓRGANO ni CLAVE.' }) +
+                '</div>' +
+                '<div class="form-seccion">Cursos del conservatorio en los que se imparte</div>' +
+                casillasHtml('cursos', CONS_ORDER.map(c => ({ v: c, t: c })), x.cursos || []);
+
+            const botones = [{ texto: 'Cancelar', valor: 'cancelar' }];
+            if (!nueva) botones.push({ texto: 'Eliminar', clase: 'peligro', valor: 'eliminar' });
+            botones.push({ texto: nueva ? 'Añadir' : 'Guardar', clase: 'principal', valor: 'guardar' });
+
+            const salida = await modal({
+                titulo: nueva ? 'Nueva asignatura' : 'Asignatura: ' + x.nombre,
+                nodo: cuerpo, botones,
+            });
+
+            const lista = state.datos.config.asignaturas;
+            if (salida === 'eliminar') {
+                const enCentros = state.centros.filter(c => (c.asignaturas || []).indexOf(x.id) !== -1).length;
+                const ok = await confirmar('Eliminar asignatura',
+                    'Se va a eliminar <strong>' + escapeHtml(x.nombre) + '</strong> del catálogo.' +
+                    (enCentros ? '<br><br>Está marcada en <strong>' + enCentros + ' ' +
+                        plural(enCentros, 'centro', 'centros') + '</strong>; también se les quitará.' : ''),
+                    'Eliminar', 'peligro');
+                if (!ok) return false;
+                lista.splice(lista.indexOf(x), 1);
+                state.centros.forEach(c => {
+                    c.asignaturas = (c.asignaturas || []).filter(id => id !== x.id);
+                });
+                state.alumnado.forEach(a => {
+                    a.asignaturasExcluidas = (a.asignaturasExcluidas || []).filter(id => id !== x.id);
+                });
+                registrarHistorial('Eliminada la asignatura ' + x.nombre);
+                marcarSucio();
+                recalcular();
+                return true;
+            }
+            if (salida !== 'guardar') return false;
+
+            const v = leerFormulario(cuerpo, ['nombre', 'excluyeEspecialidades']);
+            if (!v.nombre) { toast('La asignatura necesita un nombre.', 'error'); return false; }
+            x.nombre = v.nombre;
+            x.excluyeEspecialidades = v.excluyeEspecialidades
+                ? v.excluyeEspecialidades.split(',').map(s => normalizeText(s)).filter(Boolean) : [];
+            x.cursos = leerCasillas(cuerpo, 'cursos');
+
+            if (nueva) {
+                const usados = new Set(lista.map(i => i.id));
+                x.id = idDesdeNombre('asig', x.nombre, usados);
+                lista.push(x);
+                registrarHistorial('Añadida la asignatura ' + x.nombre);
+            } else {
+                registrarHistorial('Editada la asignatura ' + x.nombre);
+            }
+            marcarSucio();
+            recalcular();
+            return true;
+        }
+
+        function gestorAsignaturas() {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            const cuerpo = document.createElement('div');
+            const pinta = () => {
+                const lista = state.datos.config.asignaturas || [];
+                let h = '<p style="color:#666;margin-bottom:0.6rem">Asignaturas del conservatorio que pueden impartirse ' +
+                        'en los centros de enseñanza general. Después se marca en cada centro cuáles se dan allí.</p>' +
+                        '<ul class="lista-fichas">';
+                if (!lista.length) h += '<li style="color:#999">No hay ninguna.</li>';
+                lista.forEach(x => {
+                    const nCentros = state.centros.filter(c => (c.asignaturas || []).indexOf(x.id) !== -1).length;
+                    h += '<li><span class="nom">' + escapeHtml(x.nombre) +
+                         '<br><small style="color:#888">' + escapeHtml(x.cursos.join(', ') || 'sin cursos') +
+                         (x.excluyeEspecialidades.length ? ' · excepto ' + escapeHtml(x.excluyeEspecialidades.join(', ')) : '') +
+                         '</small></span>' +
+                         '<span class="cuenta">' + nCentros + ' ' + plural(nCentros, 'centro', 'centros') + '</span>' +
+                         '<button class="btn-editar" data-asig="' + escapeHtml(x.id) + '">Editar</button></li>';
+                });
+                h += '</ul><button class="btn-ghost" data-nueva-asig="1" style="margin-top:0.6rem">+ Añadir asignatura</button>';
+                cuerpo.innerHTML = h;
+            };
+            pinta();
+
+            cuerpo.addEventListener('click', async e => {
+                const ed = e.target.closest('[data-asig]');
+                const nueva = e.target.closest('[data-nueva-asig]');
+                if (ed) {
+                    const x = (state.datos.config.asignaturas || []).find(i => i.id === ed.dataset.asig);
+                    if (x) { await editarAsignatura(x); pinta(); }
+                } else if (nueva) {
+                    await editarAsignatura(null);
+                    pinta();
+                }
+            });
+
+            modal({ titulo: 'Asignaturas del conservatorio', nodo: cuerpo, ancho: true });
         }
 
         function gestorFichas() {
@@ -4064,7 +5062,9 @@
 
             $('be-punto').className = 'be-punto' + (state.sucio ? ' sucia' : (state.dirHandle ? ' conectada' : ''));
 
-            let txt = state.origen;
+            const centro = state.datos ? normalizeText(state.datos.config.nombreCentro) : '';
+            let txt = (centro ? centro + ' · ' : '') +
+                      (state.datos && state.datos.curso ? state.datos.curso + ' · ' : '') + state.origen;
             if (state.dirHandle) txt += state.sucio ? ' · cambios sin guardar' : ' · todo guardado';
             else txt += ' · sin carpeta: al guardar se descargará el archivo';
             $('be-texto').innerHTML = escapeHtml(txt) +
@@ -4072,6 +5072,10 @@
 
             // El control de carpeta tiene que estar SIEMPRE a mano: si solo vive en
             // la pantalla de inicio, quien abre un Excel se queda sin salida.
+            const btnCursos = $('btn-cursos');
+            btnCursos.hidden = !state.dirHandle;
+            btnCursos.textContent = 'Curso ' + ((state.datos && state.datos.curso) || '');
+
             const btnCarpeta = $('btn-carpeta');
             btnCarpeta.hidden = !state.soporteFSA;
             btnCarpeta.textContent = state.dirHandle ? 'Cambiar carpeta' : 'Conectar carpeta para guardar';
@@ -4180,6 +5184,8 @@
         });
         $('btn-guardar').addEventListener('click', () => guardar());
         $('btn-modo').addEventListener('click', () => { puedeEditar() ? bloquear() : pedirCodigo(); });
+        $('btn-cursos').addEventListener('click', gestorCursos);
+        $('btn-config').addEventListener('click', abrirConfiguracion);
         $('btn-historial').addEventListener('click', verHistorial);
         $('btn-copias').addEventListener('click', verCopias);
 
@@ -4232,6 +5238,7 @@
             if (!puedeEditar()) { avisoSoloLectura(); return; }
             fileInput.click();
         });
+        $('btn-coordinacion').addEventListener('click', marcarCoordinacionEnBloque);
         $('btn-nuevo-alumno').addEventListener('click', () => editarAlumno(null));
         $('btn-fichas').addEventListener('click', gestorFichas);
 

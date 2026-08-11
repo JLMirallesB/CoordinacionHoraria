@@ -26,8 +26,11 @@ nada. Eso sí, si la carpeta ya tiene datos no se sobrescriben: primero se abren
 | | |
 |---|---|
 | `Coordinacion Horaria.html` | La aplicación. Es lo único que se abre. |
-| `datos/coordinacion.json` | **Los datos.** No lo abras ni lo muevas a mano. |
-| `datos/copias/` | Copias de seguridad automáticas: una por cada vez que alguien guarda. Se conservan las 30 últimas. |
+| `datos/coordinacion-2026-2027.json` | **Los datos del curso.** Hay uno por curso. No los abras ni los muevas a mano. |
+| `datos/copias/` | Copias de seguridad automáticas: una por cada vez que alguien guarda. Se conservan las 30 últimas de cada curso. |
+
+Se abre siempre el curso más reciente. Para consultar uno anterior, usa el botón **Curso** de la barra
+de arriba. Los cursos pasados no se tocan al trabajar en el actual.
 
 La regla es sencilla: **fuera se abre, dentro de `datos/` no se toca.**
 
@@ -53,6 +56,18 @@ Para evitar sustos, avisad por el chat antes de sentaros a hacer cambios grandes
 - **"El archivo está dañado"**: la app ofrece la copia de seguridad buena más reciente. Acéptala y guarda.
 - **Has borrado algo sin querer**: botón **Copias**, elige la de antes del error y restaura. No se escribe nada hasta que pulses Guardar.
 - **Quieres ver quién cambió qué**: botón **Historial**.
+
+## En septiembre
+
+Para empezar el curso nuevo: botón **Curso** → **Empezar curso**. La app trae al alumnado del año
+anterior y propone subirlo de curso; tú desmarcas a quien se va y quitas "sube" a quien repite. A
+quien termina 6º EPM o 2º de Bachillerato lo desmarca ella sola.
+
+Después quedan dos cosas por revisar, y la app te avisa de las dos: **quién entra en la coordinación**
+este año (vuelve a estar sin decidir a propósito) y **los tutores y observaciones**, que se conservan
+del año pasado marcados hasta que los confirmes.
+
+El archivo del curso anterior no se toca.
 
 ## Modo solo lectura
 
