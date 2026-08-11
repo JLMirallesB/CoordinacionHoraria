@@ -90,6 +90,61 @@
 
         .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
 
+        /* Pantalla de inicio */
+        .inicio.hidden { display: none; }
+        .inicio-principal {
+            background: white;
+            border-radius: 12px;
+            padding: 2.2rem 2rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .inicio-principal .icon { font-size: 2.5rem; margin-bottom: 0.4rem; }
+        .inicio-principal h2 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+        .inicio-principal p { color: #666; font-size: 0.9rem; max-width: 520px; margin: 0 auto; }
+        .inicio-botones {
+            display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;
+            margin-top: 1.1rem; align-items: center;
+        }
+        .inicio-nota {
+            margin-top: 1rem !important;
+            background: #fff3e0; border: 1px solid #ffe082;
+            color: #e65100 !important; border-radius: 8px;
+            padding: 0.6rem 0.9rem; font-size: 0.85rem !important;
+        }
+        .inicio-separador {
+            display: flex; align-items: center; gap: 0.8rem;
+            margin: 1.4rem 0 1rem; color: #999; font-size: 0.8rem;
+        }
+        .inicio-separador::before, .inicio-separador::after {
+            content: ''; flex: 1; height: 1px; background: #d8dce4;
+        }
+
+        /* Barra de estado */
+        .barra-estado {
+            display: none;
+            position: sticky; top: 0; z-index: 500;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 0.6rem 1rem;
+            margin-bottom: 1.2rem;
+            align-items: center; gap: 0.8rem; flex-wrap: wrap;
+        }
+        .barra-estado.visible { display: flex; }
+        .be-origen { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 200px; font-size: 0.82rem; color: #555; }
+        .be-punto { width: 9px; height: 9px; border-radius: 50%; background: #9e9e9e; flex-shrink: 0; }
+        .be-punto.conectada { background: #4caf50; }
+        .be-punto.sucia { background: #ff9800; }
+        .be-acciones { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        #btn-guardar[disabled] { background: #b9c0d4; border-color: #b9c0d4; cursor: default; }
+        body.sucio #btn-guardar { animation: late 1.6s ease-in-out infinite; }
+        @keyframes late { 0%,100% { box-shadow: 0 0 0 0 rgba(67,97,238,.5); } 50% { box-shadow: 0 0 0 5px rgba(67,97,238,0); } }
+        .be-modo-lectura { color: #e65100; font-weight: 600; }
+
+        /* En solo lectura desaparecen los controles de edición */
+        body.lectura .solo-edicion { display: none !important; }
+
         /* Upload zone */
         .upload-zone {
             border: 2px dashed #b0b8c8;
@@ -956,6 +1011,152 @@
         .footer-changelog-btn:hover { background: rgba(255,255,255,0.25) !important; }
         .footer-separator { width: 1px; height: 14px; background: #444; }
 
+        /* Modales genéricos */
+        .modal-fondo {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1200;
+            display: flex; justify-content: center; align-items: center;
+            padding: 1.5rem;
+        }
+        .modal-caja {
+            background: white;
+            border-radius: 12px;
+            max-width: 640px; width: 100%;
+            max-height: 86vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+        .modal-caja.ancho { max-width: 860px; }
+        .modal-cab {
+            padding: 1rem 1.4rem 0.7rem;
+            border-bottom: 1px solid #eee;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .modal-cab h3 { font-size: 1.05rem; flex: 1; }
+        .modal-cerrar {
+            background: none; border: none; font-size: 1.4rem; color: #888;
+            cursor: pointer; line-height: 1; padding: 0 0.2rem;
+        }
+        .modal-cerrar:hover { color: #333; }
+        .modal-cuerpo { padding: 1rem 1.4rem; overflow-y: auto; font-size: 0.9rem; }
+        .modal-pie {
+            padding: 0.8rem 1.4rem;
+            border-top: 1px solid #eee;
+            display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;
+        }
+        .btn-modal {
+            padding: 0.5rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #d0d5dd;
+            background: white; color: #444;
+            font-size: 0.88rem; cursor: pointer;
+        }
+        .btn-modal:hover { background: #f4f6fa; }
+        .btn-modal.principal { background: #4361ee; border-color: #4361ee; color: white; }
+        .btn-modal.principal:hover { background: #3a56d4; }
+        .btn-modal.peligro { background: #c62828; border-color: #c62828; color: white; }
+        .btn-modal.peligro:hover { background: #a91d1d; }
+
+        /* Formularios de las fichas */
+        .form-rejilla {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem 0.9rem;
+        }
+        .campo { display: flex; flex-direction: column; }
+        .campo.ancho { grid-column: 1 / -1; }
+        .campo label {
+            font-size: 0.72rem; font-weight: 600; color: #666;
+            text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.2rem;
+        }
+        .campo input, .campo select, .campo textarea {
+            padding: 0.45rem 0.6rem;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: white;
+            color: inherit;
+        }
+        .campo textarea { resize: vertical; min-height: 60px; }
+        .campo input:focus, .campo select:focus, .campo textarea:focus {
+            outline: none; border-color: #4361ee; box-shadow: 0 0 0 3px rgba(67,97,238,0.12);
+        }
+        .campo .pista { font-size: 0.72rem; color: #999; margin-top: 0.15rem; }
+        .form-seccion {
+            grid-column: 1 / -1;
+            font-size: 0.72rem; font-weight: 700; color: #4361ee;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 1px solid #eee; padding-bottom: 0.25rem; margin-top: 0.4rem;
+        }
+        .form-desfase {
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            padding: 0.5rem 0.7rem;
+            border-radius: 8px;
+            background: #f4f6fa;
+        }
+        .btn-editar {
+            background: none;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            color: #555;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .btn-editar:hover { background: #eef1ff; border-color: #4361ee; color: #4361ee; }
+        .btn-alumno-editar {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 1.5px solid #b0b8c8;
+            background: white; color: #888;
+            font-size: 0.68rem; cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1; padding: 0;
+        }
+        .btn-alumno-editar:hover { border-color: #4361ee; color: #4361ee; background: #eef1ff; }
+
+        /* Gestor de centros */
+        .lista-fichas { list-style: none; padding: 0; margin: 0; }
+        .lista-fichas li {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.45rem 0; border-bottom: 1px solid #f0f0f0;
+        }
+        .lista-fichas .nom { flex: 1; }
+        .lista-fichas .cuenta { font-size: 0.78rem; color: #888; white-space: nowrap; }
+
+        /* Avisos flotantes */
+        #avisos {
+            position: fixed; right: 1rem; bottom: 1rem;
+            z-index: 1400;
+            display: flex; flex-direction: column; gap: 0.5rem;
+            max-width: min(420px, calc(100vw - 2rem));
+        }
+        .aviso {
+            background: #1a1a2e; color: white;
+            padding: 0.7rem 1rem; border-radius: 8px;
+            font-size: 0.86rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+            animation: aviso-entra 0.18s ease-out;
+        }
+        .aviso.ok { background: #2e7d32; }
+        .aviso.error { background: #c62828; }
+        .aviso.info { background: #37474f; }
+        @keyframes aviso-entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        /* Informe de importación */
+        .informe-cifras { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+        .informe-cifra { text-align: center; }
+        .informe-cifra .n { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; display: block; }
+        .informe-cifra .et { font-size: 0.75rem; color: #777; }
+        .tabla-campos { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+        .tabla-campos th, .tabla-campos td { padding: 0.25rem 0.5rem; border-bottom: 1px solid #f0f0f0; text-align: left; }
+        .tabla-campos td.n { text-align: right; font-variant-numeric: tabular-nums; }
+        .tabla-campos tr.vacio td { color: #c62828; font-weight: 600; }
+
         /* Responsive */
         @media (max-width: 600px) {
             .container { padding: 1rem; }
@@ -1041,12 +1242,42 @@
     <div class="container">
         <div class="error-msg" id="error-msg" role="alert"></div>
 
-        <div class="upload-zone" id="upload-zone">
-            <div class="icon" aria-hidden="true">📁</div>
-            <p><strong>Arrastra aquí tu archivo Excel</strong> o haz clic para seleccionarlo</p>
-            <p style="font-size:0.8rem;color:#888;margin-top:0.3rem">.xlsx con hojas "Centros", "Conservatorios" y "Alumnado"</p>
-            <button class="btn-upload" id="btn-upload">Seleccionar archivo</button>
-            <input type="file" id="file-input" accept=".xlsx,.xlsm" aria-label="Archivo Excel">
+        <div class="inicio" id="upload-zone">
+            <div class="inicio-principal">
+                <div class="icon" aria-hidden="true">📂</div>
+                <h2>Abre tu carpeta de trabajo</h2>
+                <p>Los datos se guardan en un archivo dentro de la carpeta que elijas, normalmente la carpeta compartida de OneDrive.</p>
+                <div class="inicio-botones">
+                    <button class="btn-upload" id="btn-conectar">Elegir carpeta</button>
+                    <button class="btn-ghost" id="btn-reconectar" hidden>↻ Reconectar con la última carpeta</button>
+                </div>
+                <p class="inicio-nota" id="inicio-nota-fsa" hidden>
+                    Este navegador no puede escribir en carpetas. <strong>Abre la app con Chrome o Edge</strong>
+                    para poder guardar; aquí solo podrás consultar.
+                </p>
+            </div>
+
+            <div class="inicio-separador"><span>o solo consultar, sin guardar nada</span></div>
+
+            <div class="upload-zone" id="drop-zone">
+                <p><strong>Arrastra aquí un Excel o un archivo de datos</strong> o haz clic para seleccionarlo</p>
+                <p style="font-size:0.8rem;color:#888;margin-top:0.3rem">.xlsx con hojas "Centros", "Conservatorios" y "Alumnado", o un .json de la app</p>
+                <button class="btn-upload" id="btn-upload">Seleccionar archivo</button>
+                <input type="file" id="file-input" accept=".xlsx,.xlsm,.json" aria-label="Archivo Excel o de datos">
+            </div>
+        </div>
+
+        <div class="barra-estado" id="barra-estado">
+            <div class="be-origen">
+                <span class="be-punto" id="be-punto"></span>
+                <span id="be-texto"></span>
+            </div>
+            <div class="be-acciones">
+                <button class="btn-ghost" id="btn-modo"></button>
+                <button class="btn-ghost" id="btn-historial">Historial</button>
+                <button class="btn-ghost" id="btn-copias">Copias</button>
+                <button class="btn-action primary" id="btn-guardar">Guardar</button>
+            </div>
         </div>
 
         <div class="print-header" id="print-header"></div>
@@ -1139,7 +1370,10 @@
                 <button class="btn-ghost" id="btn-collapse-all">Contraer todo</button>
             </div>
             <div class="toggle-separator" aria-hidden="true"></div>
-            <button class="btn-ghost" id="btn-reload">Cargar otro Excel</button>
+            <button class="btn-ghost solo-edicion" id="btn-nuevo-alumno">+ Alumno/a</button>
+            <button class="btn-ghost solo-edicion" id="btn-fichas">Centros</button>
+            <button class="btn-ghost solo-edicion" id="btn-importar">Importar Excel</button>
+            <button class="btn-ghost" id="btn-reload">Cerrar</button>
         </div>
 
         <div class="warnings-box" id="warnings-box"></div>
@@ -1180,6 +1414,22 @@
         <div class="changelog-modal">
             <button class="changelog-close" id="changelog-close" aria-label="Cerrar">&times;</button>
             <h3>Novedades</h3>
+            <p style="font-size:0.72rem;color:#999;margin:-0.7rem 0 0.9rem" id="changelog-build"></p>
+            <div class="changelog-version">
+                <h4>v2.0 &mdash; 11 de agosto de 2026</h4>
+                <ul>
+                    <li><strong>La app ya escribe los datos.</strong> Deja de ser un visor: abres una carpeta de trabajo y todo se guarda en ella, en un archivo <code>coordinacion.json</code></li>
+                    <li>Se puede <strong>editar todo</strong>: alta, modificaci&oacute;n y baja de alumnado, y fichas de centros y conservatorios</li>
+                    <li><strong>Copias de seguridad autom&aacute;ticas</strong>: una por cada guardado, se conservan las 30 &uacute;ltimas, y se pueden restaurar desde la propia app</li>
+                    <li>Si el archivo de datos se estropea, la app <strong>ofrece la &uacute;ltima copia buena</strong> al abrirlo</li>
+                    <li><strong>Historial de cambios</strong> dentro del archivo: qui&eacute;n cambi&oacute; qu&eacute; y cu&aacute;ndo</li>
+                    <li><strong>Aviso de conflicto</strong>: si otra persona ha guardado mientras trabajabas, la app te lo dice antes de sobrescribir y te deja elegir</li>
+                    <li><strong>Pestillo de edici&oacute;n</strong>: si configuras un c&oacute;digo de centro, la app abre en solo lectura para no tocar nada sin querer</li>
+                    <li>El Excel pasa a ser solo la <strong>puerta de entrada</strong>: se importa con un informe de comprobaci&oacute;n previo y tu archivo nunca se modifica</li>
+                    <li>Centros y conservatorios tienen <strong>identificador propio</strong>: renombrar uno ya no desconecta a su alumnado</li>
+                    <li>El guardado es <strong>siempre expl&iacute;cito</strong> (bot&oacute;n o Ctrl+S) y avisa si cierras con cambios pendientes</li>
+                </ul>
+            </div>
             <div class="changelog-version">
                 <h4>v1.1 &mdash; 11 de agosto de 2026</h4>
                 <ul>
@@ -1218,6 +1468,8 @@
         </div>
     </div>
 
+    <div id="avisos" aria-live="polite"></div>
+
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-author">
@@ -1225,7 +1477,7 @@
                 <br><a href="mailto:jl.mirallesbono@edu.gva.es" style="font-size:0.78rem">jl.mirallesbono@edu.gva.es</a> <span style="font-size:0.75rem;opacity:0.6">— sugerencias y problemas</span>
             </div>
             <div class="footer-links">
-                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v1.1</a>
+                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.0</a>
                 <span class="footer-separator"></span>
                 <a href="https://elpulpoenelvaso.jlmirall.es" target="_blank" rel="noopener">Blog</a>
                 <span class="footer-separator"></span>
@@ -1237,10 +1489,14 @@
     </footer>
 
     <script>
+    // Lo sella herramientas/publicar.sh con `git describe` al publicar en OneDrive,
+    // para saber exactamente qué versión tiene quien reporta un problema.
+    window.COORDINACION_BUILD = 'desarrollo'; /*BUILD*/
+
     (function() {
         'use strict';
 
-        const APP_VERSION = '1.1';
+        const APP_VERSION = '2.0';
 
         const EQUIVALENCIAS = [
             { cons: '1º EEM', erg: '3º Primaria', idx: 0 },
@@ -1270,11 +1526,25 @@
         // Estado
         // ---------------------------------------------------------------
         const state = {
-            centros: [],
+            datos: null,           // el JSON completo; fuente de la verdad
+            centros: [],           // atajos a state.datos.*, para no cambiar toda la vista
             conservatorios: [],
             alumnado: [],
-            fileName: '',
+            origen: '',            // texto de dónde salieron los datos (carpeta o archivo)
             loaded: false,
+
+            // Carpeta de trabajo (File System Access)
+            dirHandle: null,
+            soporteFSA: ('showDirectoryPicker' in window),
+            sucio: false,
+            cargadoRev: null,      // rev del archivo cuando se cargó
+            cargadoMtime: null,    // lastModified del archivo cuando se cargó
+            usuario: '',
+
+            // Pestillo
+            modo: 'lectura',       // lectura | edicion
+
+            // Vista
             groupMode: 'erg',      // erg | conservatorio
             viewMode: 'cons',      // cons | erg  (agrupación de cursos)
             displayMode: 'cards',  // cards | tabla
@@ -1283,6 +1553,8 @@
             expandedCursos: new Set(),
             filtered: [],
         };
+
+        try { state.usuario = localStorage.getItem('coordinacion-usuario') || ''; } catch (e) { /* sin localStorage */ }
 
         const FILTER_IDS = ['filter-tipo-ens', 'filter-curso-cons', 'filter-especialidad',
                             'filter-curso-erg', 'filter-centro', 'filter-conservatorio', 'filter-desfase'];
@@ -1328,6 +1600,85 @@
         }
 
         function plural(n, uno, varios) { return n === 1 ? uno : varios; }
+
+        /** Aviso flotante. tipo: ok | error | info */
+        function toast(msg, tipo) {
+            const cont = $('avisos');
+            const el = document.createElement('div');
+            el.className = 'aviso ' + (tipo || 'info');
+            el.setAttribute('role', 'status');
+            el.textContent = msg;
+            cont.appendChild(el);
+            setTimeout(() => el.remove(), tipo === 'error' ? 9000 : 4000);
+        }
+
+        /**
+         * Modal genérico. botones: [{texto, clase, valor}]. Devuelve una promesa
+         * con el valor del botón pulsado, o null si se cierra.
+         */
+        function modal(opciones) {
+            return new Promise(resolve => {
+                const fondo = document.createElement('div');
+                fondo.className = 'modal-fondo';
+                fondo.innerHTML =
+                    '<div class="modal-caja' + (opciones.ancho ? ' ancho' : '') + '" role="dialog" aria-modal="true">' +
+                        '<div class="modal-cab"><h3></h3>' +
+                            (opciones.sinCerrar ? '' : '<button class="modal-cerrar" aria-label="Cerrar">&times;</button>') +
+                        '</div>' +
+                        '<div class="modal-cuerpo"></div>' +
+                        '<div class="modal-pie"></div>' +
+                    '</div>';
+                fondo.querySelector('h3').textContent = opciones.titulo || '';
+
+                const cuerpo = fondo.querySelector('.modal-cuerpo');
+                if (opciones.nodo) cuerpo.appendChild(opciones.nodo);
+                else cuerpo.innerHTML = opciones.html || '';
+
+                let cerrado = false;
+                const cerrar = (valor) => {
+                    if (cerrado) return;
+                    cerrado = true;
+                    document.removeEventListener('keydown', onKey);
+                    fondo.remove();
+                    resolve(valor);
+                };
+
+                const pie = fondo.querySelector('.modal-pie');
+                (opciones.botones || [{ texto: 'Cerrar', valor: null }]).forEach(b => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-modal ' + (b.clase || '');
+                    btn.textContent = b.texto;
+                    btn.addEventListener('click', () => {
+                        if (b.antesDeCerrar && b.antesDeCerrar(fondo) === false) return;
+                        cerrar(b.valor);
+                    });
+                    pie.appendChild(btn);
+                });
+
+                const btnCerrar = fondo.querySelector('.modal-cerrar');
+                if (btnCerrar) btnCerrar.addEventListener('click', () => cerrar(null));
+                if (!opciones.sinCerrar) {
+                    fondo.addEventListener('click', e => { if (e.target === fondo) cerrar(null); });
+                }
+                function onKey(e) { if (e.key === 'Escape' && !opciones.sinCerrar) cerrar(null); }
+                document.addEventListener('keydown', onKey);
+
+                document.body.appendChild(fondo);
+                const foco = fondo.querySelector('input, select, textarea, .btn-modal.principal, .btn-modal');
+                if (foco) setTimeout(() => foco.focus(), 40);
+            });
+        }
+
+        function confirmar(titulo, mensajeHtml, textoAceptar, clase) {
+            return modal({
+                titulo,
+                html: mensajeHtml,
+                botones: [
+                    { texto: 'Cancelar', valor: false },
+                    { texto: textoAceptar || 'Aceptar', clase: clase || 'principal', valor: true },
+                ],
+            }).then(v => v === true);
+        }
 
         // ---------------------------------------------------------------
         // Lectura del Excel
@@ -1410,7 +1761,7 @@
             return -1;
         }
 
-        function parseExcel(data) {
+        function leerLibro(data) {
             const wb = XLSX.read(data, { type: 'array' });
             const names = wb.SheetNames;
 
@@ -1443,6 +1794,173 @@
         }
 
         // ---------------------------------------------------------------
+        // Modelo de datos (el JSON manda; el Excel solo entra y sale)
+        // ---------------------------------------------------------------
+        const CAMPOS_ALUMNO = ['nia', 'apellidos', 'nombre', 'curso_cons', 'especialidad', 'curso_erg',
+                               'modalidad_erg', 'tutor_cons', 'mail_tutor_cons', 'tutor_erg', 'mail_tutor_erg',
+                               'observaciones'];
+        const CAMPOS_CENTRO = ['tipo', 'denominacion', 'distancia_km', 'distancia_min', 'mail_contacto',
+                               'director', 'mail_director', 'jefe_estudios', 'mail_jefatura',
+                               'coordinador', 'mail_coordinador'];
+
+        function idAleatorio(prefijo) {
+            return prefijo + '-' + Math.random().toString(36).slice(2, 10);
+        }
+
+        /** Id legible y estable a partir del nombre; los ids no cambian aunque se renombre después. */
+        function idDesdeNombre(prefijo, texto, usados) {
+            const base = normKey(texto).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'sin-nombre';
+            let id = prefijo + '-' + base;
+            let n = 2;
+            while (usados.has(id)) id = prefijo + '-' + base + '-' + (n++);
+            usados.add(id);
+            return id;
+        }
+
+        function datosVacios() {
+            const y = new Date().getFullYear();
+            return {
+                app: 'coordinacion-horaria',
+                version: 1,
+                rev: 0,
+                ultimaModificacion: new Date().toISOString(),
+                modificadoPor: '',
+                config: { nombreCentro: '', codigoCentro: '', curso: y + '-' + (y + 1) },
+                centros: [],
+                conservatorios: [],
+                alumnado: [],
+                historial: [],
+            };
+        }
+
+        /** Rellena lo que falte y repara datos de versiones anteriores. */
+        function migrarDatos(d) {
+            if (!d || typeof d !== 'object') throw new Error('El archivo de datos no tiene el formato esperado.');
+            if (!d.config) d.config = {};
+            ['centros', 'conservatorios', 'alumnado', 'historial'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+            d.app = d.app || 'coordinacion-horaria';
+            d.version = d.version || 1;
+            d.rev = d.rev || 0;
+
+            const usados = new Set();
+            [['centros', 'centro'], ['conservatorios', 'cons']].forEach(([clave, prefijo]) => {
+                d[clave].forEach(f => {
+                    if (!f.id) f.id = idDesdeNombre(prefijo, f.denominacion, usados);
+                    else usados.add(f.id);
+                    CAMPOS_CENTRO.forEach(c => { if (f[c] == null) f[c] = ''; });
+                });
+            });
+
+            // Un JSON antiguo podría referenciar por nombre: se resuelve a id
+            const porNombre = (lista) => {
+                const m = new Map();
+                lista.forEach(f => { const k = normKey(f.denominacion); if (k && !m.has(k)) m.set(k, f.id); });
+                return m;
+            };
+            const centrosNombre = porNombre(d.centros);
+            const consNombre = porNombre(d.conservatorios);
+
+            d.alumnado.forEach(a => {
+                if (!a.id) a.id = idAleatorio('alu');
+                CAMPOS_ALUMNO.forEach(c => { if (a[c] == null) a[c] = ''; });
+                if (!a.centroId && a.centro_erg) a.centroId = centrosNombre.get(normKey(a.centro_erg)) || '';
+                if (!a.conservatorioId && a.conservatorio) a.conservatorioId = consNombre.get(normKey(a.conservatorio)) || '';
+                if (a.centroId == null) a.centroId = '';
+                if (a.conservatorioId == null) a.conservatorioId = '';
+                delete a.centro_erg;
+                delete a.conservatorio;
+            });
+            return d;
+        }
+
+        /**
+         * Convierte un libro de Excel en el JSON de la app.
+         * Devuelve también un informe para que el usuario verifique la importación
+         * ANTES de que se escriba nada: una importación que no da error puede
+         * perder datos igualmente.
+         */
+        function importarLibro(libro) {
+            const datos = datosVacios();
+            const usados = new Set();
+            const informe = {
+                alumnos: 0, centros: 0, conservatorios: 0,
+                centrosCreados: [], consCreados: [],
+                emparejadosAprox: [],
+                sinCentro: 0, sinConservatorio: 0,
+                campos: [],
+            };
+
+            const dirCentros = new Map();
+            libro.centros.forEach(fila => {
+                const ficha = { id: idDesdeNombre('centro', fila.denominacion, usados) };
+                CAMPOS_CENTRO.forEach(c => { ficha[c] = fila[c] || ''; });
+                datos.centros.push(ficha);
+                const k = normKey(ficha.denominacion);
+                if (k && !dirCentros.has(k)) dirCentros.set(k, ficha);
+            });
+
+            const dirCons = new Map();
+            libro.conservatorios.forEach(fila => {
+                const ficha = { id: idDesdeNombre('cons', fila.denominacion, usados) };
+                CAMPOS_CENTRO.forEach(c => { ficha[c] = fila[c] || ''; });
+                ficha.tipo = '';
+                datos.conservatorios.push(ficha);
+                const k = normKey(ficha.denominacion);
+                if (k && !dirCons.has(k)) dirCons.set(k, ficha);
+            });
+
+            function resolver(nombre, dir, lista, prefijo, creados) {
+                const k = normKey(nombre);
+                if (!k) return '';
+                const ficha = dir.get(k);
+                if (ficha) {
+                    if (ficha.denominacion !== nombre) {
+                        informe.emparejadosAprox.push(nombre + ' → ' + ficha.denominacion);
+                    }
+                    return ficha.id;
+                }
+                // Aparece en Alumnado pero no tiene ficha: se crea para no perder al alumno
+                const nueva = { id: idDesdeNombre(prefijo, nombre, usados) };
+                CAMPOS_CENTRO.forEach(c => { nueva[c] = ''; });
+                nueva.denominacion = nombre;
+                lista.push(nueva);
+                dir.set(k, nueva);
+                creados.push(nombre);
+                return nueva.id;
+            }
+
+            libro.alumnado.forEach(fila => {
+                const a = { id: idAleatorio('alu') };
+                CAMPOS_ALUMNO.forEach(c => { a[c] = fila[c] || ''; });
+                a.centroId = resolver(fila.centro_erg, dirCentros, datos.centros, 'centro', informe.centrosCreados);
+                a.conservatorioId = resolver(fila.conservatorio, dirCons, datos.conservatorios, 'cons', informe.consCreados);
+                if (!a.centroId) informe.sinCentro++;
+                if (!a.conservatorioId) informe.sinConservatorio++;
+                datos.alumnado.push(a);
+            });
+
+            informe.alumnos = datos.alumnado.length;
+            informe.centros = datos.centros.length;
+            informe.conservatorios = datos.conservatorios.length;
+
+            // Recuento de valores no vacíos por campo: si una columna no se ha
+            // reconocido, aquí sale un 0 que canta a la legua
+            const etiquetas = {
+                nia: 'NIA', apellidos: 'Apellidos', nombre: 'Nombre', curso_cons: 'Curso Conservatorio',
+                especialidad: 'Especialidad', curso_erg: 'Curso ERG', modalidad_erg: 'Modalidad/Turno',
+                tutor_cons: 'Tutor/a Conservatorio', mail_tutor_cons: 'Mail tutor/a Cons.',
+                tutor_erg: 'Tutor/a ERG', mail_tutor_erg: 'Mail tutor/a ERG', observaciones: 'Observaciones',
+            };
+            CAMPOS_ALUMNO.forEach(c => {
+                informe.campos.push({ campo: etiquetas[c] || c, n: datos.alumnado.filter(a => a[c] !== '').length });
+            });
+            informe.campos.push({ campo: 'Centro ERG', n: datos.alumnado.filter(a => a.centroId).length });
+            informe.campos.push({ campo: 'Conservatorio', n: datos.alumnado.filter(a => a.conservatorioId).length });
+
+            return { datos, informe };
+        }
+
+        // ---------------------------------------------------------------
         // Preparación de datos: desfase, nombres canónicos e incidencias
         // ---------------------------------------------------------------
         function calcDesfase(cursoCons, cursoErg) {
@@ -1463,46 +1981,43 @@
             return '';
         }
 
-        function buildDirectory(rows) {
+        function porId(lista) {
             const map = new Map();
-            rows.forEach(r => {
-                const key = normKey(r.denominacion);
-                if (key && !map.has(key)) map.set(key, r);
-            });
+            lista.forEach(f => { if (f.id) map.set(f.id, f); });
             return map;
         }
 
         /** Añade a cada alumno campos derivados y devuelve la lista de incidencias. */
         function prepareData() {
-            const centrosDir = buildDirectory(state.centros);
-            const consDir = buildDirectory(state.conservatorios);
+            state.centros = state.datos.centros;
+            state.conservatorios = state.datos.conservatorios;
+            state.alumnado = state.datos.alumnado;
+
+            const centrosPorId = porId(state.centros);
+            const consPorId = porId(state.conservatorios);
+            state.centrosPorId = centrosPorId;
+            state.consPorId = consPorId;
 
             const issues = {
                 incompletos: [],
                 cursosConsDesconocidos: new Map(),
                 cursosErgDesconocidos: new Map(),
-                centrosSinFicha: new Map(),
-                consSinFicha: new Map(),
+                refsHuerfanas: new Map(),
                 niaDuplicados: [],
                 sinNia: 0,
-                emparejadosAprox: new Map(),
             };
 
             const niaCount = new Map();
 
-            state.alumnado.forEach((a, i) => {
-                a._id = i;
+            state.alumnado.forEach(a => {
+                a._id = a.id;
 
-                const ckey = normKey(a.centro_erg);
-                const centro = centrosDir.get(ckey);
-                a._centroKey = ckey;
-                a._centroLabel = centro ? centro.denominacion : a.centro_erg;
+                const centro = a.centroId ? centrosPorId.get(a.centroId) : null;
+                a._centroLabel = centro ? centro.denominacion : '';
                 a._centroInfo = centro || null;
 
-                const kkey = normKey(a.conservatorio);
-                const cons = consDir.get(kkey);
-                a._consKey = kkey;
-                a._consLabel = cons ? cons.denominacion : a.conservatorio;
+                const cons = a.conservatorioId ? consPorId.get(a.conservatorioId) : null;
+                a._consLabel = cons ? cons.denominacion : '';
                 a._consInfo = cons || null;
 
                 a._desfase = calcDesfase(a.curso_cons, a.curso_erg);
@@ -1515,7 +2030,7 @@
                 const falta = [];
                 if (!a.curso_cons) falta.push('Curso Conservatorio');
                 if (!a.curso_erg) falta.push('Curso ERG');
-                if (!a.centro_erg) falta.push('Centro ERG');
+                if (!a.centroId) falta.push('Centro ERG');
                 if (falta.length) issues.incompletos.push({ alumno: a, falta });
 
                 if (a.curso_cons && CONS_TO_IDX[a.curso_cons] == null) {
@@ -1524,11 +2039,9 @@
                 if (a.curso_erg && CURSOS_ERG_INDEX[a.curso_erg] == null) {
                     inc(issues.cursosErgDesconocidos, a.curso_erg);
                 }
-                if (a.centro_erg && !centro) inc(issues.centrosSinFicha, a.centro_erg);
-                if (a.conservatorio && !cons && state.conservatorios.length) inc(issues.consSinFicha, a.conservatorio);
-
-                if (centro && centro.denominacion !== a.centro_erg) inc(issues.emparejadosAprox, a.centro_erg + ' → ' + centro.denominacion);
-                if (cons && cons.denominacion !== a.conservatorio) inc(issues.emparejadosAprox, a.conservatorio + ' → ' + cons.denominacion);
+                // Referencia a una ficha que ya no existe (edición manual del JSON o fusión rara)
+                if (a.centroId && !centro) inc(issues.refsHuerfanas, 'Centro ' + a.centroId);
+                if (a.conservatorioId && !cons) inc(issues.refsHuerfanas, 'Conservatorio ' + a.conservatorioId);
 
                 if (a.nia) {
                     niaCount.set(a.nia, (niaCount.get(a.nia) || 0) + 1);
@@ -1590,27 +2103,11 @@
                 ));
             }
 
-            if (issues.centrosSinFicha.size) {
+            if (issues.refsHuerfanas.size) {
                 blocks.push(section(
-                    issues.centrosSinFicha.size + ' ' + plural(issues.centrosSinFicha.size, 'centro ERG que no está en la hoja Centros', 'centros ERG que no están en la hoja Centros'),
-                    'El alumnado se muestra igualmente, pero sin datos de contacto ni distancia.',
-                    mapList(issues.centrosSinFicha)
-                ));
-            }
-
-            if (issues.consSinFicha.size) {
-                blocks.push(section(
-                    issues.consSinFicha.size + ' ' + plural(issues.consSinFicha.size, 'conservatorio que no está en la hoja Conservatorios', 'conservatorios que no están en la hoja Conservatorios'),
-                    'El alumnado se muestra igualmente, pero sin datos de contacto ni distancia.',
-                    mapList(issues.consSinFicha)
-                ));
-            }
-
-            if (issues.emparejadosAprox.size) {
-                blocks.push(section(
-                    issues.emparejadosAprox.size + ' ' + plural(issues.emparejadosAprox.size, 'nombre emparejado ignorando mayúsculas o acentos', 'nombres emparejados ignorando mayúsculas o acentos'),
-                    'Funciona, pero conviene escribirlos igual en todas las hojas.',
-                    mapList(issues.emparejadosAprox)
+                    issues.refsHuerfanas.size + ' ' + plural(issues.refsHuerfanas.size, 'referencia a una ficha que ya no existe', 'referencias a fichas que ya no existen'),
+                    'Hay alumnado apuntando a un centro o conservatorio que se ha borrado del archivo. Vuelve a asignárselo desde su ficha.',
+                    mapList(issues.refsHuerfanas)
                 ));
             }
 
@@ -1795,6 +2292,7 @@
             }
 
             $('summary-stats').innerHTML = html;
+            $('summary-file').textContent = textoOrigen();
             $('summary-bar').classList.add('visible');
         }
 
@@ -1810,7 +2308,7 @@
                 '<h2>Coordinación horaria</h2>' +
                 '<p>' + filtered.length + ' ' + plural(filtered.length, 'alumno/a', 'alumnos/as') +
                 (activos.length ? ' · Filtros — ' + escapeHtml(activos.join(' · ')) : ' · Sin filtros') +
-                ' · ' + escapeHtml(state.fileName) + '</p>';
+                ' · ' + escapeHtml(state.origen) + '</p>';
         }
 
         // ------------------------------ Cards ------------------------------
@@ -1883,6 +2381,8 @@
                     '</div>' +
                     '<div class="center-actions">' +
                         '<button class="btn-info" aria-expanded="false">Info</button>' +
+                        (info.id ? '<button class="btn-editar solo-edicion" data-editar-ficha="' + escapeHtml(info.id) + '"' +
+                                   ' data-cons="' + (isGroupERG ? '' : '1') + '">Editar</button>' : '') +
                         (mailtoAll
                             ? '<a class="btn-mailto" href="' + escapeHtml(mailtoAll) + '" title="Email a todos los tutores (' + emails.all.length + ')">' +
                               '<span class="mailto-icon" aria-hidden="true">✉</span> ' + emails.all.length + '</a>'
@@ -2044,8 +2544,10 @@
                             (subtext ? ' <small style="color:#888">— ' + escapeHtml(subtext) + '</small>' : '') + '</span>' +
                         '<span class="alumno-curso-cons">' + (col3 ? escapeHtml(col3) : falta) + '</span>' +
                         '<span class="alumno-especialidad">' + (col4 ? escapeHtml(col4) : '') + '</span>' +
-                        '<button class="btn-alumno-info' + (hasObs ? ' has-obs' : '') + '" data-info-for="' + a._id + '"' +
+                        '<button class="btn-alumno-info' + (hasObs ? ' has-obs' : '') + '" data-info-for="' + escapeHtml(a._id) + '"' +
                             ' aria-expanded="false" aria-label="Ver tutores y observaciones de ' + escapeHtml(a._nombreMostrado) + '">i</button>' +
+                        '<button class="btn-alumno-editar solo-edicion" data-editar-alumno="' + escapeHtml(a._id) + '"' +
+                            ' title="Editar ficha" aria-label="Editar la ficha de ' + escapeHtml(a._nombreMostrado) + '">✎</button>' +
                     '</div>' +
                     '<div class="alumno-detail-panel" data-panel-for="' + a._id + '">' +
                         '<div class="alumno-detail-grid">' +
@@ -2336,7 +2838,7 @@
         }
 
         function exportFileName(ext) {
-            const base = (state.fileName || 'coordinacion').replace(/\.[^.]+$/, '');
+            const base = 'coordinacion';
             return base + '_filtrado.' + ext;
         }
 
@@ -2486,66 +2988,591 @@
         }
 
         // ---------------------------------------------------------------
+        // Carpeta de trabajo: File System Access
+        //
+        // Verificado en Chrome 151 abriendo el HTML con doble clic (file://):
+        // isSecureContext es true, showDirectoryPicker funciona, y el handle
+        // sobrevive en IndexedDB al cierre del navegador — pero el PERMISO no,
+        // y volver a pedirlo exige un clic del usuario. De ahí el botón
+        // "Reconectar" en vez de intentarlo solo al arrancar.
+        // ---------------------------------------------------------------
+        const NOMBRE_DATOS = 'coordinacion.json';
+        const CARPETA_DATOS = 'datos';
+        const CARPETA_COPIAS = 'copias';
+        const MAX_COPIAS = 30;
+        // El sufijo -2, -3... evita que dos guardados en el mismo segundo se pisen
+        const RE_COPIA = /^coordinacion-\d{8}-\d{6}(-\d+)?\.json$/;
+
+        function idb() {
+            return new Promise((res, rej) => {
+                const req = indexedDB.open('coordinacion-fs', 1);
+                req.onupgradeneeded = () => req.result.createObjectStore('handles');
+                req.onsuccess = () => res(req.result);
+                req.onerror = () => rej(req.error);
+            });
+        }
+
+        async function guardarHandle(h) {
+            try {
+                const db = await idb();
+                await new Promise((res, rej) => {
+                    const tx = db.transaction('handles', 'readwrite');
+                    tx.objectStore('handles').put(h, 'dir');
+                    tx.oncomplete = res;
+                    tx.onerror = () => rej(tx.error);
+                });
+            } catch (e) { console.warn('No se pudo recordar la carpeta', e); }
+        }
+
+        async function leerHandle() {
+            try {
+                const db = await idb();
+                return await new Promise((res, rej) => {
+                    const tx = db.transaction('handles', 'readonly');
+                    const rq = tx.objectStore('handles').get('dir');
+                    rq.onsuccess = () => res(rq.result || null);
+                    rq.onerror = () => rej(rq.error);
+                });
+            } catch (e) { return null; }
+        }
+
+        async function olvidarHandle() {
+            try {
+                const db = await idb();
+                await new Promise((res, rej) => {
+                    const tx = db.transaction('handles', 'readwrite');
+                    tx.objectStore('handles').delete('dir');
+                    tx.oncomplete = res;
+                    tx.onerror = () => rej(tx.error);
+                });
+            } catch (e) { /* nada que olvidar */ }
+        }
+
+        let dirDatos = null;
+
+        /** Usa datos/ y, si no existe pero el JSON está en la raíz, usa la raíz. */
+        async function carpetaDatos(crearSiFalta) {
+            if (dirDatos) return dirDatos;
+            try {
+                dirDatos = await state.dirHandle.getDirectoryHandle(CARPETA_DATOS);
+            } catch (e) {
+                if (!(e && e.name === 'NotFoundError')) throw e;
+                let enRaiz = false;
+                try { await state.dirHandle.getFileHandle(NOMBRE_DATOS); enRaiz = true; } catch (e2) { /* tampoco */ }
+                if (enRaiz) dirDatos = state.dirHandle;
+                else if (crearSiFalta) dirDatos = await state.dirHandle.getDirectoryHandle(CARPETA_DATOS, { create: true });
+                else throw e;
+            }
+            return dirDatos;
+        }
+
+        async function archivoDatos(crear) {
+            const dir = await carpetaDatos(!!crear);
+            return await dir.getFileHandle(NOMBRE_DATOS, { create: !!crear });
+        }
+
+        async function conectarCarpeta() {
+            if (!state.soporteFSA) { avisoSinFSA(); return false; }
+            try {
+                const h = await window.showDirectoryPicker({ mode: 'readwrite' });
+                state.dirHandle = h;
+                dirDatos = null;
+                await guardarHandle(h);
+                return await cargarDeCarpeta();
+            } catch (e) {
+                if (e && e.name === 'AbortError') return false;
+                console.error(e);
+                showError('No he podido abrir la carpeta: ' + e.message);
+                return false;
+            }
+        }
+
+        async function reconectar(silencioso) {
+            if (!state.soporteFSA) return false;
+            const h = await leerHandle();
+            if (!h) return false;
+            let perm = await h.queryPermission({ mode: 'readwrite' });
+            if (perm !== 'granted') {
+                if (silencioso) return false;          // pedirlo exige un gesto del usuario
+                perm = await h.requestPermission({ mode: 'readwrite' });
+            }
+            if (perm !== 'granted') return false;
+            state.dirHandle = h;
+            dirDatos = null;
+            return await cargarDeCarpeta();
+        }
+
+        async function cargarDeCarpeta() {
+            try {
+                const fh = await archivoDatos(false);
+                const f = await fh.getFile();
+                const texto = await f.text();
+                let datos, rescatada = false;
+                try {
+                    datos = JSON.parse(texto);
+                } catch (eParse) {
+                    datos = await recuperarDeCopia();
+                    if (!datos) throw eParse;
+                    rescatada = true;
+                }
+                activarDatos(datos, 'Carpeta: ' + state.dirHandle.name);
+                state.cargadoRev = state.datos.rev || 0;
+                state.cargadoMtime = f.lastModified;
+                if (rescatada) {
+                    marcarSucio(true);
+                    toast('He cargado una copia de seguridad. Guarda para que sustituya al archivo dañado.', 'info');
+                } else {
+                    marcarLimpio();
+                }
+                actualizarBarraEstado();
+                return true;
+            } catch (e) {
+                if (e && e.name === 'NotFoundError') {
+                    const crear = await confirmar('Carpeta sin datos',
+                        'En esa carpeta no hay ningún <code>' + NOMBRE_DATOS + '</code>.<br><br>' +
+                        'Puedo empezar un archivo vacío y luego importas tu Excel, o eliges otra carpeta.',
+                        'Empezar archivo vacío');
+                    if (crear) {
+                        activarDatos(datosVacios(), 'Carpeta: ' + state.dirHandle.name);
+                        state.cargadoMtime = null;
+                        state.cargadoRev = 0;
+                        marcarSucio(true);
+                        actualizarBarraEstado();
+                        return true;
+                    }
+                    state.dirHandle = null;
+                    return false;
+                }
+                console.error(e);
+                showError('No he podido leer los datos: ' + e.message);
+                state.dirHandle = null;
+                return false;
+            }
+        }
+
+        /** Modo degradado (Firefox/Safari o sin carpeta): abrir el JSON como archivo suelto. */
+        async function cargarDeArchivoJson(file) {
+            try {
+                const datos = JSON.parse(await file.text());
+                activarDatos(datos, 'Archivo: ' + file.name);
+                state.cargadoMtime = null;
+                state.cargadoRev = state.datos.rev || 0;
+                marcarLimpio();
+                actualizarBarraEstado();
+                if (!state.dirHandle) toast('Abierto sin carpeta: al guardar se descargará una copia que tendrás que colocar tú.', 'info');
+            } catch (e) {
+                showError('Ese archivo .json no se puede leer: ' + e.message);
+            }
+        }
+
+        // ---------------------------------------------------------------
+        // Guardado, con detección de cambios externos
+        // ---------------------------------------------------------------
+        function marcarSucio(silencioso) {
+            if (!puedeEditar()) { if (!silencioso) avisoSoloLectura(); return false; }
+            state.sucio = true;
+            document.body.classList.add('sucio');
+            actualizarBarraEstado();
+            return true;
+        }
+
+        function marcarLimpio() {
+            state.sucio = false;
+            document.body.classList.remove('sucio');
+            actualizarBarraEstado();
+        }
+
+        function selloFecha() {
+            const d = new Date();
+            const p = n => String(n).padStart(2, '0');
+            return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' +
+                   p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+        }
+
+        async function pedirUsuario() {
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML =
+                '<p>Para poder saber quién ha hecho cada cambio, dime cómo quieres que te llame. ' +
+                'Se guarda solo en este navegador.</p>' +
+                '<input type="text" id="inp-usuario" style="width:100%;padding:0.5rem;border:1px solid #d0d5dd;border-radius:6px;margin-top:0.5rem" placeholder="Por ejemplo: Jose Luis">';
+            let valor = '';
+            await modal({
+                titulo: '¿Quién eres?',
+                nodo: cuerpo,
+                sinCerrar: true,
+                botones: [{
+                    texto: 'Aceptar', clase: 'principal', valor: true,
+                    antesDeCerrar: (f) => { valor = f.querySelector('#inp-usuario').value.trim(); },
+                }],
+            });
+            state.usuario = valor || 'sin nombre';
+            try { localStorage.setItem('coordinacion-usuario', state.usuario); } catch (e) { /* da igual */ }
+        }
+
+        async function guardar(silencioso) {
+            if (!state.datos) return false;
+            if (!puedeEditar()) { avisoSoloLectura(); return false; }
+            if (!state.usuario) await pedirUsuario();
+
+            if (!state.dirHandle) {
+                // Sin carpeta: descargar el JSON y avisar de que hay que colocarlo
+                sellarGuardado();
+                downloadBlob(new Blob([JSON.stringify(state.datos, null, 1)], { type: 'application/json' }), NOMBRE_DATOS);
+                marcarLimpio();
+                toast('Descargado ' + NOMBRE_DATOS + '. Tienes que reemplazarlo tú en la carpeta de datos.', 'info');
+                return true;
+            }
+
+            try {
+                const fh = await archivoDatos(true);
+
+                // ¿Ha guardado otra persona mientras tanto?
+                try {
+                    const f = await fh.getFile();
+                    const cambioExterno = (state.cargadoMtime !== null && f.lastModified !== state.cargadoMtime && f.size > 0);
+                    if (cambioExterno) {
+                        let otro = null;
+                        try { otro = JSON.parse(await f.text()); } catch (e) { /* ilegible */ }
+                        const quien = otro && otro.modificadoPor ? otro.modificadoPor : 'alguien';
+                        const rev = otro && otro.rev != null ? otro.rev : '?';
+                        const cuando = otro && otro.ultimaModificacion
+                            ? new Date(otro.ultimaModificacion).toLocaleString('es-ES') : 'hace un momento';
+                        const salida = await modal({
+                            titulo: 'El archivo ha cambiado por fuera',
+                            html: '<p>Desde que abriste los datos, <strong>' + escapeHtml(quien) + '</strong> ha guardado ' +
+                                  'la revisión <strong>' + escapeHtml(String(rev)) + '</strong> (' + escapeHtml(cuando) + ').</p>' +
+                                  '<p style="margin-top:0.6rem">Si sobrescribes, se perderán los cambios de esa persona. ' +
+                                  'Si recargas, se perderán los tuyos.</p>',
+                            botones: [
+                                { texto: 'Cancelar', valor: 'cancelar' },
+                                { texto: 'Recargar lo del archivo', valor: 'recargar' },
+                                { texto: 'Sobrescribir', clase: 'peligro', valor: 'sobrescribir' },
+                            ],
+                        });
+                        if (salida === 'recargar') {
+                            await cargarDeCarpeta();
+                            toast('Recargado desde la carpeta.', 'info');
+                            return false;
+                        }
+                        if (salida !== 'sobrescribir') return false;
+                    }
+                } catch (e) { /* el archivo aún no existe: no hay conflicto */ }
+
+                sellarGuardado();
+                const texto = JSON.stringify(state.datos, null, 1);
+                const w = await fh.createWritable();   // escritura atómica: se aplica en close()
+                await w.write(texto);
+                await w.close();
+
+                const f2 = await fh.getFile();
+                state.cargadoMtime = f2.lastModified;
+                state.cargadoRev = state.datos.rev;
+                marcarLimpio();
+                await escribirCopia(texto);
+                if (!silencioso) toast('Guardado (revisión ' + state.datos.rev + ')', 'ok');
+                renderView();
+                return true;
+            } catch (e) {
+                console.error(e);
+                showError('No he podido guardar: ' + e.message);
+                return false;
+            }
+        }
+
+        function sellarGuardado() {
+            state.datos.rev = (state.datos.rev || 0) + 1;
+            state.datos.ultimaModificacion = new Date().toISOString();
+            state.datos.modificadoPor = state.usuario || 'sin nombre';
+        }
+
+        // ---------------------------------------------------------------
+        // Historial: copias del archivo y registro de operaciones
+        // ---------------------------------------------------------------
+        async function escribirCopia(texto) {
+            if (!state.dirHandle) return;
+            try {
+                const dir = await (await carpetaDatos(true)).getDirectoryHandle(CARPETA_COPIAS, { create: true });
+
+                // El sello es YYYYMMDD-HHMMSS: ordenar por nombre es ordenar por fecha
+                const nombres = [];
+                for await (const entry of dir.values()) {
+                    if (entry.kind === 'file' && RE_COPIA.test(entry.name)) nombres.push(entry.name);
+                }
+                const base = 'coordinacion-' + selloFecha();
+                let nombre = base + '.json';
+                for (let n = 2; nombres.includes(nombre); n++) nombre = base + '-' + n + '.json';
+
+                const fh = await dir.getFileHandle(nombre, { create: true });
+                const w = await fh.createWritable();
+                await w.write(texto);
+                await w.close();
+                nombres.push(nombre);
+                nombres.sort();
+                while (nombres.length > MAX_COPIAS) await dir.removeEntry(nombres.shift());
+            } catch (e) {
+                console.warn('No se pudo escribir la copia de seguridad', e);
+            }
+        }
+
+        async function listarCopias() {
+            if (!state.dirHandle) return [];
+            try {
+                const dir = await (await carpetaDatos(false)).getDirectoryHandle(CARPETA_COPIAS);
+                const nombres = [];
+                for await (const entry of dir.values()) {
+                    if (entry.kind === 'file' && RE_COPIA.test(entry.name)) nombres.push(entry.name);
+                }
+                return nombres.sort().reverse();
+            } catch (e) { return []; }
+        }
+
+        async function leerCopia(nombre) {
+            const dir = await (await carpetaDatos(false)).getDirectoryHandle(CARPETA_COPIAS);
+            const fh = await dir.getFileHandle(nombre);
+            return JSON.parse(await (await fh.getFile()).text());
+        }
+
+        /** Si el archivo principal no parsea, ofrece la copia buena más reciente. */
+        async function recuperarDeCopia() {
+            for (const nombre of await listarCopias()) {
+                try {
+                    const datos = await leerCopia(nombre);
+                    const ok = await confirmar('El archivo de datos está dañado',
+                        'No he podido leer <code>' + NOMBRE_DATOS + '</code>.<br><br>' +
+                        'La copia de seguridad más reciente que sí se puede leer es <code>' + escapeHtml(nombre) + '</code>. ¿La cargo?',
+                        'Cargar esa copia');
+                    return ok ? datos : null;
+                } catch (e) { /* esa copia tampoco: probar la anterior */ }
+            }
+            return null;
+        }
+
+        function fechaDeCopia(nombre) {
+            const m = nombre.match(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/);
+            if (!m) return nombre;
+            return m[3] + '/' + m[2] + '/' + m[1] + ' a las ' + m[4] + ':' + m[5] + ':' + m[6];
+        }
+
+        function registrarHistorial(descripcion) {
+            if (!state.datos) return;
+            if (!Array.isArray(state.datos.historial)) state.datos.historial = [];
+            state.datos.historial.unshift({
+                fecha: new Date().toISOString(),
+                quien: state.usuario || '',
+                descripcion,
+            });
+            if (state.datos.historial.length > 500) state.datos.historial.length = 500;
+        }
+
+        // ---------------------------------------------------------------
+        // Pestillo de edición
+        //
+        // Como la protección de un Excel: evita tocar datos sin querer. NO es
+        // seguridad: el JSON está en la misma carpeta y cualquiera lo abre. El
+        // código sale de los datos, nunca del fuente, porque este repo es público.
+        // ---------------------------------------------------------------
+        const SS_MODO = 'coordinacion-modo';
+
+        function hayPestillo() {
+            return !!(state.datos && state.datos.config && String(state.datos.config.codigoCentro || '').trim());
+        }
+
+        function puedeEditar() { return state.modo === 'edicion'; }
+
+        function iniciarModo() {
+            let recordado = null;
+            try { recordado = sessionStorage.getItem(SS_MODO); } catch (e) { /* sin sessionStorage */ }
+            state.modo = (!hayPestillo() || recordado === 'edicion') ? 'edicion' : 'lectura';
+            document.body.classList.toggle('lectura', !puedeEditar());
+        }
+
+        function desbloquear(codigo) {
+            const esperado = String((state.datos && state.datos.config && state.datos.config.codigoCentro) || '').trim();
+            if (!esperado || String(codigo || '').trim() !== esperado) return false;
+            state.modo = 'edicion';
+            try { sessionStorage.setItem(SS_MODO, 'edicion'); } catch (e) { /* ídem */ }
+            document.body.classList.remove('lectura');
+            actualizarBarraEstado();
+            renderView();
+            return true;
+        }
+
+        function bloquear() {
+            state.modo = 'lectura';
+            try { sessionStorage.removeItem(SS_MODO); } catch (e) { /* ídem */ }
+            document.body.classList.add('lectura');
+            actualizarBarraEstado();
+            renderView();
+        }
+
+        function avisoSoloLectura() {
+            toast('Estás en modo solo lectura. Pulsa "Activar edición" para poder cambiar datos.', 'info');
+        }
+
+        function avisoSinFSA() {
+            showError('Este navegador no puede escribir en carpetas. Abre la app con Chrome o Edge. ' +
+                      'Mientras tanto puedes consultar los datos abriendo el archivo .json o tu Excel.');
+        }
+
+        // ---------------------------------------------------------------
         // Carga del archivo
         // ---------------------------------------------------------------
         const uploadZone = $('upload-zone');
         const fileInput = $('file-input');
 
-        function handleFile(file) {
+        /** Deja los datos listos y enseña la interfaz. */
+        function activarDatos(datos, origen) {
+            state.datos = migrarDatos(datos);
+            state.origen = origen;
+            state.loaded = true;
+            state.expandedGroups.clear();
+            state.expandedCursos.clear();
+
+            iniciarModo();
+            const issues = prepareData();
+            renderWarnings(issues);
+            populateFilters();
+            applyUrlState();
+
+            uploadZone.classList.add('hidden');
+            ['search-bar', 'filters', 'toggles-row', 'legend', 'equiv-section']
+                .forEach(id => $(id).classList.add('visible'));
+
+            renderView();
+            syncUrl();
+        }
+
+        function textoOrigen() {
+            const d = state.datos;
+            if (!d) return '';
+            return state.origen + ' · ' +
+                d.alumnado.length + ' ' + plural(d.alumnado.length, 'alumno/a', 'alumnos/as') +
+                ' · ' + d.centros.length + ' ' + plural(d.centros.length, 'centro', 'centros') +
+                (d.conservatorios.length ? ' · ' + d.conservatorios.length + ' ' + plural(d.conservatorios.length, 'conservatorio', 'conservatorios') : '') +
+                (d.rev ? ' · revisión ' + d.rev : '') +
+                (d.modificadoPor ? ' · última modificación de ' + d.modificadoPor : '');
+        }
+
+        /**
+         * Informe de verificación de la importación. Se enseña ANTES de tocar nada:
+         * una importación que no da ningún error puede haber perdido datos igualmente.
+         */
+        function informeImportacionHtml(informe, sustituye) {
+            let h = '<div class="informe-cifras">' +
+                '<div class="informe-cifra"><span class="n">' + informe.alumnos + '</span><span class="et">alumnos/as</span></div>' +
+                '<div class="informe-cifra"><span class="n">' + informe.centros + '</span><span class="et">centros</span></div>' +
+                '<div class="informe-cifra"><span class="n">' + informe.conservatorios + '</span><span class="et">conservatorios</span></div>' +
+                '</div>';
+
+            h += '<p style="margin-bottom:0.5rem">Comprueba que estas cifras cuadran con tu Excel. ' +
+                 'Un <strong>0</strong> en rojo significa que esa columna no se ha reconocido.</p>';
+            h += '<table class="tabla-campos"><thead><tr><th>Campo</th><th style="text-align:right">Con datos</th></tr></thead><tbody>';
+            informe.campos.forEach(c => {
+                h += '<tr' + (c.n === 0 ? ' class="vacio"' : '') + '><td>' + escapeHtml(c.campo) + '</td>' +
+                     '<td class="n">' + c.n + ' de ' + informe.alumnos + '</td></tr>';
+            });
+            h += '</tbody></table>';
+
+            const listas = [];
+            if (informe.centrosCreados.length) {
+                listas.push('<strong>' + informe.centrosCreados.length + ' ' +
+                    plural(informe.centrosCreados.length, 'centro que aparece en Alumnado pero no en la hoja Centros', 'centros que aparecen en Alumnado pero no en la hoja Centros') +
+                    '</strong>. Les he creado ficha vacía para no perder a su alumnado: ' +
+                    escapeHtml([...new Set(informe.centrosCreados)].join(', ')));
+            }
+            if (informe.consCreados.length) {
+                listas.push('<strong>' + informe.consCreados.length + ' ' +
+                    plural(informe.consCreados.length, 'conservatorio sin ficha', 'conservatorios sin ficha') +
+                    '</strong>: ' + escapeHtml([...new Set(informe.consCreados)].join(', ')));
+            }
+            if (informe.emparejadosAprox.length) {
+                const u = [...new Set(informe.emparejadosAprox)];
+                listas.push('<strong>' + u.length + ' ' + plural(u.length, 'nombre emparejado', 'nombres emparejados') +
+                    '</strong> ignorando mayúsculas, acentos o espacios: ' + escapeHtml(u.join(' · ')));
+            }
+            if (informe.sinCentro) {
+                listas.push('<strong>' + informe.sinCentro + ' ' + plural(informe.sinCentro, 'alumno/a sin centro ERG', 'alumnos/as sin centro ERG') + '</strong>.');
+            }
+            if (listas.length) {
+                h += '<ul style="margin:0.8rem 0 0 1rem;font-size:0.85rem"><li>' + listas.join('</li><li>') + '</li></ul>';
+            }
+
+            if (sustituye) {
+                h += '<p style="margin-top:0.9rem;padding:0.6rem 0.8rem;background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;color:#b71c1c">' +
+                     '<strong>Atención:</strong> esto sustituye por completo los datos que tienes ahora, incluido el historial de cambios. ' +
+                     'Se guardará una copia de seguridad antes de sustituirlos.</p>';
+            } else {
+                h += '<p style="margin-top:0.9rem;color:#666;font-size:0.85rem">Tu archivo Excel no se modifica en ningún momento.</p>';
+            }
+            return h;
+        }
+
+        async function importarDesdeExcel(file) {
             if (!/\.(xlsx|xlsm)$/i.test(file.name)) {
                 showError(/\.xls$/i.test(file.name)
                     ? 'El formato .xls antiguo no es compatible. Abre el archivo en Excel o LibreOffice y guárdalo como .xlsx.'
                     : 'Selecciona un archivo Excel (.xlsx).');
                 return;
             }
-            const reader = new FileReader();
-            reader.onerror = () => showError('No he podido leer el archivo.');
-            reader.onload = function(e) {
-                try {
-                    const parsed = parseExcel(new Uint8Array(e.target.result));
-                    state.centros = parsed.centros;
-                    state.conservatorios = parsed.conservatorios;
-                    state.alumnado = parsed.alumnado;
-                    state.fileName = file.name;
-                    state.loaded = true;
-                    state.expandedGroups.clear();
-                    state.expandedCursos.clear();
+            // Con carpeta conectada, importar sustituye los datos: es una edición
+            if (state.dirHandle && !puedeEditar()) { avisoSoloLectura(); return; }
 
-                    const issues = prepareData();
-                    renderWarnings(issues);
-                    populateFilters();
-                    applyUrlState();
+            let libro;
+            try {
+                libro = leerLibro(new Uint8Array(await file.arrayBuffer()));
+            } catch (err) {
+                showError(err && err.message ? err.message : 'No he podido leer el Excel.');
+                return;
+            }
 
-                    uploadZone.classList.add('hidden');
-                    $('search-bar').classList.add('visible');
-                    $('filters').classList.add('visible');
-                    $('toggles-row').classList.add('visible');
-                    $('legend').classList.add('visible');
-                    $('equiv-section').classList.add('visible');
-                    $('summary-file').textContent = 'Archivo: ' + file.name + ' · ' +
-                        state.alumnado.length + ' ' + plural(state.alumnado.length, 'fila de alumnado', 'filas de alumnado') +
-                        ' · ' + state.centros.length + ' ' + plural(state.centros.length, 'centro', 'centros') +
-                        (state.conservatorios.length ? ' · ' + state.conservatorios.length + ' ' + plural(state.conservatorios.length, 'conservatorio', 'conservatorios') : '');
+            const { datos, informe } = importarLibro(libro);
+            const sustituye = !!(state.datos && state.datos.alumnado.length);
 
-                    renderView();
-                    syncUrl();
-                } catch (err) {
-                    showError(err && err.message ? err.message : 'No he podido leer el Excel.');
-                }
-            };
-            reader.readAsArrayBuffer(file);
+            const ok = await modal({
+                titulo: 'Comprobación de la importación',
+                html: informeImportacionHtml(informe, sustituye),
+                ancho: true,
+                botones: [
+                    { texto: 'Cancelar', valor: false },
+                    { texto: sustituye ? 'Sustituir los datos' : 'Importar', clase: sustituye ? 'peligro' : 'principal', valor: true },
+                ],
+            });
+            if (ok !== true) return;
+
+            if (sustituye && state.dirHandle) await escribirCopia(JSON.stringify(state.datos, null, 1));
+
+            datos.config = Object.assign({}, state.datos ? state.datos.config : {}, datos.config);
+            if (state.datos) { datos.rev = state.datos.rev; datos.historial = state.datos.historial || []; }
+
+            activarDatos(datos, state.dirHandle ? state.origen : 'Excel: ' + file.name);
+            registrarHistorial('Importación desde ' + file.name + ': ' +
+                informe.alumnos + ' alumnos, ' + informe.centros + ' centros, ' + informe.conservatorios + ' conservatorios');
+
+            if (state.dirHandle) {
+                marcarSucio();
+                toast('Datos importados. Revísalos y pulsa Guardar para escribirlos en la carpeta.', 'info');
+            } else {
+                toast('Excel cargado en modo visor: no se guarda nada.', 'info');
+            }
+            renderView();
         }
 
         function resetApp() {
+            if (state.sucio && !confirm('Hay cambios sin guardar. ¿Seguro que quieres cerrar los datos?')) return;
             state.loaded = false;
+            state.datos = null;
             state.alumnado = [];
             state.centros = [];
             state.conservatorios = [];
             state.filtered = [];
-            state.fileName = '';
+            state.origen = '';
+            state.dirHandle = null;
+            state.cargadoRev = null;
+            state.cargadoMtime = null;
             state.expandedGroups.clear();
             state.expandedCursos.clear();
             state.sort = { key: null, dir: 1 };
+            marcarLimpio();
             fileInput.value = '';
             clearSearch();
             FILTER_IDS.forEach(id => { $(id).value = ''; });
@@ -2553,29 +3580,439 @@
             $('flat-table').innerHTML = '';
             $('warnings-box').innerHTML = '';
             $('warnings-box').classList.remove('visible');
-            $('summary-file').textContent = '';
             uploadZone.classList.remove('hidden');
             ['search-bar', 'filters', 'toggles-row', 'legend', 'equiv-section', 'summary-bar']
                 .forEach(id => $(id).classList.remove('visible'));
+            actualizarBarraEstado();
             syncUrl();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ---------------------------------------------------------------
+        // Edición de fichas
+        // ---------------------------------------------------------------
+        const ETIQUETAS = {
+            nia: 'NIA', apellidos: 'Apellidos', nombre: 'Nombre', curso_cons: 'Curso Conservatorio',
+            especialidad: 'Especialidad', curso_erg: 'Curso ERG', modalidad_erg: 'Modalidad/Turno',
+            tutor_cons: 'Tutor/a Conservatorio', mail_tutor_cons: 'Mail tutor/a Conservatorio',
+            tutor_erg: 'Tutor/a ERG', mail_tutor_erg: 'Mail tutor/a ERG', observaciones: 'Observaciones',
+            centroId: 'Centro ERG', conservatorioId: 'Conservatorio',
+            tipo: 'Tipo', denominacion: 'Denominación', distancia_km: 'Distancia (km)',
+            distancia_min: 'Distancia (min a pie)', mail_contacto: 'Mail de contacto',
+            director: 'Director/a', mail_director: 'Mail director/a',
+            jefe_estudios: 'Jefe/a de estudios', mail_jefatura: 'Mail jefatura',
+            coordinador: 'Coordinador/a', mail_coordinador: 'Mail coordinador/a',
+        };
+
+        function campoHtml(name, valor, opciones) {
+            const o = opciones || {};
+            const et = ETIQUETAS[name] || name;
+            let control;
+            if (o.opciones) {
+                control = '<select name="' + name + '">' +
+                    o.opciones.map(op => {
+                        const v = typeof op === 'string' ? op : op.v;
+                        const t = typeof op === 'string' ? op : op.t;
+                        return '<option value="' + escapeHtml(v) + '"' + (String(valor) === String(v) ? ' selected' : '') + '>' +
+                               escapeHtml(t) + '</option>';
+                    }).join('') + '</select>';
+            } else if (o.textarea) {
+                control = '<textarea name="' + name + '" rows="3">' + escapeHtml(valor) + '</textarea>';
+            } else {
+                control = '<input type="' + (o.tipo || 'text') + '" name="' + name + '" value="' + escapeHtml(valor) + '">';
+            }
+            return '<div class="campo' + (o.ancho ? ' ancho' : '') + '">' +
+                   '<label>' + escapeHtml(et) + '</label>' + control +
+                   (o.pista ? '<div class="pista">' + escapeHtml(o.pista) + '</div>' : '') +
+                   '</div>';
+        }
+
+        function leerFormulario(raiz, campos) {
+            const out = {};
+            campos.forEach(c => {
+                const el = raiz.querySelector('[name="' + c + '"]');
+                out[c] = el ? normalizeText(el.value) : '';
+            });
+            return out;
+        }
+
+        function recalcular() {
+            const issues = prepareData();
+            renderWarnings(issues);
+            populateFilters();
+            renderView();
+        }
+
+        function opcionesFichas(lista, vacio) {
+            return [{ v: '', t: vacio }].concat(
+                lista.slice().sort((a, b) => cmpEs(a.denominacion, b.denominacion))
+                     .map(f => ({ v: f.id, t: f.denominacion || '(sin nombre)' })));
+        }
+
+        async function editarAlumno(alumno) {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            const nuevo = !alumno;
+            const a = alumno || { id: idAleatorio('alu'), centroId: '', conservatorioId: '' };
+            CAMPOS_ALUMNO.forEach(c => { if (a[c] == null) a[c] = ''; });
+
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML = '<div class="form-rejilla">' +
+                campoHtml('apellidos', a.apellidos) +
+                campoHtml('nombre', a.nombre) +
+                campoHtml('nia', a.nia) +
+                campoHtml('modalidad_erg', a.modalidad_erg) +
+
+                '<div class="form-seccion">Conservatorio</div>' +
+                campoHtml('conservatorioId', a.conservatorioId, { opciones: opcionesFichas(state.conservatorios, '(sin conservatorio)') }) +
+                campoHtml('curso_cons', a.curso_cons, { opciones: [{ v: '', t: '(sin curso)' }].concat(CONS_ORDER) }) +
+                campoHtml('especialidad', a.especialidad) +
+                campoHtml('tutor_cons', a.tutor_cons) +
+                campoHtml('mail_tutor_cons', a.mail_tutor_cons, { tipo: 'email' }) +
+
+                '<div class="form-seccion">Centro de enseñanza general</div>' +
+                campoHtml('centroId', a.centroId, { opciones: opcionesFichas(state.centros, '(sin centro)') }) +
+                campoHtml('curso_erg', a.curso_erg, { opciones: [{ v: '', t: '(sin curso)' }].concat(Object.keys(CURSOS_ERG_INDEX)) }) +
+                campoHtml('tutor_erg', a.tutor_erg) +
+                campoHtml('mail_tutor_erg', a.mail_tutor_erg, { tipo: 'email' }) +
+
+                '<div class="form-desfase" id="vista-desfase"></div>' +
+                campoHtml('observaciones', a.observaciones, { textarea: true, ancho: true }) +
+                '</div>';
+
+            // El desfase se recalcula en vivo al cambiar cualquiera de los dos cursos
+            const pintaDesfase = () => {
+                const cc = cuerpo.querySelector('[name="curso_cons"]').value;
+                const ce = cuerpo.querySelector('[name="curso_erg"]').value;
+                const d = calcDesfase(cc, ce);
+                const equiv = EQUIVALENCIAS.find(e => e.cons === cc);
+                cuerpo.querySelector('#vista-desfase').innerHTML =
+                    '<span class="desfase-badge ' + d.clase + '">' + d.texto + '</span> ' +
+                    (d.valor == null
+                        ? 'No puedo calcular el desfase: falta algún curso o no lo reconozco.'
+                        : (d.valor === 0 ? 'Está en el curso equivalente.'
+                                         : 'Desfase de ' + (d.valor > 0 ? '+' : '') + d.valor + ' respecto a ' +
+                                           escapeHtml(equiv ? equiv.erg : '') + ', que es lo que le tocaría.'));
+            };
+            cuerpo.querySelector('[name="curso_cons"]').addEventListener('change', pintaDesfase);
+            cuerpo.querySelector('[name="curso_erg"]').addEventListener('change', pintaDesfase);
+            pintaDesfase();
+
+            const botones = [{ texto: 'Cancelar', valor: 'cancelar' }];
+            if (!nuevo) botones.push({ texto: 'Eliminar', clase: 'peligro', valor: 'eliminar' });
+            botones.push({ texto: nuevo ? 'Añadir' : 'Guardar cambios', clase: 'principal', valor: 'guardar' });
+
+            const campos = CAMPOS_ALUMNO.concat(['centroId', 'conservatorioId']);
+            const salida = await modal({
+                titulo: nuevo ? 'Nuevo alumno/a' : 'Ficha de ' + a._nombreMostrado,
+                nodo: cuerpo, ancho: true, botones,
+            });
+
+            if (salida === 'eliminar') {
+                const ok = await confirmar('Eliminar alumno/a',
+                    'Se va a eliminar a <strong>' + escapeHtml(a._nombreMostrado) + '</strong> del archivo.<br><br>' +
+                    'Puedes recuperarlo desde las copias de seguridad si te arrepientes, pero no hay deshacer.',
+                    'Eliminar', 'peligro');
+                if (!ok) return;
+                const i = state.datos.alumnado.indexOf(a);
+                if (i !== -1) state.datos.alumnado.splice(i, 1);
+                registrarHistorial('Eliminado ' + a._nombreMostrado + (a.nia ? ' (NIA ' + a.nia + ')' : ''));
+                marcarSucio();
+                recalcular();
+                toast('Alumno/a eliminado. Recuerda guardar.', 'ok');
+                return;
+            }
+            if (salida !== 'guardar') return;
+
+            const valores = leerFormulario(cuerpo, campos);
+            const cambios = campos.filter(c => String(a[c] || '') !== String(valores[c] || ''));
+            Object.assign(a, valores);
+
+            if (nuevo) {
+                state.datos.alumnado.push(a);
+                registrarHistorial('Añadido ' + [a.apellidos, a.nombre].filter(Boolean).join(', '));
+            } else if (cambios.length) {
+                registrarHistorial('Editado ' + [a.apellidos, a.nombre].filter(Boolean).join(', ') +
+                    ': ' + cambios.map(c => ETIQUETAS[c] || c).join(', '));
+            }
+
+            if (nuevo || cambios.length) {
+                marcarSucio();
+                recalcular();
+                toast(nuevo ? 'Alumno/a añadido. Recuerda guardar.' : 'Ficha actualizada. Recuerda guardar.', 'ok');
+            }
+        }
+
+        async function editarFicha(ficha, esConservatorio) {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            const nuevo = !ficha;
+            const lista = esConservatorio ? state.datos.conservatorios : state.datos.centros;
+            const f = ficha || { id: '' };
+            CAMPOS_CENTRO.forEach(c => { if (f[c] == null) f[c] = ''; });
+
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML = '<div class="form-rejilla">' +
+                campoHtml('denominacion', f.denominacion, { ancho: true, pista: 'Como quieres que aparezca en la app.' }) +
+                (esConservatorio ? '' : campoHtml('tipo', f.tipo, { opciones: ['', 'CEIP', 'IES', 'Otro'] })) +
+                campoHtml('mail_contacto', f.mail_contacto, { tipo: 'email' }) +
+                campoHtml('distancia_km', f.distancia_km) +
+                campoHtml('distancia_min', f.distancia_min) +
+                '<div class="form-seccion">Equipo directivo</div>' +
+                campoHtml('director', f.director) +
+                campoHtml('mail_director', f.mail_director, { tipo: 'email' }) +
+                campoHtml('jefe_estudios', f.jefe_estudios) +
+                campoHtml('mail_jefatura', f.mail_jefatura, { tipo: 'email' }) +
+                campoHtml('coordinador', f.coordinador) +
+                campoHtml('mail_coordinador', f.mail_coordinador, { tipo: 'email' }) +
+                '</div>';
+
+            const cuantos = nuevo ? 0 : state.datos.alumnado.filter(a =>
+                (esConservatorio ? a.conservatorioId : a.centroId) === f.id).length;
+
+            const botones = [{ texto: 'Cancelar', valor: 'cancelar' }];
+            if (!nuevo) botones.push({ texto: 'Eliminar', clase: 'peligro', valor: 'eliminar' });
+            botones.push({ texto: nuevo ? 'Añadir' : 'Guardar cambios', clase: 'principal', valor: 'guardar' });
+
+            const titulo = (nuevo ? 'Nuevo ' : 'Ficha de ') +
+                (esConservatorio ? 'conservatorio' : 'centro') + (nuevo ? '' : ': ' + (f.denominacion || ''));
+            const salida = await modal({ titulo, nodo: cuerpo, ancho: true, botones });
+
+            if (salida === 'eliminar') {
+                if (cuantos > 0) {
+                    await modal({
+                        titulo: 'No puedo eliminarlo',
+                        html: 'Todavía hay <strong>' + cuantos + ' ' + plural(cuantos, 'alumno/a', 'alumnos/as') +
+                              '</strong> en <strong>' + escapeHtml(f.denominacion) + '</strong>.<br><br>' +
+                              'Cámbialos de ' + (esConservatorio ? 'conservatorio' : 'centro') + ' primero, o elimínalos.',
+                    });
+                    return;
+                }
+                const ok = await confirmar('Eliminar ficha',
+                    'Se va a eliminar <strong>' + escapeHtml(f.denominacion) + '</strong>.', 'Eliminar', 'peligro');
+                if (!ok) return;
+                const i = lista.indexOf(f);
+                if (i !== -1) lista.splice(i, 1);
+                registrarHistorial('Eliminado ' + (esConservatorio ? 'conservatorio' : 'centro') + ' ' + f.denominacion);
+                marcarSucio();
+                recalcular();
+                return;
+            }
+            if (salida !== 'guardar') return;
+
+            const valores = leerFormulario(cuerpo, CAMPOS_CENTRO);
+            if (!valores.denominacion) { toast('La denominación no puede quedar vacía.', 'error'); return; }
+            const cambios = CAMPOS_CENTRO.filter(c => String(f[c] || '') !== String(valores[c] || ''));
+            const antes = f.denominacion;
+            Object.assign(f, valores);
+
+            if (nuevo) {
+                const usados = new Set(state.datos.centros.concat(state.datos.conservatorios).map(x => x.id));
+                f.id = idDesdeNombre(esConservatorio ? 'cons' : 'centro', f.denominacion, usados);
+                lista.push(f);
+                registrarHistorial('Añadido ' + (esConservatorio ? 'conservatorio' : 'centro') + ' ' + f.denominacion);
+            } else if (cambios.length) {
+                registrarHistorial('Editado ' + (esConservatorio ? 'conservatorio' : 'centro') + ' ' + antes +
+                    ': ' + cambios.map(c => ETIQUETAS[c] || c).join(', '));
+            }
+
+            if (nuevo || cambios.length) {
+                marcarSucio();
+                recalcular();
+                toast('Ficha actualizada. Recuerda guardar.', 'ok');
+            }
+        }
+
+        function gestorFichas() {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            const cuerpo = document.createElement('div');
+
+            const pinta = () => {
+                const bloque = (lista, esCons) => {
+                    const titulo = esCons ? 'Conservatorios' : 'Centros de enseñanza general';
+                    let h = '<div class="form-seccion" style="margin-top:0.8rem">' + titulo + '</div><ul class="lista-fichas">';
+                    if (!lista.length) h += '<li style="color:#999">Todavía no hay ninguno.</li>';
+                    lista.slice().sort((a, b) => cmpEs(a.denominacion, b.denominacion)).forEach(f => {
+                        const n = state.datos.alumnado.filter(a => (esCons ? a.conservatorioId : a.centroId) === f.id).length;
+                        h += '<li><span class="nom">' + escapeHtml(f.denominacion || '(sin nombre)') + '</span>' +
+                             '<span class="cuenta">' + n + ' ' + plural(n, 'alumno/a', 'alumnos/as') + '</span>' +
+                             '<button class="btn-editar" data-ficha="' + escapeHtml(f.id) + '" data-cons="' + (esCons ? '1' : '') + '">Editar</button></li>';
+                    });
+                    h += '</ul><button class="btn-ghost" data-nuevo="' + (esCons ? 'cons' : 'centro') + '" style="margin-top:0.5rem">+ Añadir ' +
+                         (esCons ? 'conservatorio' : 'centro') + '</button>';
+                    return h;
+                };
+                cuerpo.innerHTML = bloque(state.centros, false) + bloque(state.conservatorios, true);
+            };
+            pinta();
+
+            cuerpo.addEventListener('click', async e => {
+                const editar = e.target.closest('[data-ficha]');
+                const nuevo = e.target.closest('[data-nuevo]');
+                if (editar) {
+                    const esCons = editar.dataset.cons === '1';
+                    const lista = esCons ? state.conservatorios : state.centros;
+                    const f = lista.find(x => x.id === editar.dataset.ficha);
+                    if (f) { await editarFicha(f, esCons); pinta(); }
+                } else if (nuevo) {
+                    await editarFicha(null, nuevo.dataset.nuevo === 'cons');
+                    pinta();
+                }
+            });
+
+            modal({ titulo: 'Centros y conservatorios', nodo: cuerpo, ancho: true });
+        }
+
+        // ---------------------------------------------------------------
+        // Barra de estado y diálogos de la carpeta
+        // ---------------------------------------------------------------
+        function actualizarBarraEstado() {
+            const barra = $('barra-estado');
+            if (!state.loaded) { barra.classList.remove('visible'); return; }
+            barra.classList.add('visible');
+
+            $('be-punto').className = 'be-punto' + (state.sucio ? ' sucia' : (state.dirHandle ? ' conectada' : ''));
+
+            let txt = state.origen;
+            if (state.dirHandle) txt += state.sucio ? ' · cambios sin guardar' : ' · todo guardado';
+            else txt += ' · sin carpeta: al guardar se descargará el archivo';
+            $('be-texto').innerHTML = escapeHtml(txt) +
+                (puedeEditar() ? '' : ' · <span class="be-modo-lectura">solo lectura</span>');
+
+            const btnModo = $('btn-modo');
+            btnModo.hidden = !hayPestillo();
+            btnModo.textContent = puedeEditar() ? 'Bloquear edición' : 'Activar edición';
+
+            const btnGuardar = $('btn-guardar');
+            btnGuardar.disabled = !state.sucio || !puedeEditar();
+            btnGuardar.textContent = state.sucio ? 'Guardar cambios' : 'Guardado';
+
+            $('btn-copias').hidden = !state.dirHandle;
+        }
+
+        async function pedirCodigo() {
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML =
+                '<p>Introduce el código del centro para poder modificar datos.</p>' +
+                '<input type="password" id="inp-codigo" autocomplete="off" style="width:100%;padding:0.5rem;border:1px solid #d0d5dd;border-radius:6px;margin-top:0.5rem">' +
+                '<p style="margin-top:0.8rem;font-size:0.8rem;color:#777">Esto es como la protección de un Excel: evita cambios sin querer, ' +
+                'no protege el archivo. Quien tenga acceso a la carpeta puede abrir el .json igualmente.</p>';
+            let codigo = '';
+            const ok = await modal({
+                titulo: 'Activar edición',
+                nodo: cuerpo,
+                botones: [
+                    { texto: 'Cancelar', valor: false },
+                    { texto: 'Desbloquear', clase: 'principal', valor: true,
+                      antesDeCerrar: f => { codigo = f.querySelector('#inp-codigo').value; } },
+                ],
+            });
+            if (ok !== true) return;
+            if (desbloquear(codigo)) toast('Edición activada.', 'ok');
+            else toast('El código no es correcto.', 'error');
+        }
+
+        function verHistorial() {
+            const h = (state.datos && state.datos.historial) || [];
+            let html;
+            if (!h.length) {
+                html = '<p>Todavía no hay cambios registrados.</p>';
+            } else {
+                html = '<p style="color:#777;margin-bottom:0.6rem">Últimos ' + h.length + ' cambios, del más reciente al más antiguo.</p><ul style="list-style:none;padding:0">';
+                h.forEach(e => {
+                    const f = e.fecha ? new Date(e.fecha).toLocaleString('es-ES') : '';
+                    html += '<li style="padding:0.35rem 0;border-bottom:1px solid #f0f0f0">' +
+                        '<div style="font-size:0.72rem;color:#999">' + escapeHtml(f) +
+                        (e.quien ? ' · ' + escapeHtml(e.quien) : '') + '</div>' +
+                        escapeHtml(e.descripcion || '') + '</li>';
+                });
+                html += '</ul>';
+            }
+            modal({ titulo: 'Historial de cambios', html, ancho: true });
+        }
+
+        async function verCopias() {
+            const nombres = await listarCopias();
+            if (!nombres.length) {
+                modal({ titulo: 'Copias de seguridad', html: '<p>Todavía no hay ninguna copia. Se crea una cada vez que guardas.</p>' });
+                return;
+            }
+            const cuerpo = document.createElement('div');
+            cuerpo.innerHTML = '<p style="margin-bottom:0.6rem">Se guardan las ' + MAX_COPIAS +
+                ' copias más recientes, una por cada guardado. Están en <code>' + CARPETA_DATOS + '/' + CARPETA_COPIAS + '</code>.</p>' +
+                '<ul style="list-style:none;padding:0">' +
+                nombres.map(n => '<li style="display:flex;align-items:center;gap:0.6rem;padding:0.3rem 0;border-bottom:1px solid #f0f0f0">' +
+                    '<span style="flex:1">' + escapeHtml(fechaDeCopia(n)) + '</span>' +
+                    '<button class="btn-ghost solo-edicion" data-copia="' + escapeHtml(n) + '">Restaurar</button></li>').join('') +
+                '</ul>';
+
+            cuerpo.addEventListener('click', async e => {
+                const btn = e.target.closest('[data-copia]');
+                if (!btn) return;
+                const nombre = btn.dataset.copia;
+                if (!puedeEditar()) { avisoSoloLectura(); return; }
+                const ok = await confirmar('Restaurar copia',
+                    'Voy a cargar la copia del <strong>' + escapeHtml(fechaDeCopia(nombre)) + '</strong>.<br><br>' +
+                    'Sustituye a lo que tienes ahora en pantalla, pero <strong>no se escribe nada</strong> hasta que pulses Guardar.',
+                    'Cargar esa copia');
+                if (!ok) return;
+                try {
+                    const datos = await leerCopia(nombre);
+                    document.querySelectorAll('.modal-fondo').forEach(m => m.remove());
+                    activarDatos(datos, state.origen);
+                    registrarHistorial('Restaurada la copia del ' + fechaDeCopia(nombre));
+                    marcarSucio(true);
+                    toast('Copia cargada. Pulsa Guardar si quieres que sustituya al archivo.', 'info');
+                } catch (err) {
+                    showError('No he podido leer esa copia: ' + err.message);
+                }
+            });
+
+            modal({ titulo: 'Copias de seguridad', nodo: cuerpo, ancho: true });
+        }
+
+        // ---------------------------------------------------------------
         // Eventos
         // ---------------------------------------------------------------
+        $('btn-conectar').addEventListener('click', conectarCarpeta);
+        $('btn-reconectar').addEventListener('click', async () => {
+            const ok = await reconectar(false);
+            if (!ok) toast('No he podido reconectar. Elige la carpeta otra vez.', 'error');
+        });
+        $('btn-guardar').addEventListener('click', () => guardar());
+        $('btn-modo').addEventListener('click', () => { puedeEditar() ? bloquear() : pedirCodigo(); });
+        $('btn-historial').addEventListener('click', verHistorial);
+        $('btn-copias').addEventListener('click', verCopias);
+
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's' && state.loaded) {
+                e.preventDefault();
+                if (state.sucio) guardar();
+            }
+        });
+
+        window.addEventListener('beforeunload', e => {
+            if (state.sucio) { e.preventDefault(); e.returnValue = ''; }
+        });
+
+        const dropZone = $('drop-zone');
         $('btn-upload').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
-        uploadZone.addEventListener('click', () => fileInput.click());
-        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
-        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-        uploadZone.addEventListener('drop', e => {
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
             e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) recibirArchivo(e.dataTransfer.files[0]);
         });
         fileInput.addEventListener('change', () => {
-            if (fileInput.files.length) handleFile(fileInput.files[0]);
+            if (fileInput.files.length) recibirArchivo(fileInput.files[0]);
+            fileInput.value = '';
         });
+
+        /** Punto único de entrada de archivos: decide entre Excel y JSON. */
+        function recibirArchivo(file) {
+            if (/\.json$/i.test(file.name)) return cargarDeArchivoJson(file);
+            return importarDesdeExcel(file);
+        }
 
         FILTER_IDS.forEach(id => $(id).addEventListener('change', () => { renderView(); syncUrl(); }));
         $('btn-clear-filters').addEventListener('click', () => { clearFilters(); syncUrl(); });
@@ -2590,6 +4027,12 @@
         $('btn-expand-all').addEventListener('click', () => expandAll(true));
         $('btn-collapse-all').addEventListener('click', () => expandAll(false));
         $('btn-reload').addEventListener('click', resetApp);
+        $('btn-importar').addEventListener('click', () => {
+            if (!puedeEditar()) { avisoSoloLectura(); return; }
+            fileInput.click();
+        });
+        $('btn-nuevo-alumno').addEventListener('click', () => editarAlumno(null));
+        $('btn-fichas').addEventListener('click', gestorFichas);
 
         $('btn-export-xlsx').addEventListener('click', exportXlsx);
         $('btn-export-csv').addEventListener('click', exportCsv);
@@ -2597,6 +4040,24 @@
 
         // Cursos, fichas de alumno y cabeceras de tabla (delegación)
         document.addEventListener('click', e => {
+            const editAlu = e.target.closest('[data-editar-alumno]');
+            if (editAlu) {
+                e.stopPropagation();
+                const a = state.alumnado.find(x => x.id === editAlu.dataset.editarAlumno);
+                if (a) editarAlumno(a);
+                return;
+            }
+
+            const editFicha = e.target.closest('[data-editar-ficha]');
+            if (editFicha) {
+                e.stopPropagation();
+                const esCons = editFicha.dataset.cons === '1';
+                const lista = esCons ? state.conservatorios : state.centros;
+                const f = lista.find(x => x.id === editFicha.dataset.editarFicha);
+                if (f) editarFicha(f, esCons);
+                return;
+            }
+
             const infoBtn = e.target.closest('.btn-alumno-info');
             if (infoBtn) {
                 const panel = document.querySelector('[data-panel-for="' + infoBtn.dataset.infoFor + '"]');
@@ -2684,6 +4145,9 @@
         });
 
         $('version-badge').textContent = 'v' + APP_VERSION;
+        $('version-badge').title = 'Compilación: ' + window.COORDINACION_BUILD;
+        const elBuild = $('changelog-build');
+        if (elBuild) elBuild.textContent = 'Compilación ' + window.COORDINACION_BUILD;
 
         // La librería va incrustada al final del archivo (ver tools/inline-vendor.js)
         window.addEventListener('load', () => {
@@ -2691,6 +4155,26 @@
                 showError('No se ha cargado el lector de Excel. Vuelve a descargar el archivo index.html completo desde GitHub.');
             }
         });
+
+        // Asa de diagnóstico: útil para soporte ("abre la consola y escribe
+        // __coordinacion.datos") y para las pruebas automáticas. No expone nada
+        // que no esté ya en el archivo de datos que el usuario tiene delante.
+        window.__coordinacion = state;
+
+        async function arrancar() {
+            if (!state.soporteFSA) {
+                $('inicio-nota-fsa').hidden = false;
+                $('btn-conectar').disabled = true;
+            }
+            // Si ya hay carpeta recordada y el permiso sigue concedido, entrar directo;
+            // si no, ofrecer el botón, porque volver a pedirlo exige un clic del usuario.
+            if (state.soporteFSA && await leerHandle()) {
+                $('btn-reconectar').hidden = false;
+                const ok = await reconectar(true);
+                if (ok) toast('Carpeta recuperada automáticamente.', 'ok');
+            }
+        }
+        arrancar();
     })();
     </script>
 

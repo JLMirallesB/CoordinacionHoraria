@@ -2,18 +2,26 @@
 
 App para coordinar horarios entre conservatorios de música/danza y centros de enseñanza general (CEIP/IES).
 
+Desde la versión 2.0 no es solo un visor: **la app guarda los datos**. Abres una carpeta de trabajo
+—normalmente una carpeta compartida de OneDrive— y todo se escribe ahí, con copias de seguridad
+automáticas e historial de cambios.
+
 ![Pantalla de inicio](screenshots/01-pantalla-inicio.png)
 
 ## Privacidad y seguridad
 
 - **No se instala nada.** Es un único archivo HTML que se abre en el navegador.
-- **Funciona sin conexión.** La app no descarga nada de internet: el lector de Excel viaja dentro del propio archivo HTML. Puedes desconectar la red y seguirá funcionando igual.
-- **No se suben datos a internet.** Todo el procesamiento ocurre localmente en tu navegador. Ningún dato sale de tu ordenador.
-- **No se almacenan datos.** La app no guarda nada: ni cookies, ni bases de datos, ni archivos temporales. Al cerrar el navegador, desaparece todo.
-- **La app NO escribe en el Excel.** Solo lee los datos para mostrarlos de forma visual. Tu archivo Excel nunca se modifica.
-- **Los datos están en tu Excel local.** Tú controlas dónde está el archivo y quién tiene acceso a él.
+- **Funciona sin conexión.** La app no descarga nada de internet: el lector de Excel viaja dentro del propio archivo HTML.
+- **No se suben datos a internet.** Todo el procesamiento ocurre en tu navegador. Ningún dato sale de tu ordenador.
+- **Los datos son tuyos y están donde tú digas.** La app escribe en la carpeta que le indiques y en ningún otro sitio.
+- **La app NO escribe en tu Excel.** El Excel solo se lee, para importarlo. Nunca se modifica.
 
-> Los filtros y la vista que tengas activos se guardan en la dirección del navegador (después de la `#`), para que puedas recargar o guardar el enlace. Eso ocurre solo en tu navegador: esa dirección no se envía a ningún sitio.
+> Los filtros y la vista se guardan en la dirección del navegador (después de la `#`) para que puedas
+> recargar o guardar el enlace. Eso ocurre solo en tu navegador; esa dirección no se envía a ningún sitio.
+
+**Si vas a usar esto con datos reales de alumnado**, ten en cuenta que son datos personales de menores:
+guarda la carpeta donde tu centro guarde el resto de datos académicos, y comprueba qué dice la normativa
+de tu administración sobre dónde pueden almacenarse.
 
 ---
 
@@ -21,39 +29,78 @@ App para coordinar horarios entre conservatorios de música/danza y centros de e
 
 ### 1. Descargar la app
 
-Ve a la [última release en GitHub](https://github.com/JLMirallesB/CoordinacionHoraria/releases/latest) y descarga el archivo **`index.html`**. Guárdalo donde quieras en tu ordenador.
+Ve a la [última release en GitHub](https://github.com/JLMirallesB/CoordinacionHoraria/releases/latest)
+y descarga **`index.html`**. Ocupa unos 400 KB porque lleva dentro el lector de Excel; gracias a eso
+funciona sin conexión.
 
-### 2. Descargar el Excel de ejemplo
+También encontrarás **`ejemplo_coordinacion.xlsx`**, con datos inventados, para probar.
 
-En la misma release encontrarás el archivo **`ejemplo_coordinacion.xlsx`**. Descárgalo para probar la app antes de usar tus propios datos.
+### 2. Ábrelo con Chrome o con Edge
 
-### 3. Abrir la app
+Haz doble clic en el archivo. **Para poder guardar hace falta Chrome o Edge**: Firefox y Safari no
+permiten que una página escriba en una carpeta, así que allí la app funciona solo como visor.
 
-Haz doble clic en `index.html`. Se abrirá en tu navegador (Chrome, Firefox, Edge, Safari...). Verás la pantalla de inicio con la zona para subir el Excel.
+### 3. Elige la carpeta de trabajo
 
-El archivo ocupa unos 400 KB porque lleva dentro el lector de Excel. Gracias a eso no necesita conexión a internet.
+Pulsa **"Elegir carpeta"** y selecciona la carpeta donde quieres que vivan los datos. El navegador
+te pedirá permiso para editar archivos.
 
-### 4. Cargar el Excel
+Dentro de esa carpeta la app crea:
 
-Arrastra el archivo Excel sobre la zona de subida o haz clic en "Seleccionar archivo" para buscarlo en tu ordenador.
+```
+tu-carpeta/
+  datos/
+    coordinacion.json      ← los datos
+    copias/                ← copias de seguridad automáticas
+```
 
-El formato admitido es `.xlsx` (y `.xlsm`). Si tienes un `.xls` antiguo, ábrelo en Excel o LibreOffice y guárdalo como `.xlsx`.
+**Una vez elegida, no cambies el nombre de la carpeta ni la muevas**: el permiso se invalida y todo el
+mundo tendrá que volver a seleccionarla.
 
-Para cargar otro archivo después, usa el botón **"Cargar otro Excel"** de la barra de herramientas; no hace falta recargar la página.
+El navegador recuerda la carpeta, pero **el permiso caduca al cerrar el navegador del todo**. Cuando
+vuelvas a abrir la app, pulsa **"↻ Reconectar con la última carpeta"**.
 
-![Vista general tras cargar el Excel](screenshots/02-vista-general.png)
+### 4. Importa tu Excel
+
+Con la carpeta abierta, pulsa **"Importar Excel"**. Antes de tocar nada, la app te enseña un
+**informe de comprobación**: cuántos alumnos, centros y conservatorios ha leído, y cuántos valores
+ha traído en cada columna. Si una columna aparece en rojo con un 0, es que no se ha reconocido su
+título. Revísalo y solo entonces confirma.
+
+Después pulsa **Guardar**. A partir de ahí ya trabajas contra el JSON: el Excel solo hace falta si
+quieres volver a importar desde cero.
+
+### Solo consultar, sin guardar
+
+Si únicamente quieres mirar, arrastra un `.xlsx` (o un `.json` de la app) a la zona de abajo de la
+pantalla de inicio. No se conecta ninguna carpeta y no se escribe nada.
+
+![Vista general tras cargar los datos](screenshots/02-vista-general.png)
 
 ---
 
-## Cómo preparar tu propio Excel
+## Trabajar con varias personas
 
-Puedes partir del Excel de ejemplo y adaptarlo a tu centro. La app **solo lee** el archivo, nunca lo modifica, así que puedes editarlo con total tranquilidad en Excel, LibreOffice, Google Sheets, etc.
+La carpeta puede estar compartida. La app está pensada para eso, pero conviene saber cómo se comporta:
+
+- **El guardado es siempre explícito** (botón Guardar o Ctrl+S). No hay autoguardado: en una carpeta
+  sincronizada, guardar a cada tecla multiplica las probabilidades de pisarse.
+- **Antes de guardar, la app comprueba si alguien más ha guardado** desde que tú abriste los datos.
+  Si es así, te dice quién y qué revisión, y te deja elegir entre recargar lo suyo, sobrescribirlo o
+  cancelar. Sobrescribir borra el trabajo de la otra persona: léelo antes de pulsar.
+- **No hay bloqueo de archivo** a propósito. Un archivo de bloqueo en una carpeta sincronizada deja
+  al equipo bloqueado en cuanto alguien cierra el portátil sin salir de la app.
+- Si cierras la pestaña con cambios sin guardar, el navegador te avisa.
+
+---
+
+## Cómo preparar tu Excel
+
+Puedes partir del Excel de ejemplo. La app **solo lo lee**, nunca lo modifica.
 
 El Excel debe tener **tres hojas** (los nombres deben contener estas palabras):
 
 ### Hoja "Centros"
-
-Datos de los centros de enseñanza general coordinados. Columnas:
 
 | Columna | Descripción | Ejemplo |
 |---------|-------------|---------|
@@ -71,24 +118,9 @@ Datos de los centros de enseñanza general coordinados. Columnas:
 
 ### Hoja "Conservatorios"
 
-Datos de los conservatorios. Columnas:
-
-| Columna | Descripción | Ejemplo |
-|---------|-------------|---------|
-| Denominación | Nombre del conservatorio | Conservatorio Municipal de Música |
-| Distancia (km) | Distancia al centro ERG | 1.2 |
-| Distancia (min a pie) | Tiempo a pie | 15 |
-| Mail contacto | Email general | info@conservatorio.es |
-| Director/a | Nombre | Alberto Roca |
-| Mail director/a | Email | a.roca@conservatorio.es |
-| Jefe/a estudios | Nombre | Pilar Esteve |
-| Mail jefatura | Email | p.esteve@conservatorio.es |
-| Coordinador/a | Nombre | Mª Carmen Bellés |
-| Mail coordinador/a | Email | mc.belles@conservatorio.es |
+Las mismas columnas que "Centros", sin la columna Tipo.
 
 ### Hoja "Alumnado"
-
-Listado completo del alumnado. Columnas:
 
 | Columna | Descripción | Ejemplo |
 |---------|-------------|---------|
@@ -107,9 +139,12 @@ Listado completo del alumnado. Columnas:
 | Mail tutor/a ERG | Email del tutor/a del CEIP/IES | r.ibanez@edu.gva.es |
 | Observaciones | Notas relevantes (opcional) | Solicita adaptación horaria |
 
-**Importante:** Los valores de "Centro ERG" y "Conservatorio" en la hoja de Alumnado deben coincidir exactamente con los de "Denominación" en las hojas de Centros y Conservatorios.
+Los nombres de "Centro ERG" y "Conservatorio" se emparejan con los de las otras hojas ignorando
+mayúsculas, acentos y espacios sobrantes. Si aun así alguno no aparece en su hoja, la app **le crea
+una ficha vacía** para no perder a su alumnado, y te lo dice en el informe de importación.
 
-**Campos opcionales:** No es obligatorio rellenar los nombres y emails de tutores, miembros de equipo directivo, coordinadores ni las distancias. La app funciona sin ellos. Sin embargo, si quieres tener esa informacion a mano en el visor (botones "Info", datos de tutores, enlaces mailto grupales), se recomienda completarlos.
+**Campos opcionales:** los nombres y emails de tutores, equipo directivo, coordinación y las
+distancias no son obligatorios. También puedes rellenarlos después desde la propia app.
 
 ### Cursos válidos del conservatorio
 
@@ -130,117 +165,122 @@ Listado completo del alumnado. Columnas:
 
 ## Funciones de la app
 
-### Sistema de desfase
+### Editar
 
-La app calcula automáticamente el desfase entre el curso del conservatorio y el curso real en el centro ERG:
+- **Ficha de alumno/a**: botón ✎ en cada fila. Alta, modificación y baja, con el desfase
+  recalculándose en vivo mientras rellenas los cursos.
+- **Centros y conservatorios**: botón "Editar" en cada tarjeta, o el botón "Centros" de la barra de
+  herramientas para verlos todos, añadir y eliminar. No deja eliminar uno que todavía tenga alumnado.
+- Cada cambio queda anotado en el historial diciendo **qué campos** se han tocado.
+
+### Historial y copias de seguridad
+
+- **Copias**: cada vez que guardas se escribe una copia fechada en `datos/copias/`. Se conservan las
+  30 últimas. Desde el botón **Copias** puedes ver la lista y restaurar cualquiera (no se escribe
+  nada hasta que pulses Guardar).
+- **Rescate automático**: si el archivo principal se corrompe, al abrirlo la app te ofrece la copia
+  buena más reciente.
+- **Historial**: quién cambió qué y cuándo, dentro del propio archivo. Se guardan los 500 últimos
+  cambios.
+
+### Pestillo de edición
+
+Si rellenas el **código de centro** en la configuración, la app arranca en **solo lectura** y hay que
+introducirlo para poder modificar nada. El desbloqueo dura lo que la pestaña.
+
+Es la protección de un Excel, no seguridad: quien tenga acceso a la carpeta puede abrir el `.json`
+igualmente. Sirve para no tocar datos sin querer mientras consultas. La protección real son los
+permisos de la carpeta compartida.
+
+### Sistema de desfase
 
 - **Verde (0)**: el alumno/a está en el curso equivalente exacto
 - **Amarillo (±1)**: desfase de un curso (leve)
 - **Rojo (±2 o más)**: desfase de dos o más cursos (grande)
-- **Gris (?)**: no se puede calcular porque algún curso está vacío o escrito de una forma que la app no reconoce. Estos alumnos **no** se cuentan como "curso equivalente": salen aparte y aparecen listados en el panel de revisión de datos
+- **Gris (?)**: no se puede calcular porque falta algún curso o no se reconoce. **No** cuenta como
+  curso equivalente: sale aparte y aparece en el panel de revisión
 
 ### Revisión de los datos
 
-Al cargar el Excel, la app revisa los datos y avisa (sin bloquear nada) de lo que conviene mirar:
+La app avisa (sin bloquear nada) de NIA duplicados, alumnado con el curso o el centro sin rellenar,
+cursos escritos de forma no reconocida, referencias a fichas borradas y alumnado sin NIA. Las filas
+completamente vacías del Excel se ignoran.
 
-- NIA duplicados
-- Alumnado con el curso o el centro sin rellenar
-- Cursos de conservatorio o de ERG escritos de una forma no reconocida
-- Centros o conservatorios que aparecen en Alumnado pero no en sus hojas correspondientes (se muestran igual, pero sin datos de contacto)
-- Nombres que solo coinciden ignorando mayúsculas, acentos o espacios sobrantes (la app los agrupa juntos, pero conviene unificarlos)
-- Alumnado sin NIA
+### Vistas
 
-Las filas completamente vacías del Excel se ignoran.
+- **Cards**: jerarquía centro → curso → alumnado agrupado por desfase, con barras y chips de color.
+  ![Detalle de un centro](screenshots/03-detalle-centro.png)
+- **Tabla**: todo el alumnado en una tabla ordenable por cualquier columna (el NIA ordena como número
+  y los cursos en su orden natural).
+  ![Vista tabla](screenshots/04-vista-tabla.png)
+- **Agrupar por** Centro ERG o Conservatorio, y **agrupar cursos por** curso del conservatorio o del centro.
+  ![Vista agrupada por conservatorio](screenshots/05-vista-conservatorio.png)
 
-### Vista Cards
+### Filtros y buscador
 
-Vista jerárquica con tarjetas colapsables. Cada centro o conservatorio se muestra como una tarjeta que al expandir muestra los cursos, y dentro de cada curso los alumnos agrupados por desfase con fondo coloreado.
+7 filtros combinables (tipo de enseñanza, curso del conservatorio, especialidad, curso ERG, centro,
+conservatorio y **desfase**), con contador de filtros activos y botón para limpiarlos. El buscador por
+nombre o NIA funciona en las dos vistas, despliega las tarjetas donde están los resultados y se
+mantiene al cambiar de filtro, de vista o de orden. Ctrl+F lleva el cursor al buscador.
 
-![Detalle de un centro expandido con cursos, desfases y datos de tutor](screenshots/03-detalle-centro.png)
+### Contacto
 
-### Vista Tabla
+Botón "Info" en cada centro con los datos del equipo directivo, botón (i) en cada alumno/a con sus
+tutores y observaciones, y enlaces de email grupal por centro y por curso.
 
-Tabla plana con todos los alumnos filtrados. Ordenable por cualquier columna haciendo clic en la cabecera (el NIA ordena como número y los cursos en su orden natural, no alfabético). Un segundo clic invierte el orden y la flecha indica en qué sentido está ordenada. Incluye columna de desfase coloreada e indicador de observaciones.
+### Exportar e imprimir
 
-![Vista tabla con todos los alumnos](screenshots/04-vista-tabla.png)
-
-### Toggles de agrupación
-
-- **Agrupar por**: Centro ERG (por defecto) o Conservatorio. Cambia qué aparece como tarjeta principal.
-- **Agrupar cursos por**: Curso Conservatorio (por defecto) o Curso ERG. Cambia cómo se organizan los alumnos dentro de cada tarjeta.
-
-![Vista agrupada por conservatorio](screenshots/05-vista-conservatorio.png)
-
-### Filtros
-
-7 filtros combinables que se aplican en ambas vistas:
-
-1. **Tipo enseñanza**: EEM (Elemental) o EPM (Profesional)
-2. **Curso Conservatorio**: filtrar por un curso concreto del conservatorio
-3. **Especialidad**: filtrar por instrumento/especialidad
-4. **Curso ERG**: filtrar por un curso concreto del centro
-5. **Centro ERG**: filtrar por un centro concreto
-6. **Conservatorio**: filtrar por un conservatorio concreto
-7. **Desfase**: solo los equivalentes, solo los leves, solo los grandes, solo los que tienen algún desfase, o solo los que están sin determinar
-
-Los filtros activos se marcan en azul y hay un contador con un botón para limpiarlos todos de golpe. La combinación de filtros y la vista quedan guardadas en la dirección del navegador, así que puedes recargar la página o guardar el enlace (tendrás que volver a seleccionar el Excel, pero los filtros se recuperan).
-
-### Buscador
-
-Campo de búsqueda por nombre o NIA, que funciona en las dos vistas. Al escribir:
-
-- Resalta en amarillo todos los resultados, y en un amarillo más intenso el resultado actual
-- Auto-despliega las tarjetas y cursos donde están los resultados
-- Flechas arriba/abajo o Enter para navegar entre resultados (Mayús+Enter hacia atrás)
-- Escape o el botón X para limpiar
-- Ctrl+F (Cmd+F en Mac) lleva el cursor al buscador
-- La búsqueda se mantiene al cambiar de filtro, de vista o de orden
-
-### Información de contacto
-
-- **Botón "Info"** en cada centro y conservatorio: muestra datos de contacto (director/a, jefe/a de estudios, coordinador/a) con enlaces de email
-- **Botón (i)** en cada alumno/a: muestra tutores del conservatorio y del centro ERG con emails, y observaciones si las hay. El icono se destaca en naranja cuando hay observaciones
-
-### Email grupal
-
-Botón de email en cada centro/conservatorio y en cada curso que abre el cliente de correo con todos los tutores de ese grupo como destinatarios.
-
-### Expandir y contraer
-
-Botones "Expandir todo" y "Contraer todo" para abrir o cerrar de golpe todas las tarjetas y cursos. Lo que tengas abierto sigue abierto aunque cambies de filtro.
-
-### Exportar
-
-- **Excel**: descarga un `.xlsx` con el alumnado que estés viendo (filtros y orden incluidos) y una columna de desfase ya calculada
-- **CSV**: lo mismo en `.csv`, con `;` como separador para que Excel en español lo abra directamente
-
-Ninguna de las dos exportaciones toca tu archivo original: crean un archivo nuevo.
-
-### Imprimir y PDF
-
-El botón **"Imprimir / PDF"** abre el diálogo de impresión del navegador; ahí puedes elegir "Guardar como PDF". Se imprime lo que tengas filtrado, con todas las tarjetas y cursos desplegados, el texto seleccionable y los cortes de página respetando las tarjetas. La vista Cards se imprime en vertical y la vista Tabla en horizontal.
-
-Cada centro tiene además un botón 🖨 en su cabecera para imprimir **solo ese centro**.
+Excel y CSV de lo que estés viendo (filtros y orden incluidos, con el desfase ya calculado), y botón
+de imprimir que abre el diálogo del navegador, donde puedes elegir "Guardar como PDF". Cada centro
+tiene además su propio botón de imprimir.
 
 ---
 
 ## Accesibilidad
 
-Las tarjetas y los cursos se pueden abrir con el teclado (Tab para moverse, Enter o Espacio para abrir), el foco se ve siempre, las cabeceras de la tabla indican el orden a los lectores de pantalla y las animaciones se desactivan si el sistema tiene activado "reducir movimiento".
+Las tarjetas y los cursos se abren con el teclado, el foco se ve siempre, las cabeceras de la tabla
+indican el orden a los lectores de pantalla y las animaciones se desactivan si el sistema tiene
+activado "reducir movimiento".
 
 ---
 
 ## Para desarrolladores
 
-Todo el código está en `index.html`: HTML, CSS y JavaScript en un único archivo, sin framework ni proceso de compilación.
+Todo el código está en `index.html`: HTML, CSS y JavaScript en un único archivo, sin framework.
 
-La única dependencia es [SheetJS](https://sheetjs.com) (Apache-2.0), que lee el Excel y va **incrustada dentro del HTML** para que la app funcione sin conexión. Vive en `vendor/xlsx.mini.min.js` y se incrusta entre los marcadores `<!-- vendor:xlsx -->` con:
+**SheetJS** (Apache-2.0) va incrustada dentro del HTML para que funcione sin conexión. Vive en
+`vendor/xlsx.mini.min.js` y se incrusta entre los marcadores `<!-- vendor:xlsx -->`:
 
 ```bash
 npm run vendor
 ```
 
-Para actualizar SheetJS, descarga la nueva versión en `vendor/xlsx.mini.min.js` y vuelve a ejecutar ese comando.
+**Publicar en la carpeta compartida:**
+
+```bash
+cp herramientas/destino.local.example herramientas/destino.local   # y edita la ruta
+npm run publicar
+```
+
+Copia un solo archivo HTML autocontenido, sellado con `git describe`, y lo hace **a través del
+Finder por AppleScript**: en los Mac de Conselleria la terminal no puede acceder a OneDrive
+(`Operation not permitted`) aunque tenga Acceso total al disco.
+
+**Antes de nada, instala el hook** que impide subir datos personales a este repositorio público:
+
+```bash
+npm run instalar-hooks
+```
+
+### Si reutilizas este repositorio
+
+Los datos de alumnado **nunca** deben entrar en git. El `.gitignore` y el hook `pre-commit` lo
+impiden, pero recuerda que el historial de git es para siempre: si alguna vez se cuela un archivo,
+no basta con borrarlo en el commit siguiente. Ojo también con las **capturas de pantalla en issues
+públicos**: una captura con nombres y NIA es exactamente lo mismo que subir el fichero.
+
+El código del pestillo sale del archivo de datos, nunca del código fuente, precisamente porque este
+repositorio es público.
 
 ---
 

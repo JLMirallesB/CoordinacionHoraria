@@ -1,10 +1,12 @@
 {
   "name": "coordinacion-horaria",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Visor de coordinacion horaria entre conservatorios y centros de ensenanza general. App de un solo archivo HTML, sin servidor y sin conexion.",
+  "description": "Coordinacion horaria entre conservatorios y centros de ensenanza general. App de un solo archivo HTML, sin servidor y sin conexion, que guarda los datos en una carpeta local.",
   "scripts": {
-    "vendor": "node tools/inline-vendor.js"
+    "vendor": "node tools/inline-vendor.js",
+    "publicar": "zsh herramientas/publicar.sh",
+    "instalar-hooks": "cp herramientas/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo 'Hook pre-commit instalado: no dejara commitear archivos de datos.'"
   },
   "author": "Jose Luis Miralles Bono",
   "license": "MIT"

@@ -1,0 +1,8 @@
+# Copia este archivo como "destino.local" (sin .example) y escribe debajo la ruta
+# completa de la carpeta de OneDrive donde vive la app.
+#
+# destino.local NO se sube al repositorio: la ruta lleva la estructura de carpetas
+# del centro y este repositorio es público.
+#
+# Ejemplo (una sola línea, sin comillas y sin barra final):
+/Users/tu-usuario/Library/CloudStorage/OneDrive-TuOrganizacion/CARPETA COMPARTIDA/COORDINACION

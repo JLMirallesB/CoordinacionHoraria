@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Impide que entren datos personales en un repositorio PÚBLICO.
+#
+# El .gitignore no protege de un `git add -f` distraído; este hook sí.
+# Se instala con:  npm run instalar-hooks
+#
+# Si alguna vez necesitas saltártelo a conciencia:  git commit --no-verify
+#
+bloqueados=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei \
+  '(^|/)datos/|(^|/)copias/|coordinacion.*\.json$|\.(xlsx|xlsm|xls|csv|ods)$' | \
+  grep -v '^ejemplo_coordinacion\.xlsx$' || true)
+
+if [ -n "$bloqueados" ]; then
+  echo ""
+  echo "  COMMIT BLOQUEADO: esto parecen datos, y este repositorio es público."
+  echo ""
+  echo "$bloqueados" | sed 's/^/    /'
+  echo ""
+  echo "  Los datos de alumnado NUNCA deben subirse: viven en la carpeta de"
+  echo "  OneDrive, no en el repositorio. El único Excel permitido es"
+  echo "  ejemplo_coordinacion.xlsx, que lleva datos inventados."
+  echo ""
+  echo "  Si te has equivocado:   git reset HEAD <archivo>"
+  echo ""
+  exit 1
+fi
+exit 0

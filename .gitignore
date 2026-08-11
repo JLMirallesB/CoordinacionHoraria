@@ -1,3 +1,25 @@
+# ---------------------------------------------------------------------------
+# Este repositorio es PÚBLICO y la app maneja datos personales de menores.
+# Nada de lo que haya aquí debajo puede subirse nunca. No relajes estas reglas
+# sin pensarlo dos veces: el historial de git es para siempre.
+#
+# Los datos viven en la carpeta compartida de OneDrive, no aquí.
+# El hook herramientas/pre-commit refuerza esto (npm run instalar-hooks).
+# ---------------------------------------------------------------------------
+datos/
+copias/
+coordinacion*.json
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+*.ods
+# ...salvo el Excel de ejemplo, que lleva datos inventados
+!ejemplo_coordinacion.xlsx
+
+# Ruta local de publicación: lleva la estructura de carpetas del centro
+herramientas/destino.local
+
 node_modules/
 .DS_Store
 *.log
