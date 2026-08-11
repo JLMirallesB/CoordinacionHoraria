@@ -7,10 +7,13 @@ App para coordinar horarios entre conservatorios de música/danza y centros de e
 ## Privacidad y seguridad
 
 - **No se instala nada.** Es un único archivo HTML que se abre en el navegador.
+- **Funciona sin conexión.** La app no descarga nada de internet: el lector de Excel viaja dentro del propio archivo HTML. Puedes desconectar la red y seguirá funcionando igual.
 - **No se suben datos a internet.** Todo el procesamiento ocurre localmente en tu navegador. Ningún dato sale de tu ordenador.
 - **No se almacenan datos.** La app no guarda nada: ni cookies, ni bases de datos, ni archivos temporales. Al cerrar el navegador, desaparece todo.
 - **La app NO escribe en el Excel.** Solo lee los datos para mostrarlos de forma visual. Tu archivo Excel nunca se modifica.
 - **Los datos están en tu Excel local.** Tú controlas dónde está el archivo y quién tiene acceso a él.
+
+> Los filtros y la vista que tengas activos se guardan en la dirección del navegador (después de la `#`), para que puedas recargar o guardar el enlace. Eso ocurre solo en tu navegador: esa dirección no se envía a ningún sitio.
 
 ---
 
@@ -28,9 +31,15 @@ En la misma release encontrarás el archivo **`ejemplo_coordinacion.xlsx`**. Des
 
 Haz doble clic en `index.html`. Se abrirá en tu navegador (Chrome, Firefox, Edge, Safari...). Verás la pantalla de inicio con la zona para subir el Excel.
 
+El archivo ocupa unos 400 KB porque lleva dentro el lector de Excel. Gracias a eso no necesita conexión a internet.
+
 ### 4. Cargar el Excel
 
 Arrastra el archivo Excel sobre la zona de subida o haz clic en "Seleccionar archivo" para buscarlo en tu ordenador.
+
+El formato admitido es `.xlsx` (y `.xlsm`). Si tienes un `.xls` antiguo, ábrelo en Excel o LibreOffice y guárdalo como `.xlsx`.
+
+Para cargar otro archivo después, usa el botón **"Cargar otro Excel"** de la barra de herramientas; no hace falta recargar la página.
 
 ![Vista general tras cargar el Excel](screenshots/02-vista-general.png)
 
@@ -128,6 +137,20 @@ La app calcula automáticamente el desfase entre el curso del conservatorio y el
 - **Verde (0)**: el alumno/a está en el curso equivalente exacto
 - **Amarillo (±1)**: desfase de un curso (leve)
 - **Rojo (±2 o más)**: desfase de dos o más cursos (grande)
+- **Gris (?)**: no se puede calcular porque algún curso está vacío o escrito de una forma que la app no reconoce. Estos alumnos **no** se cuentan como "curso equivalente": salen aparte y aparecen listados en el panel de revisión de datos
+
+### Revisión de los datos
+
+Al cargar el Excel, la app revisa los datos y avisa (sin bloquear nada) de lo que conviene mirar:
+
+- NIA duplicados
+- Alumnado con el curso o el centro sin rellenar
+- Cursos de conservatorio o de ERG escritos de una forma no reconocida
+- Centros o conservatorios que aparecen en Alumnado pero no en sus hojas correspondientes (se muestran igual, pero sin datos de contacto)
+- Nombres que solo coinciden ignorando mayúsculas, acentos o espacios sobrantes (la app los agrupa juntos, pero conviene unificarlos)
+- Alumnado sin NIA
+
+Las filas completamente vacías del Excel se ignoran.
 
 ### Vista Cards
 
@@ -137,7 +160,7 @@ Vista jerárquica con tarjetas colapsables. Cada centro o conservatorio se muest
 
 ### Vista Tabla
 
-Tabla plana con todos los alumnos filtrados. Ordenable por cualquier columna haciendo clic en la cabecera. Incluye columna de desfase coloreada e indicador de observaciones.
+Tabla plana con todos los alumnos filtrados. Ordenable por cualquier columna haciendo clic en la cabecera (el NIA ordena como número y los cursos en su orden natural, no alfabético). Un segundo clic invierte el orden y la flecha indica en qué sentido está ordenada. Incluye columna de desfase coloreada e indicador de observaciones.
 
 ![Vista tabla con todos los alumnos](screenshots/04-vista-tabla.png)
 
@@ -150,23 +173,28 @@ Tabla plana con todos los alumnos filtrados. Ordenable por cualquier columna hac
 
 ### Filtros
 
-6 filtros combinables que se aplican en ambas vistas:
+7 filtros combinables que se aplican en ambas vistas:
 
 1. **Tipo enseñanza**: EEM (Elemental) o EPM (Profesional)
 2. **Curso Conservatorio**: filtrar por un curso concreto del conservatorio
-3. **Curso ERG**: filtrar por un curso concreto del centro
-4. **Especialidad**: filtrar por instrumento/especialidad
+3. **Especialidad**: filtrar por instrumento/especialidad
+4. **Curso ERG**: filtrar por un curso concreto del centro
 5. **Centro ERG**: filtrar por un centro concreto
 6. **Conservatorio**: filtrar por un conservatorio concreto
+7. **Desfase**: solo los equivalentes, solo los leves, solo los grandes, solo los que tienen algún desfase, o solo los que están sin determinar
+
+Los filtros activos se marcan en azul y hay un contador con un botón para limpiarlos todos de golpe. La combinación de filtros y la vista quedan guardadas en la dirección del navegador, así que puedes recargar la página o guardar el enlace (tendrás que volver a seleccionar el Excel, pero los filtros se recuperan).
 
 ### Buscador
 
-Campo de búsqueda por nombre o NIA. Al escribir:
+Campo de búsqueda por nombre o NIA, que funciona en las dos vistas. Al escribir:
 
-- Resalta en amarillo todos los resultados
+- Resalta en amarillo todos los resultados, y en un amarillo más intenso el resultado actual
 - Auto-despliega las tarjetas y cursos donde están los resultados
-- Flechas arriba/abajo o Enter para navegar entre resultados
+- Flechas arriba/abajo o Enter para navegar entre resultados (Mayús+Enter hacia atrás)
 - Escape o el botón X para limpiar
+- Ctrl+F (Cmd+F en Mac) lleva el cursor al buscador
+- La búsqueda se mantiene al cambiar de filtro, de vista o de orden
 
 ### Información de contacto
 
@@ -177,9 +205,42 @@ Campo de búsqueda por nombre o NIA. Al escribir:
 
 Botón de email en cada centro/conservatorio y en cada curso que abre el cliente de correo con todos los tutores de ese grupo como destinatarios.
 
-### Exportar PDF
+### Expandir y contraer
 
-Botón "Exportar PDF" que genera un documento con todo el contenido visible (respetando los filtros activos). El PDF se genera en formato A4 horizontal.
+Botones "Expandir todo" y "Contraer todo" para abrir o cerrar de golpe todas las tarjetas y cursos. Lo que tengas abierto sigue abierto aunque cambies de filtro.
+
+### Exportar
+
+- **Excel**: descarga un `.xlsx` con el alumnado que estés viendo (filtros y orden incluidos) y una columna de desfase ya calculada
+- **CSV**: lo mismo en `.csv`, con `;` como separador para que Excel en español lo abra directamente
+
+Ninguna de las dos exportaciones toca tu archivo original: crean un archivo nuevo.
+
+### Imprimir y PDF
+
+El botón **"Imprimir / PDF"** abre el diálogo de impresión del navegador; ahí puedes elegir "Guardar como PDF". Se imprime lo que tengas filtrado, con todas las tarjetas y cursos desplegados, el texto seleccionable y los cortes de página respetando las tarjetas. La vista Cards se imprime en vertical y la vista Tabla en horizontal.
+
+Cada centro tiene además un botón 🖨 en su cabecera para imprimir **solo ese centro**.
+
+---
+
+## Accesibilidad
+
+Las tarjetas y los cursos se pueden abrir con el teclado (Tab para moverse, Enter o Espacio para abrir), el foco se ve siempre, las cabeceras de la tabla indican el orden a los lectores de pantalla y las animaciones se desactivan si el sistema tiene activado "reducir movimiento".
+
+---
+
+## Para desarrolladores
+
+Todo el código está en `index.html`: HTML, CSS y JavaScript en un único archivo, sin framework ni proceso de compilación.
+
+La única dependencia es [SheetJS](https://sheetjs.com) (Apache-2.0), que lee el Excel y va **incrustada dentro del HTML** para que la app funcione sin conexión. Vive en `vendor/xlsx.mini.min.js` y se incrusta entre los marcadores `<!-- vendor:xlsx -->` con:
+
+```bash
+npm run vendor
+```
+
+Para actualizar SheetJS, descarga la nueva versión en `vendor/xlsx.mini.min.js` y vuelve a ejecutar ese comando.
 
 ---
 
