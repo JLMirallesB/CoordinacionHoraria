@@ -75,6 +75,23 @@ quieres volver a importar desde cero.
 Si únicamente quieres mirar, arrastra un `.xlsx` (o un `.json` de la app) a la zona de abajo de la
 pantalla de inicio. No se conecta ninguna carpeta y no se escribe nada.
 
+**No es una decisión definitiva**: mientras estás mirando, arriba tienes el botón
+**"Conectar carpeta para guardar"**. Si la carpeta que elijas está vacía, se guardará ahí lo que
+tengas abierto y a partir de ese momento trabajas contra ella.
+
+### Qué pasa al conectar una carpeta
+
+Depende de lo que haya a cada lado, y **conectar nunca escribe encima de lo que ya está en la carpeta**:
+
+| | Carpeta vacía | Carpeta que ya tiene datos |
+|---|---|---|
+| **No tienes nada abierto** | te ofrece empezar un archivo nuevo | los abre |
+| **Tienes datos abiertos** | te ofrece guardarlos ahí | te enseña qué hay al otro lado y solo puedes abrirlos o cancelar |
+
+Si lo que quieres es justo lo contrario —que tu Excel sustituya a los datos de la carpeta— hay que
+hacerlo en dos pasos deliberados: abrir la carpeta primero y usar después **Importar Excel**, que
+avisa en rojo de lo que va a pasar y guarda una copia de seguridad antes de sustituir nada.
+
 ![Vista general tras cargar los datos](screenshots/02-vista-general.png)
 
 ---

@@ -119,6 +119,10 @@
         .inicio-separador::before, .inicio-separador::after {
             content: ''; flex: 1; height: 1px; background: #d8dce4;
         }
+        .inicio-pie {
+            text-align: center; color: #888; font-size: 0.82rem;
+            margin-top: 1rem; max-width: 620px; margin-left: auto; margin-right: auto;
+        }
 
         /* Barra de estado */
         .barra-estado {
@@ -907,6 +911,12 @@
             font-size: 0.9rem;
         }
         .cards-empty { background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .table-empty .cards-empty { box-shadow: none; }
+        .ce-titulo { font-size: 1rem; font-weight: 600; color: #1a1a2e; margin-bottom: 0.3rem; }
+        .ce-botones {
+            display: flex; gap: 0.6rem; justify-content: center;
+            margin-top: 1rem; flex-wrap: wrap;
+        }
 
         /* Changelog modal */
         .changelog-overlay {
@@ -1245,8 +1255,9 @@
         <div class="inicio" id="upload-zone">
             <div class="inicio-principal">
                 <div class="icon" aria-hidden="true">📂</div>
-                <h2>Abre tu carpeta de trabajo</h2>
-                <p>Los datos se guardan en un archivo dentro de la carpeta que elijas, normalmente la carpeta compartida de OneDrive.</p>
+                <h2>Trabajar y guardar</h2>
+                <p>Elige la carpeta donde viven los datos, normalmente la carpeta compartida de OneDrive.
+                   Todo lo que cambies se guarda ahí, con copias de seguridad e historial.</p>
                 <div class="inicio-botones">
                     <button class="btn-upload" id="btn-conectar">Elegir carpeta</button>
                     <button class="btn-ghost" id="btn-reconectar" hidden>↻ Reconectar con la última carpeta</button>
@@ -1257,14 +1268,17 @@
                 </p>
             </div>
 
-            <div class="inicio-separador"><span>o solo consultar, sin guardar nada</span></div>
+            <div class="inicio-separador"><span>o</span></div>
 
             <div class="upload-zone" id="drop-zone">
-                <p><strong>Arrastra aquí un Excel o un archivo de datos</strong> o haz clic para seleccionarlo</p>
-                <p style="font-size:0.8rem;color:#888;margin-top:0.3rem">.xlsx con hojas "Centros", "Conservatorios" y "Alumnado", o un .json de la app</p>
+                <p><strong>Solo mirar un archivo</strong>, sin guardar nada</p>
+                <p style="font-size:0.8rem;color:#888;margin-top:0.3rem">Arrastra aquí un .xlsx con las hojas "Centros", "Conservatorios" y "Alumnado", o un .json de la app</p>
                 <button class="btn-upload" id="btn-upload">Seleccionar archivo</button>
                 <input type="file" id="file-input" accept=".xlsx,.xlsm,.json" aria-label="Archivo Excel o de datos">
             </div>
+
+            <p class="inicio-pie">No tienes que decidirlo ahora: si empiezas mirando un archivo, luego puedes
+               conectar la carpeta sin perder nada, con el botón que aparecerá arriba.</p>
         </div>
 
         <div class="barra-estado" id="barra-estado">
@@ -1273,6 +1287,7 @@
                 <span id="be-texto"></span>
             </div>
             <div class="be-acciones">
+                <button class="btn-ghost" id="btn-carpeta"></button>
                 <button class="btn-ghost" id="btn-modo"></button>
                 <button class="btn-ghost" id="btn-historial">Historial</button>
                 <button class="btn-ghost" id="btn-copias">Copias</button>
@@ -1416,6 +1431,16 @@
             <h3>Novedades</h3>
             <p style="font-size:0.72rem;color:#999;margin:-0.7rem 0 0.9rem" id="changelog-build"></p>
             <div class="changelog-version">
+                <h4>v2.1 &mdash; 11 de agosto de 2026</h4>
+                <ul>
+                    <li><strong>El bot&oacute;n de carpeta est&aacute; siempre a mano.</strong> Antes, si empezabas abriendo un Excel, ya no hab&iacute;a forma de conectar una carpeta sin volver a empezar</li>
+                    <li>Si abres un Excel y luego conectas una carpeta vac&iacute;a, se guarda ah&iacute; lo que tienes: es el camino natural de «lo miro y, si me convence, lo guardo»</li>
+                    <li><strong>Conectar una carpeta nunca escribe encima de lo que ya hay en ella.</strong> Si la carpeta ya tiene datos, solo se puede abrirlos o cancelar. Para sustituirlos por los de un Excel hay que hacerlo a conciencia: abrir la carpeta primero y usar despu&eacute;s «Importar Excel», que avisa y guarda copia de seguridad</li>
+                    <li>Cuando no hay datos, la pantalla lo dice y ofrece importar o a&ntilde;adir alumnado, en vez del enga&ntilde;oso «no hay alumnado que cumpla los filtros»</li>
+                    <li>Al filtrar sin resultados, ahora se recuerda cu&aacute;ntos hay en total y hay un bot&oacute;n para limpiar los filtros</li>
+                </ul>
+            </div>
+            <div class="changelog-version">
                 <h4>v2.0 &mdash; 11 de agosto de 2026</h4>
                 <ul>
                     <li><strong>La app ya escribe los datos.</strong> Deja de ser un visor: abres una carpeta de trabajo y todo se guarda en ella, en un archivo <code>coordinacion.json</code></li>
@@ -1477,7 +1502,7 @@
                 <br><a href="mailto:jl.mirallesbono@edu.gva.es" style="font-size:0.78rem">jl.mirallesbono@edu.gva.es</a> <span style="font-size:0.75rem;opacity:0.6">— sugerencias y problemas</span>
             </div>
             <div class="footer-links">
-                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.0</a>
+                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.1</a>
                 <span class="footer-separator"></span>
                 <a href="https://elpulpoenelvaso.jlmirall.es" target="_blank" rel="noopener">Blog</a>
                 <span class="footer-separator"></span>
@@ -1496,7 +1521,7 @@
     (function() {
         'use strict';
 
-        const APP_VERSION = '2.0';
+        const APP_VERSION = '2.1';
 
         const EQUIVALENCIAS = [
             { cons: '1º EEM', erg: '3º Primaria', idx: 0 },
@@ -2311,13 +2336,51 @@
                 ' · ' + escapeHtml(state.origen) + '</p>';
         }
 
+        /**
+         * "No hay nada" y "los filtros no dejan pasar nada" son cosas distintas y
+         * hasta ahora compartían mensaje, que además mentía cuando no había filtros.
+         */
+        function vacioHtml() {
+            if (!state.alumnado.length) {
+                return '<div class="cards-empty">' +
+                    '<p class="ce-titulo">Aquí todavía no hay datos</p>' +
+                    '<p>Importa tu Excel para empezar, o ve añadiendo el alumnado a mano.</p>' +
+                    '<div class="ce-botones solo-edicion">' +
+                        '<button class="btn-action primary" data-vacio="importar">Importar Excel</button>' +
+                        '<button class="btn-ghost" data-vacio="nuevo">+ Alumno/a</button>' +
+                    '</div></div>';
+            }
+            return '<div class="cards-empty">' +
+                '<p>Ningún alumno/a de los ' + state.alumnado.length + ' que hay cumple los filtros seleccionados.</p>' +
+                '<div class="ce-botones"><button class="btn-ghost" data-vacio="limpiar">Limpiar filtros</button></div>' +
+                '</div>';
+        }
+
+        function enlazarVacio(raiz) {
+            raiz.querySelectorAll('[data-vacio]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const q = btn.dataset.vacio;
+                    if (q === 'importar') {
+                        if (!puedeEditar()) { avisoSoloLectura(); return; }
+                        fileInput.click();
+                    } else if (q === 'nuevo') {
+                        editarAlumno(null);
+                    } else if (q === 'limpiar') {
+                        clearFilters();
+                        syncUrl();
+                    }
+                });
+            });
+        }
+
         // ------------------------------ Cards ------------------------------
         function renderCards(filtered) {
             const list = $('centers-list');
             list.innerHTML = '';
 
             if (!filtered.length) {
-                list.innerHTML = '<div class="cards-empty">No hay alumnado que cumpla los filtros seleccionados.</div>';
+                list.innerHTML = vacioHtml();
+                enlazarVacio(list);
                 return;
             }
 
@@ -2666,7 +2729,7 @@
             html += '</tr></thead><tbody>';
 
             if (!rows.length) {
-                html += '<tr><td colspan="' + TABLE_COLS.length + '" class="table-empty">No hay alumnado que cumpla los filtros seleccionados.</td></tr>';
+                html += '<tr><td colspan="' + TABLE_COLS.length + '" class="table-empty">' + vacioHtml() + '</td></tr>';
             }
 
             rows.forEach(a => {
@@ -2687,6 +2750,7 @@
             });
 
             table.innerHTML = html + '</tbody>';
+            if (!rows.length) enlazarVacio(table);
         }
 
         function onSortHeader(th) {
@@ -3071,20 +3135,146 @@
             return await dir.getFileHandle(NOMBRE_DATOS, { create: !!crear });
         }
 
+        /** Mira qué hay en la carpeta sin cargar nada: {existe, resumen} */
+        async function inspeccionarCarpeta() {
+            try {
+                const fh = await archivoDatos(false);
+                const f = await fh.getFile();
+                try {
+                    const d = JSON.parse(await f.text());
+                    return { existe: true, resumen: {
+                        alumnos: (d.alumnado || []).length,
+                        rev: d.rev || 0,
+                        quien: d.modificadoPor || '',
+                        fecha: d.ultimaModificacion || '',
+                    } };
+                } catch (e) {
+                    return { existe: true, resumen: null };   // está, pero ilegible
+                }
+            } catch (e) {
+                if (e && e.name === 'NotFoundError') return { existe: false, resumen: null };
+                throw e;
+            }
+        }
+
+        /**
+         * Conectar una carpeta NUNCA escribe encima de un archivo que ya existe.
+         * Si traes datos abiertos y la carpeta ya tiene los suyos, solo se puede
+         * abrir lo de la carpeta o cancelar. Para que ganen los tuyos, el camino
+         * son dos pasos a conciencia: conectar y luego "Importar Excel", que sí
+         * avisa en rojo y hace copia de seguridad antes de sustituir.
+         */
         async function conectarCarpeta() {
             if (!state.soporteFSA) { avisoSinFSA(); return false; }
+
+            let h;
             try {
-                const h = await window.showDirectoryPicker({ mode: 'readwrite' });
-                state.dirHandle = h;
-                dirDatos = null;
-                await guardarHandle(h);
-                return await cargarDeCarpeta();
+                h = await window.showDirectoryPicker({ mode: 'readwrite' });
             } catch (e) {
                 if (e && e.name === 'AbortError') return false;
                 console.error(e);
                 showError('No he podido abrir la carpeta: ' + e.message);
                 return false;
             }
+
+            const dirAnterior = state.dirHandle;
+            const datosAnterior = dirDatos;
+            const revertir = () => { state.dirHandle = dirAnterior; dirDatos = datosAnterior; actualizarBarraEstado(); };
+
+            state.dirHandle = h;
+            dirDatos = null;
+
+            let info;
+            try {
+                info = await inspeccionarCarpeta();
+            } catch (e) {
+                showError('No he podido mirar en esa carpeta: ' + e.message);
+                revertir();
+                return false;
+            }
+
+            const hayDatosAbiertos = !!(state.datos &&
+                (state.datos.alumnado.length || state.datos.centros.length || state.datos.conservatorios.length));
+
+            // Sin nada abierto: como siempre, cargar o empezar de cero
+            if (!hayDatosAbiertos) {
+                await guardarHandle(h);
+                const ok = await cargarDeCarpeta();
+                if (!ok && !state.dirHandle) revertir();
+                return ok;
+            }
+
+            if (!puedeEditar()) {
+                await modal({
+                    titulo: 'Estás en modo solo lectura',
+                    html: 'Para llevar los datos que tienes abiertos a una carpeta hace falta activar la edición primero.',
+                });
+                revertir();
+                return false;
+            }
+
+            // Carpeta vacía + datos abiertos: es el «guardar aquí» que faltaba
+            if (!info.existe) {
+                const ok = await confirmar('Guardar en esta carpeta',
+                    'La carpeta <strong>' + escapeHtml(h.name) + '</strong> todavía no tiene datos.<br><br>' +
+                    'Voy a guardar ahí lo que tienes abierto ahora mismo: <strong>' +
+                    state.datos.alumnado.length + ' ' + plural(state.datos.alumnado.length, 'alumno/a', 'alumnos/as') +
+                    '</strong> y ' + state.datos.centros.length + ' ' + plural(state.datos.centros.length, 'centro', 'centros') + '.<br><br>' +
+                    'A partir de ese momento se trabaja contra esa carpeta.',
+                    'Guardar aquí');
+                if (!ok) { revertir(); return false; }
+
+                await guardarHandle(h);
+                state.origen = 'Carpeta: ' + h.name;
+                state.cargadoMtime = null;
+                state.cargadoRev = state.datos.rev || 0;
+                state.sucio = true;
+                document.body.classList.add('sucio');
+                const guardado = await guardar(true);
+                if (guardado) {
+                    registrarHistorial('Datos llevados a la carpeta ' + h.name);
+                    toast('Guardado en ' + h.name + '.', 'ok');
+                }
+                actualizarBarraEstado();
+                renderView();
+                return guardado;
+            }
+
+            // Carpeta con datos + datos abiertos: no se sustituye desde aquí
+            const cuantos = state.datos.alumnado.length;
+            let detalle;
+            if (info.resumen) {
+                const cuando = info.resumen.fecha ? new Date(info.resumen.fecha).toLocaleString('es-ES') : '';
+                detalle = 'Esa carpeta ya tiene datos: <strong>' + info.resumen.alumnos + ' ' +
+                    plural(info.resumen.alumnos, 'alumno/a', 'alumnos/as') + '</strong>, revisión ' + info.resumen.rev +
+                    (info.resumen.quien ? ', guardados por <strong>' + escapeHtml(info.resumen.quien) + '</strong>' : '') +
+                    (cuando ? ' el ' + escapeHtml(cuando) : '') + '.';
+            } else {
+                detalle = 'Esa carpeta ya tiene un archivo de datos, aunque no he podido leerlo.';
+            }
+
+            const salida = await modal({
+                titulo: 'Esa carpeta ya tiene datos',
+                html: '<p>' + detalle + '</p>' +
+                      '<p style="margin-top:0.6rem">Lo que tienes abierto ahora (<strong>' + cuantos + ' ' +
+                      plural(cuantos, 'alumno/a', 'alumnos/as') + '</strong>) se descartará: ' +
+                      'conectar una carpeta nunca escribe encima de lo que ya hay en ella.</p>' +
+                      '<p style="margin-top:0.6rem;font-size:0.85rem;color:#666">Si lo que quieres es justo lo contrario, ' +
+                      'sustituir los datos de la carpeta por los de tu Excel, ábrela primero y usa después ' +
+                      '<strong>Importar Excel</strong>: ahí sí se puede, avisa de lo que va a pasar y guarda una copia de seguridad antes.</p>',
+                botones: [
+                    { texto: 'Cancelar', valor: 'cancelar' },
+                    { texto: 'Abrir los de la carpeta', clase: 'principal', valor: 'abrir' },
+                ],
+            });
+
+            if (salida !== 'abrir') { revertir(); return false; }
+
+            await guardarHandle(h);
+            marcarLimpio();
+            const ok = await cargarDeCarpeta();
+            if (!ok && !state.dirHandle) revertir();
+            return ok;
         }
 
         async function reconectar(silencioso) {
@@ -3439,6 +3629,9 @@
                 .forEach(id => $(id).classList.add('visible'));
 
             renderView();
+            // Sin esto la barra de estado no aparece al abrir un Excel en modo
+            // visor, y con ella se pierde el botón para conectar una carpeta
+            actualizarBarraEstado();
             syncUrl();
         }
 
@@ -3877,6 +4070,13 @@
             $('be-texto').innerHTML = escapeHtml(txt) +
                 (puedeEditar() ? '' : ' · <span class="be-modo-lectura">solo lectura</span>');
 
+            // El control de carpeta tiene que estar SIEMPRE a mano: si solo vive en
+            // la pantalla de inicio, quien abre un Excel se queda sin salida.
+            const btnCarpeta = $('btn-carpeta');
+            btnCarpeta.hidden = !state.soporteFSA;
+            btnCarpeta.textContent = state.dirHandle ? 'Cambiar carpeta' : 'Conectar carpeta para guardar';
+            btnCarpeta.className = state.dirHandle ? 'btn-ghost' : 'btn-action primary';
+
             const btnModo = $('btn-modo');
             btnModo.hidden = !hayPestillo();
             btnModo.textContent = puedeEditar() ? 'Bloquear edición' : 'Activar edición';
@@ -3973,6 +4173,7 @@
         // Eventos
         // ---------------------------------------------------------------
         $('btn-conectar').addEventListener('click', conectarCarpeta);
+        $('btn-carpeta').addEventListener('click', conectarCarpeta);
         $('btn-reconectar').addEventListener('click', async () => {
             const ok = await reconectar(false);
             if (!ok) toast('No he podido reconectar. Elige la carpeta otra vez.', 'error');

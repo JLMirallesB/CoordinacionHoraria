@@ -17,6 +17,10 @@ La primera vez te pedirá dos cosas:
 El navegador recuerda la carpeta, pero **vuelve a pedirte permiso cada vez que lo cierras del todo**.
 Cuando pase, pulsa el botón **"↻ Reconectar con la última carpeta"** y sigue donde lo dejaste.
 
+Si prefieres mirar un Excel antes de nada, puedes: arrástralo a la zona de abajo. Luego, con el
+botón **"Conectar carpeta para guardar"** de la barra de arriba, lo llevas a esta carpeta sin perder
+nada. Eso sí, si la carpeta ya tiene datos no se sobrescriben: primero se abren los de la carpeta.
+
 ## Qué hay aquí
 
 | | |
