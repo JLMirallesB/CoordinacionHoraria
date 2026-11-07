@@ -1010,6 +1010,11 @@
         .footer-author { flex: 1; min-width: 250px; }
         .footer-author a { color: #8eaaff; text-decoration: none; }
         .footer-author a:hover { text-decoration: underline; color: white; }
+        .footer-licencia {
+            flex-basis: 100%;
+            font-size: 0.72rem;
+            opacity: 0.75;
+        }
         .footer-links {
             display: flex;
             gap: 1.2rem;
@@ -1501,6 +1506,12 @@
             <h3>Novedades</h3>
             <p style="font-size:0.72rem;color:#999;margin:-0.7rem 0 0.9rem" id="changelog-build"></p>
             <div class="changelog-version">
+                <h4>v2.4.1 &mdash; 7 de noviembre de 2026</h4>
+                <ul>
+                    <li><strong>Licencia</strong>: el c&oacute;digo pasa a GNU AGPL v3 y los contenidos a CC BY-SA 4.0. El pie lo indica, con enlace al c&oacute;digo fuente y a la entrada del blog, y el correo de contacto pasa a ser joseluismirallesbono@gmail.com</li>
+                </ul>
+            </div>
+            <div class="changelog-version">
                 <h4>v2.4 &mdash; 11 de agosto de 2026</h4>
                 <ul>
                     <li><strong>Un archivo por curso.</strong> Los datos pasan a llamarse <code>coordinacion-2026-2027.json</code>, y el curso anterior queda congelado e intocable. Hay un gestor para volver a cualquier curso</li>
@@ -1602,18 +1613,19 @@
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-author">
-                App creada por <a href="https://www.jlmirall.es" target="_blank" rel="noopener">Jos&eacute; Luis Miralles Bono</a> con ayuda de Claude
-                <br><a href="mailto:jl.mirallesbono@edu.gva.es" style="font-size:0.78rem">jl.mirallesbono@edu.gva.es</a> <span style="font-size:0.75rem;opacity:0.6">— sugerencias y problemas</span>
+                App creada por <a href="https://jlmirall.es" target="_blank" rel="noopener">Jos&eacute; Luis Miralles Bono</a> con ayuda de Claude
+                <br><a href="mailto:joseluismirallesbono@gmail.com" style="font-size:0.78rem">joseluismirallesbono@gmail.com</a> <span style="font-size:0.75rem;opacity:0.6">— sugerencias y problemas</span>
             </div>
             <div class="footer-links">
-                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.4</a>
+                <a href="#" id="btn-changelog" class="footer-changelog-btn">Novedades v2.4.1</a>
                 <span class="footer-separator"></span>
-                <a href="https://elpulpoenelvaso.jlmirall.es" target="_blank" rel="noopener">Blog</a>
+                <a href="https://elpulpoenelvaso.jlmirall.es/?p=718" target="_blank" rel="noopener">M&aacute;s informaci&oacute;n sobre este proyecto</a>
                 <span class="footer-separator"></span>
                 <a href="https://github.com/JLMirallesB/CoordinacionHoraria" target="_blank" rel="noopener">GitHub</a>
                 <span class="footer-separator"></span>
                 <a href="https://ko-fi.com/miralles" target="_blank" rel="noopener">Inv&iacute;tame a una horchata</a>
             </div>
+            <div class="footer-licencia">C&oacute;digo bajo licencia <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="license noopener">AGPL v3</a> &middot; contenidos bajo <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="license noopener">CC BY-SA 4.0</a> &middot; <a href="https://github.com/JLMirallesB/CoordinacionHoraria" target="_blank" rel="noopener">c&oacute;digo fuente</a> &middot; SheetJS: Apache 2.0</div>
         </div>
     </footer>
 
@@ -1625,7 +1637,7 @@
     (function() {
         'use strict';
 
-        const APP_VERSION = '2.4';
+        const APP_VERSION = '2.4.1';
 
         const EQUIVALENCIAS = [
             { cons: '1º EEM', erg: '3º Primaria', idx: 0 },

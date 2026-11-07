@@ -9,5 +9,5 @@
     "instalar-hooks": "cp herramientas/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo 'Hook pre-commit instalado: no dejara commitear archivos de datos.'"
   },
   "author": "Jose Luis Miralles Bono",
-  "license": "MIT"
+  "license": "AGPL-3.0-only"
 }

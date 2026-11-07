@@ -373,11 +373,11 @@ repositorio es público.
 
 ## Autor
 
-**Jose Luis Miralles Bono** - [www.jlmirall.es](https://www.jlmirall.es)
+**José Luis Miralles Bono** - [jlmirall.es](https://jlmirall.es)
 
-Blog: [El pulpo en el vaso](https://elpulpoenelvaso.jlmirall.es)
+Más información: [APP para Coordinación Horaria entre Conservatorios y CEIPs e IES](https://elpulpoenelvaso.jlmirall.es/?p=718)
 
-Contacto para sugerencias o problemas: [jl.mirallesbono@edu.gva.es](mailto:jl.mirallesbono@edu.gva.es)
+Contacto para sugerencias o problemas: [joseluismirallesbono@gmail.com](mailto:joseluismirallesbono@gmail.com)
 
 App creada con ayuda de Claude (Anthropic).
 
@@ -389,4 +389,13 @@ Si esta app te resulta util, puedes invitarme a una horchata en [ko-fi.com/miral
 
 ## Licencia
 
-Este proyecto es software libre. Consulta el repositorio para mas detalles.
+© 2026 José Luis Miralles Bono
+
+- **Código:** [GNU AGPL v3](LICENSE). Puedes usarlo, modificarlo y redistribuirlo, también con fines
+  comerciales, siempre que lo que derives se publique con la misma licencia y con su código fuente disponible.
+- **Contenidos** (textos, documentación, Excel de ejemplo con datos inventados): [CC BY-SA 4.0](LICENSE-CONTENIDOS).
+
+**Excepción:** `vendor/xlsx.mini.min.js` es [SheetJS Community Edition](https://sheetjs.com), con licencia
+Apache 2.0 (ver `vendor/xlsx-LICENSE.txt`); también va incrustada en el `index.html` publicado.
+
+Hasta la versión 2.4 el `package.json` indicaba licencia MIT; las copias obtenidas antes la conservan.
